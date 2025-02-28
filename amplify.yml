@@ -1,0 +1,21 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Node version $(node -v)"
+        - echo "NPM version $(npm -v)"
+        - npm ci --cache .npm --prefer-offline
+    build:
+      commands:
+        - echo "Starting build phase"
+        - npm run build
+        - echo "Build phase completed"
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/* 

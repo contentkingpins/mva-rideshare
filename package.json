@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node build-diagnostic.js && echo 'Starting build process' && next build --debug && echo 'Build process completed'",
     "start": "next start",
     "lint": "next lint"
   },
