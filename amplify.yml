@@ -3,14 +3,11 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Node version $(node -v)"
-        - echo "NPM version $(npm -v)"
-        - npm ci --cache .npm --prefer-offline
+        - npm ci
     build:
       commands:
-        - echo "Starting build phase"
+        - echo "Building Next.js application..."
         - npm run build
-        - echo "Build phase completed"
   artifacts:
     baseDirectory: .next
     files:
@@ -18,4 +15,31 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-      - .next/cache/**/* 
+      - .next/cache/**/*
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=0, must-revalidate'
+    - pattern: '_next/static/**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: 'static/**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+  routes:
+    - source: '/_next/static/(?<file>.*)'
+      destination: '/_next/static/$file'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - source: '/static/(?<file>.*)'
+      destination: '/static/$file'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - source: '/(.*)'
+      destination: '/index.html'
+      status: '200' 
