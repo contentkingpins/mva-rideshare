@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node build-diagnostic.js && echo 'Starting build process' && next build --debug && echo 'Build process completed'",
+    "build": "node build-diagnostic.js && node src/utils/client-component-checker.js && echo 'Starting build process' && next build --debug && echo 'Build process completed'",
     "start": "next start",
     "lint": "next lint"
   },
