@@ -2,11 +2,6 @@
 
 import React, { useState } from 'react';
 
-export const metadata = {
-  title: 'Frequently Asked Questions | Claim Connectors',
-  description: 'Find answers to common questions about rideshare accident claims and our services.',
-};
-
 const faqs = [
   {
     question: "How does the claim process work?",
