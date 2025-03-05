@@ -1,6 +1,9 @@
 import React from 'react';
+import { useState } from 'react';
 
 export default function TermsPage() {
+  const [tcpaConsent, setTcpaConsent] = useState(false);
+
   return (
     <main className="container py-12 md:py-16">
       <div className="max-w-4xl mx-auto">
@@ -66,10 +69,59 @@ export default function TermsPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">7. Communication Consent</h2>
-            <p>
-              By using our services, you consent to receive communications from us, including emails, text messages, and phone calls related to your claim. You may opt out of marketing communications while maintaining essential claim-related communications.
-            </p>
+            <h2 className="text-2xl font-bold mb-4">7. Communication Consent and TCPA Agreement</h2>
+            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
+              <h3 className="text-xl font-semibold mb-4">TCPA Consent</h3>
+              <p className="mb-4">
+                By checking the box below, you expressly consent and agree to receive:
+              </p>
+              <ul className="list-disc pl-6 mb-4">
+                <li>Marketing and promotional communications</li>
+                <li>Claim status updates and notifications</li>
+                <li>Document requests and submission confirmations</li>
+                <li>Appointment reminders and scheduling communications</li>
+                <li>Case-related information and updates</li>
+              </ul>
+              <p className="mb-4">
+                These communications may be made using an automatic telephone dialing system or artificial/prerecorded voice and may be delivered via:
+              </p>
+              <ul className="list-disc pl-6 mb-4">
+                <li>Phone calls to your provided telephone number(s)</li>
+                <li>SMS/text messages to your provided mobile number(s)</li>
+                <li>Emails to your provided email address(es)</li>
+              </ul>
+              <p className="mb-4">
+                You understand and agree that these communications may be made by:
+              </p>
+              <ul className="list-disc pl-6 mb-4">
+                <li>Claim Connectors</li>
+                <li>Law Office of Michael Binder</li>
+                <li>Our authorized representatives and service providers</li>
+              </ul>
+              <p className="mb-4">
+                You acknowledge that:
+              </p>
+              <ul className="list-disc pl-6 mb-4">
+                <li>Your consent is not required to purchase any goods or services</li>
+                <li>Message and data rates may apply</li>
+                <li>The frequency of messages will vary based on your case status and preferences</li>
+                <li>You can opt-out of SMS messages at any time by replying "STOP"</li>
+                <li>You can opt-out of calls by informing the caller or contacting us directly</li>
+              </ul>
+              <div className="mt-6">
+                <label className="flex items-start cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={tcpaConsent}
+                    onChange={(e) => setTcpaConsent(e.target.checked)}
+                    className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span className="ml-3 text-sm">
+                    I have read and agree to the TCPA Consent terms above. I understand and consent to receiving calls, SMS messages, and other communications as described above.
+                  </span>
+                </label>
+              </div>
+            </div>
           </section>
 
           <section className="mb-8">
