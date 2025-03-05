@@ -111,20 +111,23 @@ export default function ClaimForm() {
   const handleAccidentSubmit = (data: AccidentFormData) => {
     setFormData((prev: any) => ({ ...prev, ...data }));
     
-    // Apply denial logic for drivers not at fault
+    // Only apply denial logic for specific cases
     if (data.role === 'driver' && data.atFault === 'no') {
       setDenialReason('Unfortunately, we cannot find you representation at this time as you were the driver and the other vehicle was not at fault.');
       setShowDenial(true);
       return;
     }
     
-    // Apply denial logic for guests without info
-    if (data.role === 'guest' && (!data.guestInfo || data.guestInfo.trim() === '')) {
-      setDenialReason('To proceed, we need the rideshare user\'s information.');
-      setShowDenial(true);
-      return;
+    // For guest role, only check if info is required and provided
+    if (data.role === 'guest') {
+      if (!data.guestInfo || data.guestInfo.trim() === '') {
+        setDenialReason('To proceed, we need the rideshare user\'s information.');
+        setShowDenial(true);
+        return;
+      }
     }
     
+    // If we reach here, proceed to next step
     setStep(3);
   };
   
