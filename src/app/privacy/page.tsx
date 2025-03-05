@@ -109,8 +109,6 @@ export default function PrivacyPage() {
             </p>
             <div className="mt-4">
               <p>Email: privacy@claimconnectors.com</p>
-              <p>Phone: (888) 555-5555</p>
-              <p>Address: 123 Legal Street, Suite 456, Los Angeles, CA 90001</p>
             </div>
           </section>
         </div>
