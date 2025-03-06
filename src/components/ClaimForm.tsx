@@ -12,9 +12,6 @@ const contactSchema = z.object({
   lastName: z.string().min(2, { message: 'Last name is required' }),
   phone: z.string().min(10, { message: 'Valid phone number is required' }),
   email: z.string().email({ message: 'Valid email is required' }),
-  tcpaConsent: z.boolean().refine(val => val === true, {
-    message: 'You must agree to the TCPA consent to proceed',
-  }),
 });
 
 const accidentSchema = z.object({
@@ -23,7 +20,10 @@ const accidentSchema = z.object({
   }),
   atFault: z.enum(['yes', 'no', 'unknown'], {
     required_error: 'Please indicate if the other vehicle was at fault',
-  }).optional(),
+  }).refine((val) => {
+    if (val === undefined) return false;
+    return true;
+  }, { message: 'Please indicate if the other vehicle was at fault' }),
   guestInfo: z.string().optional(),
 });
 
@@ -65,7 +65,6 @@ export default function ClaimForm() {
       lastName: '',
       phone: '',
       email: '',
-      tcpaConsent: false,
     },
   });
   
@@ -109,6 +108,7 @@ export default function ClaimForm() {
   };
   
   const handleAccidentSubmit = (data: AccidentFormData) => {
+    console.log('Accident form data:', data);
     setFormData((prev: any) => ({ ...prev, ...data }));
     
     // Only apply denial logic for specific cases
@@ -128,10 +128,11 @@ export default function ClaimForm() {
     }
     
     // If we reach here, proceed to next step
+    console.log('Proceeding to step 3');
     setStep(3);
   };
   
-  const handleLegalSubmit = (data: LegalFormData) => {
+  const handleLegalSubmit = async (data: LegalFormData) => {
     setFormData((prev: any) => ({ ...prev, ...data }));
     
     // Apply denial logic for no complaint and no police report
@@ -143,6 +144,34 @@ export default function ClaimForm() {
     
     // Start processing animation
     startProcessing();
+
+    try {
+      // Submit lead data to API
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          ...data,
+          source: 'claim-form',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit claim');
+      }
+
+      // Continue with success flow
+      setIsProcessing(false);
+      setIsComplete(true);
+      setStep(5);
+    } catch (error) {
+      console.error('Error submitting claim:', error);
+      setDenialReason('There was an error submitting your claim. Please try again or contact us directly.');
+      setShowDenial(true);
+    }
   };
   
   // Processing animation
@@ -279,47 +308,20 @@ export default function ClaimForm() {
                   <p className="mt-1 text-sm text-red-600">{contactForm.formState.errors.email.message}</p>
                 )}
               </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <h3 className="text-base font-semibold mb-2">TCPA Consent</h3>
-                <div className="text-sm text-gray-600">
-                  <label className="flex items-start cursor-pointer">
-                    <input
-                      type="checkbox"
-                      {...contactForm.register('tcpaConsent')}
-                      className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                    />
-                    <span className="ml-3">
-                      By checking this box, I consent to receive calls, texts & emails (including via automated systems) from Claim Connectors, Law Office of Michael Binder & partners about my claim and marketing. Consent isn't required to purchase services. Msg & data rates may apply. Reply STOP to opt-out of SMS.
-                    </span>
-                  </label>
-                  {contactForm.formState.errors.tcpaConsent && (
-                    <p className="mt-2 text-sm text-red-600">{contactForm.formState.errors.tcpaConsent.message}</p>
-                  )}
-                </div>
-              </div>
               
               <div className="pt-4">
                 <button 
                   type="submit" 
-                  className={`w-full ${
-                    !contactForm.watch('tcpaConsent') 
-                      ? 'btn-disabled bg-gray-300 cursor-not-allowed' 
-                      : 'btn-primary'
-                  }`}
-                  disabled={!contactForm.watch('tcpaConsent')}
+                  className="btn-primary w-full"
                 >
-                  {!contactForm.watch('tcpaConsent') 
-                    ? 'Please Accept TCPA Consent to Submit' 
-                    : 'Submit Your Claim'
-                  }
+                  Submit Your Claim
                 </button>
               </div>
             </form>
           </motion.div>
         )}
         
-        {/* Step 2: Accident Involvement */}
+        {/* Step 2: Accident Details */}
         {step === 2 && (
           <motion.div
             key="step2"
@@ -328,126 +330,67 @@ export default function ClaimForm() {
             animate="visible"
             exit="exit"
           >
-            <h2 className="text-2xl font-bold mb-6">Accident Involvement</h2>
-            <form onSubmit={accidentForm.handleSubmit(handleAccidentSubmit)} className="space-y-6">
+            <h2 className="text-2xl font-bold mb-6">Accident Details</h2>
+            <form onSubmit={accidentForm.handleSubmit(handleAccidentSubmit)} className="space-y-4">
               <div>
-                <label className="label">What was your role in the rideshare accident?</label>
-                <div className="space-y-3 mt-2">
-                  <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
-                    <input
-                      type="radio"
-                      value="driver"
-                      className="h-5 w-5 text-primary-600"
-                      {...accidentForm.register('role')}
-                    />
-                    <span>I was the rideshare driver</span>
-                  </label>
-                  
-                  <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
-                    <input
-                      type="radio"
-                      value="passenger"
-                      className="h-5 w-5 text-primary-600"
-                      {...accidentForm.register('role')}
-                    />
-                    <span>I was a passenger in a rideshare vehicle</span>
-                  </label>
-                  
-                  <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
-                    <input
-                      type="radio"
-                      value="guest"
-                      className="h-5 w-5 text-primary-600"
-                      {...accidentForm.register('role')}
-                    />
-                    <span>I was a guest traveling with a rideshare user</span>
-                  </label>
-                  
-                  <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
-                    <input
-                      type="radio"
-                      value="other_vehicle"
-                      className="h-5 w-5 text-primary-600"
-                      {...accidentForm.register('role')}
-                    />
-                    <span>I was in another vehicle hit by a rideshare car</span>
-                  </label>
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Your Role in the Accident
+                </label>
+                <select
+                  {...accidentForm.register('role')}
+                  className="w-full p-2 border rounded-md"
+                >
+                  <option value="">Select your role</option>
+                  <option value="driver">Driver</option>
+                  <option value="passenger">Passenger</option>
+                  <option value="guest">Guest</option>
+                  <option value="other_vehicle">Other Vehicle</option>
+                </select>
                 {accidentForm.formState.errors.role && (
-                  <p className="mt-1 text-sm text-red-600">{accidentForm.formState.errors.role.message}</p>
+                  <p className="text-red-500 text-sm mt-1">{accidentForm.formState.errors.role.message}</p>
                 )}
               </div>
-              
-              {/* Conditional follow-up questions */}
-              {accidentRole === 'driver' && (
-                <div className="pl-4 border-l-4 border-primary-200 py-2">
-                  <label className="label">Was the other vehicle at fault?</label>
-                  <div className="space-y-3 mt-2">
-                    <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
-                      <input
-                        type="radio"
-                        value="yes"
-                        className="h-5 w-5 text-primary-600"
-                        {...accidentForm.register('atFault')}
-                      />
-                      <span>Yes</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
-                      <input
-                        type="radio"
-                        value="no"
-                        className="h-5 w-5 text-primary-600"
-                        {...accidentForm.register('atFault')}
-                      />
-                      <span>No</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
-                      <input
-                        type="radio"
-                        value="unknown"
-                        className="h-5 w-5 text-primary-600"
-                        {...accidentForm.register('atFault')}
-                      />
-                      <span>I'm not sure</span>
-                    </label>
-                  </div>
+
+              {accidentRole && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Was the other vehicle at fault?
+                  </label>
+                  <select
+                    {...accidentForm.register('atFault')}
+                    className="w-full p-2 border rounded-md"
+                  >
+                    <option value="">Select an option</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                    <option value="unknown">Unknown</option>
+                  </select>
                   {accidentForm.formState.errors.atFault && (
-                    <p className="mt-1 text-sm text-red-600">{accidentForm.formState.errors.atFault.message}</p>
+                    <p className="text-red-500 text-sm mt-1">{accidentForm.formState.errors.atFault.message}</p>
                   )}
                 </div>
               )}
-              
+
               {accidentRole === 'guest' && (
-                <div className="pl-4 border-l-4 border-primary-200 py-2">
-                  <label htmlFor="guestInfo" className="label">
-                    Please provide the rideshare user's information (Name & Contact)
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Rideshare User Information
                   </label>
                   <textarea
-                    id="guestInfo"
-                    className={`input h-24 ${accidentForm.formState.errors.guestInfo ? 'border-red-500' : ''}`}
-                    placeholder="Name and contact information of the person who ordered the rideshare"
                     {...accidentForm.register('guestInfo')}
-                  ></textarea>
-                  <p className="text-sm text-gray-500 mt-1">
-                    This information is required to proceed with your claim.
-                  </p>
+                    className="w-full p-2 border rounded-md"
+                    rows={3}
+                    placeholder="Please provide the rideshare user's contact information"
+                  />
                 </div>
               )}
-              
-              <div className="flex justify-between pt-4">
-                <button 
-                  type="button" 
-                  onClick={() => setStep(1)}
-                  className="btn-outline"
-                >
-                  Back
-                </button>
-                <button type="submit" className="btn-primary">
-                  Continue to Legal Information
-                </button>
-              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 transition-colors"
+              >
+                Continue to Legal Information
+              </button>
             </form>
           </motion.div>
         )}
