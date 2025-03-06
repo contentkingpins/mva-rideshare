@@ -1,3 +1,4 @@
+# AWS Amplify configuration for Next.js application
 version: 1
 frontend:
   phases:
@@ -13,9 +14,9 @@ frontend:
         - echo "AWS_ACCESS_KEY_ID=${key_id}" > .env.local
         - echo "AWS_SECRET_ACCESS_KEY=${secret}" >> .env.local
         - echo "AWS_REGION=${region:-us-east-1}" >> .env.local
-        - echo "DYNAMODB_TABLE_NAME=${table name:-rideshare-mva}" >> .env.local
+        - echo "DYNAMODB_TABLE_NAME=${table_name:-rideshare-mva}" >> .env.local
         - echo "Environment variables set successfully"
-        - chmod 600 .env.local
+        - node build-diagnostic.js
     build:
       commands:
         - echo "Building Next.js application..."
