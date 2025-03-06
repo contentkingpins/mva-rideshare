@@ -106,24 +106,6 @@ export default function Hero() {
                   )}
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="text-sm text-gray-600">
-                    <label className="flex items-start cursor-pointer">
-                      <input
-                        type="checkbox"
-                        {...register('tcpaConsent')}
-                        className="mt-1 h-5 w-5 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                      />
-                      <span className="ml-3">
-                        By checking this box, I consent to receive calls, texts & emails (including via automated systems) from Claim Connectors, Law Office of Michael Binder & partners about my claim and marketing. Consent isn't required to purchase services. Msg & data rates may apply. Reply STOP to opt-out of SMS.
-                      </span>
-                    </label>
-                    {errors.tcpaConsent && (
-                      <p className="mt-2 text-sm text-red-600">{errors.tcpaConsent.message}</p>
-                    )}
-                  </div>
-                </div>
-
                 <button
                   type="submit"
                   disabled={isSubmitting || !watch('tcpaConsent')}
@@ -142,9 +124,39 @@ export default function Hero() {
                     : 'Submit My Claim'}
                 </button>
 
-                <p className="mt-2 text-sm text-gray-500 text-center">
-                  Free Consultation • No Obligation • 24/7 Support
-                </p>
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div className="text-sm text-gray-600">
+                    <label className="flex items-start cursor-pointer">
+                      <input
+                        type="checkbox"
+                        {...register('tcpaConsent')}
+                        className="mt-1 h-5 w-5 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                      />
+                      <span className="ml-3">
+                        By checking this box, I consent to receive calls, texts & emails (including via automated systems) from Claim Connectors, Law Office of Michael Binder & partners about my claim and marketing. Consent isn't required to purchase services. Msg & data rates may apply. Reply STOP to opt-out of SMS.
+                      </span>
+                    </label>
+                    {errors.tcpaConsent && (
+                      <p className="mt-2 text-sm text-red-600">{errors.tcpaConsent.message}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-center text-sm">
+                  <p className="text-gray-500">
+                    Free Consultation • No Obligation • 24/7 Support
+                  </p>
+                  <p className="mt-2 text-gray-500">
+                    By submitting, you agree to our{' '}
+                    <a href="/terms" className="text-primary-600 hover:text-primary-500">
+                      Terms of Service
+                    </a>{' '}
+                    and{' '}
+                    <a href="/privacy" className="text-primary-600 hover:text-primary-500">
+                      Privacy Policy
+                    </a>
+                  </p>
+                </div>
               </form>
             </div>
           </div>
