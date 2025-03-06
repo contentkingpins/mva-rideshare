@@ -18,8 +18,8 @@ export async function POST(request: Request) {
     // Log DynamoDB configuration
     console.log('4. DynamoDB Configuration:');
     console.log('- Table Name:', TABLE_NAME);
-    console.log('- Region:', process.env.AWS_REGION);
-    console.log('- Has Credentials:', !!process.env.AWS_ACCESS_KEY_ID && !!process.env.AWS_SECRET_ACCESS_KEY);
+    console.log('- Region:', process.env['region']);
+    console.log('- Has Credentials:', !!process.env['key_id'] && !!process.env['secret']);
     
     // Create the lead submission with the generated ID
     console.log('5. Attempting to create lead submission...');

@@ -10,8 +10,8 @@ export async function GET() {
     // Log configuration
     console.log('2. Configuration:');
     console.log('- Table Name:', TABLE_NAME);
-    console.log('- Region:', process.env.AWS_REGION);
-    console.log('- Has Credentials:', !!process.env.AWS_ACCESS_KEY_ID && !!process.env.AWS_SECRET_ACCESS_KEY);
+    console.log('- Region:', process.env['region']);
+    console.log('- Has Credentials:', !!process.env['key_id'] && !!process.env['secret']);
     
     // Test write operation
     console.log('3. Testing write operation...');
@@ -58,8 +58,8 @@ export async function GET() {
       message: 'DynamoDB connectivity test successful',
       details: {
         tableName: TABLE_NAME,
-        region: process.env.AWS_REGION,
-        hasCredentials: !!process.env.AWS_ACCESS_KEY_ID && !!process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env['region'],
+        hasCredentials: !!process.env['key_id'] && !!process.env['secret'],
         testData: result.Item
       }
     });
