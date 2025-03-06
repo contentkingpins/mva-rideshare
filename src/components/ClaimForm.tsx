@@ -283,12 +283,6 @@ export default function ClaimForm() {
                   <p className="mt-1 text-sm text-red-600">{contactForm.formState.errors.email.message}</p>
                 )}
               </div>
-              
-              <div className="pt-4">
-                <button type="submit" className="btn-primary w-full">
-                  Submit Your Claim
-                </button>
-              </div>
 
               <div className="mt-4">
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -309,6 +303,23 @@ export default function ClaimForm() {
                     )}
                   </div>
                 </div>
+              </div>
+              
+              <div className="pt-4">
+                <button 
+                  type="submit" 
+                  className={`w-full ${
+                    !contactForm.watch('tcpaConsent') 
+                      ? 'btn-disabled bg-gray-300 cursor-not-allowed' 
+                      : 'btn-primary'
+                  }`}
+                  disabled={!contactForm.watch('tcpaConsent')}
+                >
+                  {!contactForm.watch('tcpaConsent') 
+                    ? 'Please Accept TCPA Consent to Submit' 
+                    : 'Submit Your Claim'
+                  }
+                </button>
               </div>
             </form>
           </motion.div>
