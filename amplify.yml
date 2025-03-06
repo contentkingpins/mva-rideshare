@@ -6,14 +6,14 @@ frontend:
         - npm ci
         - echo "Setting up environment variables..."
         - |
-          if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+          if [ -z "$key_id" ] || [ -z "$secret" ]; then
             echo "Error: AWS credentials are not set"
             exit 1
           fi
-        - echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" > .env.local
-        - echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env.local
-        - echo "AWS_REGION=${AWS_REGION:-us-east-1}" >> .env.local
-        - echo "DYNAMODB_TABLE_NAME=${DYNAMODB_TABLE_NAME:-rideshare-mva}" >> .env.local
+        - echo "AWS_ACCESS_KEY_ID=${key_id}" > .env.local
+        - echo "AWS_SECRET_ACCESS_KEY=${secret}" >> .env.local
+        - echo "AWS_REGION=${region:-us-east-1}" >> .env.local
+        - echo "DYNAMODB_TABLE_NAME=${table name:-rideshare-mva}" >> .env.local
         - echo "Environment variables set successfully"
         - chmod 600 .env.local
     build:

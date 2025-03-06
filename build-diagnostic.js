@@ -24,7 +24,13 @@ criticalFiles.forEach(file => {
   if (file === '.env.local' && exists) {
     try {
       const envContent = fs.readFileSync('.env.local', 'utf8');
-      console.log('Environment variables found:', envContent.split('\n').length);
+      console.log('\nEnvironment variables in .env.local:');
+      envContent.split('\n').forEach(line => {
+        if (line.trim()) {
+          const [key] = line.split('=');
+          console.log(`- ${key}`);
+        }
+      });
     } catch (error) {
       console.log('Error reading .env.local:', error.message);
     }
@@ -34,10 +40,10 @@ criticalFiles.forEach(file => {
 // Check environment variables
 console.log('\nChecking environment variables:');
 const requiredEnvVars = [
-  'AWS_ACCESS_KEY_ID',
-  'AWS_SECRET_ACCESS_KEY',
-  'AWS_REGION',
-  'DYNAMODB_TABLE_NAME'
+  'key_id',
+  'secret',
+  'region',
+  'table name'
 ];
 
 let missingVars = [];

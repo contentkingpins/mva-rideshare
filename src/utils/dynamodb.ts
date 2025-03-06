@@ -2,22 +2,28 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 // Check for AWS credentials in environment
-const hasAwsCredentials = process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY;
+const hasAwsCredentials = process.env.key_id && process.env.secret;
+
+// Log configuration details (without exposing sensitive values)
+console.log('DynamoDB Configuration:');
+console.log('- Region:', process.env.region || "us-east-1");
+console.log('- Table Name:', process.env['table name'] || "rideshare-mva");
+console.log('- Credentials:', hasAwsCredentials ? '✅ Configured' : '❌ Missing');
 
 // Only warn about missing credentials if we're not in a build environment
 if (!hasAwsCredentials && !process.env.NEXT_PHASE) {
-  console.warn('AWS credentials are not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables.');
+  console.warn('AWS credentials are not configured. Please set key_id and secret environment variables.');
 }
 
 const clientConfig = {
-  region: process.env.AWS_REGION || "us-east-1",
+  region: process.env.region || "us-east-1",
 } as const;
 
 if (hasAwsCredentials) {
   Object.assign(clientConfig, {
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
+      accessKeyId: process.env.key_id!,
+      secretAccessKey: process.env.secret!
     }
   });
 }
@@ -26,7 +32,7 @@ const client = new DynamoDBClient(clientConfig);
 
 export const docClient = DynamoDBDocumentClient.from(client);
 
-export const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME || "rideshare-mva";
+export const TABLE_NAME = process.env['table name'] || "rideshare-mva";
 
 export interface LeadSubmission {
   lead_id: string;
