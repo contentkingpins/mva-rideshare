@@ -285,34 +285,17 @@ export default function ClaimForm() {
               </div>
               
               <div className="mt-6">
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <h3 className="text-lg font-semibold mb-4">TCPA Consent</h3>
-                  <p className="text-sm text-gray-600 mb-4">
-                    By checking this box, you expressly consent to receive:
-                  </p>
-                  <ul className="list-disc pl-6 mb-4 text-sm text-gray-600">
-                    <li>Marketing and promotional communications</li>
-                    <li>Claim status updates and notifications</li>
-                    <li>Document requests and submission confirmations</li>
-                    <li>Appointment reminders and scheduling communications</li>
-                  </ul>
-                  <p className="text-sm text-gray-600 mb-4">
-                    These communications may be made using an automatic telephone dialing system or artificial/prerecorded voice and may be delivered via phone calls, SMS/text messages, and emails from:
-                  </p>
-                  <ul className="list-disc pl-6 mb-4 text-sm text-gray-600">
-                    <li>Claim Connectors</li>
-                    <li>Law Office of Michael Binder</li>
-                    <li>Our authorized representatives and service providers</li>
-                  </ul>
-                  <div className="mt-4">
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <h3 className="text-base font-semibold mb-2">TCPA Consent</h3>
+                  <div className="text-sm text-gray-600">
                     <label className="flex items-start cursor-pointer">
                       <input
                         type="checkbox"
                         {...contactForm.register('tcpaConsent')}
                         className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                       />
-                      <span className="ml-3 text-sm text-gray-600">
-                        I understand and agree to receive calls, SMS messages, and other communications as described above. Message and data rates may apply. I can opt-out of SMS messages by replying "STOP" or opt-out of calls by informing the caller.
+                      <span className="ml-3">
+                        By checking this box, I consent to receive calls, texts & emails (including via automated systems) from Claim Connectors, Law Office of Michael Binder & partners about my claim and marketing. Consent isn't required to purchase services. Msg & data rates may apply. Reply STOP to opt-out of SMS.
                       </span>
                     </label>
                     {contactForm.formState.errors.tcpaConsent && (
