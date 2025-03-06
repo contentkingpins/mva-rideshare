@@ -1,38 +1,44 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
-// Check for AWS credentials in environment
-const hasAwsCredentials = process.env['key_id'] && process.env['secret'];
+// Fixed values for key variables for reliability
+const TABLE_NAME = process.env['table name'] || "rideshare-mva";
+const REGION = process.env['region'] || "us-east-1";
+const HAS_CREDENTIALS = !!(process.env['key_id'] && process.env['secret']);
 
 // Log configuration details (without exposing sensitive values)
-console.log('DynamoDB Configuration:');
-console.log('- Region:', process.env['region'] || "us-east-1");
-console.log('- Table Name:', process.env['table name'] || "rideshare-mva");
-console.log('- Credentials:', hasAwsCredentials ? '✅ Configured' : '❌ Missing');
+console.log('[DynamoDB Config]', {
+  tableName: TABLE_NAME,
+  region: REGION,
+  hasCredentials: HAS_CREDENTIALS
+});
 
-// Only warn about missing credentials if we're not in a build environment
-if (!hasAwsCredentials && !process.env.NEXT_PHASE) {
-  console.warn('AWS credentials are not configured. Please set key_id and secret environment variables.');
-}
-
+// Create the client config
 const clientConfig = {
-  region: process.env['region'] || "us-east-1",
+  region: REGION,
 } as const;
 
-if (hasAwsCredentials) {
+// Only add credentials if they exist
+if (HAS_CREDENTIALS) {
   Object.assign(clientConfig, {
     credentials: {
       accessKeyId: process.env['key_id']!,
       secretAccessKey: process.env['secret']!
     }
   });
+} else {
+  console.warn('[DynamoDB] No AWS credentials found. Please check environment variables.');
 }
 
+// Create the DynamoDB client
 const client = new DynamoDBClient(clientConfig);
+export const docClient = DynamoDBDocumentClient.from(client, {
+  marshallOptions: {
+    removeUndefinedValues: true, // This helps with empty values
+  }
+});
 
-export const docClient = DynamoDBDocumentClient.from(client);
-
-export const TABLE_NAME = process.env['table name'] || "rideshare-mva";
+export { TABLE_NAME };
 
 export interface LeadSubmission {
   lead_id: string;
@@ -41,16 +47,26 @@ export interface LeadSubmission {
 
 export async function createLeadSubmission(lead: LeadSubmission) {
   try {
+    console.log('[DynamoDB] Creating lead submission:', { 
+      leadId: lead.lead_id,
+      tableName: TABLE_NAME
+    });
+    
     const command = new PutCommand({
       TableName: TABLE_NAME,
       Item: lead
     });
     
-    await docClient.send(command);
+    const result = await docClient.send(command);
+    console.log('[DynamoDB] Lead submission created successfully');
     return { success: true, message: "Lead submission created successfully" };
   } catch (error) {
-    console.error("Error creating lead submission:", error);
-    return { success: false, message: "Failed to create lead submission" };
+    console.error("[DynamoDB] Error creating lead submission:", error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : "Failed to create lead submission",
+      error: error
+    };
   }
 }
 
