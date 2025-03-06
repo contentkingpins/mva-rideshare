@@ -106,24 +106,6 @@ export default function Hero() {
                   )}
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !watch('tcpaConsent')}
-                  className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white ${
-                    !watch('tcpaConsent')
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : isSubmitting
-                      ? 'bg-primary-500 cursor-wait'
-                      : 'bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'
-                  }`}
-                >
-                  {!watch('tcpaConsent')
-                    ? 'Please Accept TCPA Consent to Submit'
-                    : isSubmitting
-                    ? 'Submitting...'
-                    : 'Submit My Claim'}
-                </button>
-
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <div className="text-sm text-gray-600">
                     <label className="flex items-start cursor-pointer">
@@ -141,6 +123,20 @@ export default function Hero() {
                     )}
                   </div>
                 </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !watch('tcpaConsent')}
+                  className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white ${
+                    !watch('tcpaConsent')
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : isSubmitting
+                      ? 'bg-primary-500 cursor-wait'
+                      : 'bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'
+                  }`}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Your Claim'}
+                </button>
 
                 <div className="text-center text-sm">
                   <p className="text-gray-500">
