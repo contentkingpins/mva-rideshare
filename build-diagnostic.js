@@ -43,7 +43,7 @@ const requiredEnvVars = [
   'key_id',
   'secret',
   'region',
-  'table name'
+  'table_name'
 ];
 
 let missingVars = [];

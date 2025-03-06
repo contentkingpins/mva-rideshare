@@ -7,7 +7,7 @@ const hasAwsCredentials = process.env.key_id && process.env.secret;
 // Log configuration details (without exposing sensitive values)
 console.log('DynamoDB Configuration:');
 console.log('- Region:', process.env.region || "us-east-1");
-console.log('- Table Name:', process.env['table name'] || "rideshare-mva");
+console.log('- Table Name:', process.env.table_name || "rideshare-mva");
 console.log('- Credentials:', hasAwsCredentials ? '✅ Configured' : '❌ Missing');
 
 // Only warn about missing credentials if we're not in a build environment
@@ -32,7 +32,7 @@ const client = new DynamoDBClient(clientConfig);
 
 export const docClient = DynamoDBDocumentClient.from(client);
 
-export const TABLE_NAME = process.env['table name'] || "rideshare-mva";
+export const TABLE_NAME = process.env.table_name || "rideshare-mva";
 
 export interface LeadSubmission {
   lead_id: string;
