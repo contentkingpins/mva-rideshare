@@ -13,14 +13,45 @@ const criticalFiles = [
   'package.json',
   'tsconfig.json',
   'src/app/layout.tsx',
-  'src/app/page.tsx'
+  'src/app/page.tsx',
+  '.env.local'
 ];
 
 console.log('\nChecking for critical files:');
 criticalFiles.forEach(file => {
   const exists = fs.existsSync(path.join(process.cwd(), file));
   console.log(`${file}: ${exists ? '✅ Found' : '❌ Missing'}`);
+  if (file === '.env.local' && exists) {
+    try {
+      const envContent = fs.readFileSync('.env.local', 'utf8');
+      console.log('Environment variables found:', envContent.split('\n').length);
+    } catch (error) {
+      console.log('Error reading .env.local:', error.message);
+    }
+  }
 });
+
+// Check environment variables
+console.log('\nChecking environment variables:');
+const requiredEnvVars = [
+  'AWS_ACCESS_KEY_ID',
+  'AWS_SECRET_ACCESS_KEY',
+  'AWS_REGION',
+  'DYNAMODB_TABLE_NAME'
+];
+
+let missingVars = [];
+requiredEnvVars.forEach(envVar => {
+  const exists = !!process.env[envVar];
+  console.log(`${envVar}: ${exists ? '✅ Set' : '❌ Missing'}`);
+  if (!exists) missingVars.push(envVar);
+});
+
+if (missingVars.length > 0) {
+  console.log('\n⚠️ Missing required environment variables:', missingVars.join(', '));
+  console.log('Please ensure these variables are set in your Amplify environment settings.');
+  // Don't exit with error during build phase
+}
 
 // Check package.json configuration
 try {
@@ -41,5 +72,16 @@ console.log('\nMemory usage:');
 Object.entries(memoryUsage).forEach(([key, value]) => {
   console.log(`- ${key}: ${Math.round(value / 1024 / 1024 * 100) / 100} MB`);
 });
+
+// Check for TypeScript errors
+try {
+  const tsConfig = require('./tsconfig.json');
+  console.log('\nTypeScript configuration:');
+  console.log('- Target:', tsConfig.compilerOptions.target);
+  console.log('- Strict mode:', tsConfig.compilerOptions.strict);
+  console.log('- JSX:', tsConfig.compilerOptions.jsx);
+} catch (error) {
+  console.error('Error reading tsconfig.json:', error.message);
+}
 
 console.log('\n=== Diagnostic Complete ==='); 

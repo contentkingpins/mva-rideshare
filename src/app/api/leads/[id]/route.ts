@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { UpdateCommand } from '@aws-sdk/lib-dynamodb';
-import { docClient, TABLE_NAME } from '@/lib/aws-config';
+import { updateLeadSubmission } from '@/utils/dynamodb';
 
 export async function PATCH(
   request: Request,
@@ -8,33 +7,31 @@ export async function PATCH(
 ) {
   try {
     const data = await request.json();
-    const now = new Date().toISOString();
+    const result = await updateLeadSubmission(params.id, data);
 
-    const command = new UpdateCommand({
-      TableName: TABLE_NAME,
-      Key: {
-        id: params.id,
-      },
-      UpdateExpression: 'SET #status = :status, updatedAt = :updatedAt',
-      ExpressionAttributeNames: {
-        '#status': 'status',
-      },
-      ExpressionAttributeValues: {
-        ':status': data.status,
-        ':updatedAt': now,
-      },
-    });
-
-    await docClient.send(command);
+    if (!result.success) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: result.message,
+          error: result.error
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Lead status updated successfully' 
+      message: result.message
     });
   } catch (error) {
     console.error('Error updating lead status:', error);
     return NextResponse.json(
-      { success: false, message: 'Error updating lead status' },
+      { 
+        success: false, 
+        message: 'Error updating lead status',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
