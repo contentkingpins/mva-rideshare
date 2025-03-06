@@ -164,9 +164,12 @@ export default function ClaimForm() {
       // Continue with success flow
       setIsProcessing(false);
       setIsComplete(true);
+      setShowDenial(false); // Ensure denial isn't shown
       setStep(5);
     } catch (error) {
       console.error('Error submitting claim:', error);
+      setIsProcessing(false);
+      setIsComplete(false); // Ensure complete isn't shown
       setDenialReason('There was an error submitting your claim. Please try again or contact us directly.');
       setShowDenial(true);
     }
@@ -534,7 +537,7 @@ export default function ClaimForm() {
         )}
         
         {/* Step 5: Final Call to Action */}
-        {step === 5 && (
+        {step === 5 && !showDenial && (
           <motion.div
             key="step5"
             variants={fadeIn}
