@@ -284,7 +284,13 @@ export default function ClaimForm() {
                 )}
               </div>
               
-              <div className="mt-6">
+              <div className="pt-4">
+                <button type="submit" className="btn-primary w-full">
+                  Submit Your Claim
+                </button>
+              </div>
+
+              <div className="mt-4">
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h3 className="text-base font-semibold mb-2">TCPA Consent</h3>
                   <div className="text-sm text-gray-600">
@@ -303,12 +309,6 @@ export default function ClaimForm() {
                     )}
                   </div>
                 </div>
-              </div>
-              
-              <div className="pt-4">
-                <button type="submit" className="btn-primary w-full">
-                  Continue to Accident Details
-                </button>
               </div>
             </form>
           </motion.div>
