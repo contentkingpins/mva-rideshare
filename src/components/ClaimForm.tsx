@@ -111,10 +111,8 @@ export default function ClaimForm() {
     console.log('Accident form data:', data);
     setFormData((prev: any) => ({ ...prev, ...data }));
     
-    // Only apply denial logic for specific cases
-    if (data.role === 'driver' && data.atFault === 'no') {
-      setDenialReason('Unfortunately, we cannot find you representation at this time as you were the driver and the other vehicle was not at fault.');
-      setShowDenial(true);
+    // Stop form submission for driver role
+    if (data.role === 'driver') {
       return;
     }
     
@@ -205,8 +203,15 @@ export default function ClaimForm() {
     }, 1500);
   };
   
-  // Watch for role changes to show/hide conditional fields
+  // Watch for role changes to show/hide conditional fields and handle immediate denial
   const accidentRole = accidentForm.watch('role');
+  useEffect(() => {
+    if (accidentRole === 'driver') {
+      setDenialReason('As a rideshare driver, you are not eligible for our services at this time. Please contact your insurance provider for assistance.');
+      setShowDenial(true);
+      setStep(2); // Keep the form at step 2
+    }
+  }, [accidentRole]);
   
   // Calculate progress percentage
   const calculateProgress = () => {
@@ -341,20 +346,20 @@ export default function ClaimForm() {
                   className="w-full p-2 border rounded-md"
                 >
                   <option value="">Select your role</option>
-                  <option value="driver">Driver</option>
-                  <option value="passenger">Passenger</option>
-                  <option value="guest">Guest</option>
-                  <option value="other_vehicle">Other Vehicle</option>
+                  <option value="driver">Rideshare Driver</option>
+                  <option value="passenger">Rideshare Passenger</option>
+                  <option value="guest">Guest of Rideshare Rider</option>
+                  <option value="other_vehicle">Driver of Car Hit by Rideshare Driver</option>
                 </select>
                 {accidentForm.formState.errors.role && (
                   <p className="text-red-500 text-sm mt-1">{accidentForm.formState.errors.role.message}</p>
                 )}
               </div>
 
-              {accidentRole && (
+              {accidentRole !== 'driver' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Was the other vehicle at fault?
+                    Was the rideshare driver at fault?
                   </label>
                   <select
                     {...accidentForm.register('atFault')}
@@ -363,7 +368,6 @@ export default function ClaimForm() {
                     <option value="">Select an option</option>
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
-                    <option value="unknown">Unknown</option>
                   </select>
                   {accidentForm.formState.errors.atFault && (
                     <p className="text-red-500 text-sm mt-1">{accidentForm.formState.errors.atFault.message}</p>
