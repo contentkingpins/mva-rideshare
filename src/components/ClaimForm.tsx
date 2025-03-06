@@ -31,9 +31,6 @@ const legalSchema = z.object({
   rideshareComplaint: z.enum(['yes', 'no'], {
     required_error: 'Please indicate if you filed a complaint',
   }),
-  rideshareCompany: z.enum(['uber', 'lyft', 'both'], {
-    required_error: 'Please select the rideshare company',
-  }),
   policeReport: z.enum(['yes', 'no'], {
     required_error: 'Please indicate if there is a police report',
   }),
@@ -85,7 +82,6 @@ export default function ClaimForm() {
     resolver: zodResolver(legalSchema),
     defaultValues: {
       rideshareComplaint: undefined,
-      rideshareCompany: undefined,
       policeReport: undefined,
     },
   });
@@ -494,25 +490,9 @@ export default function ClaimForm() {
                   <p className="mt-1 text-sm text-red-600">{legalForm.formState.errors.rideshareComplaint.message}</p>
                 )}
               </div>
-              
+
               <div>
-                <label className="label">Were you in an Uber or Lyft?</label>
-                <select
-                  className={`input ${legalForm.formState.errors.rideshareCompany ? 'border-red-500' : ''}`}
-                  {...legalForm.register('rideshareCompany')}
-                >
-                  <option value="">Please select</option>
-                  <option value="uber">Uber</option>
-                  <option value="lyft">Lyft</option>
-                  <option value="both">Both</option>
-                </select>
-                {legalForm.formState.errors.rideshareCompany && (
-                  <p className="mt-1 text-sm text-red-600">{legalForm.formState.errors.rideshareCompany.message}</p>
-                )}
-              </div>
-              
-              <div>
-                <label className="label">Is there a police report?</label>
+                <label className="label">Was a police report filed?</label>
                 <div className="flex space-x-4 mt-2">
                   <label className="flex items-center space-x-3 p-3 border rounded-md hover:bg-gray-50 cursor-pointer">
                     <input
@@ -538,7 +518,7 @@ export default function ClaimForm() {
                   <p className="mt-1 text-sm text-red-600">{legalForm.formState.errors.policeReport.message}</p>
                 )}
               </div>
-              
+
               <div className="flex justify-between pt-4">
                 <button 
                   type="button" 
