@@ -40,10 +40,10 @@ criticalFiles.forEach(file => {
 // Check environment variables
 console.log('\nChecking environment variables:');
 const requiredEnvVars = [
-  'key_id',
-  'secret',
-  'region',
-  'table_name'
+  'AWS_ACCESS_KEY_ID',
+  'AWS_SECRET_ACCESS_KEY',
+  'AWS_REGION',
+  'DYNAMODB_TABLE_NAME'
 ];
 
 let missingVars = [];
