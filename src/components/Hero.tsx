@@ -8,10 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 const initialFormSchema = z.object({
   firstName: z.string().min(2, { message: 'First name is required' }),
-  phone: z.string().min(10, { message: 'Valid phone number is required' }),
-  tcpaConsent: z.boolean().refine(val => val === true, {
-    message: 'You must agree to the TCPA consent to proceed',
-  }),
+  phone: z.string().min(10, { message: 'Valid phone number is required' })
 });
 
 type InitialFormData = z.infer<typeof initialFormSchema>;
@@ -20,19 +17,17 @@ export default function Hero() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<InitialFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<InitialFormData>({
     resolver: zodResolver(initialFormSchema),
     defaultValues: {
       firstName: '',
-      phone: '',
-      tcpaConsent: false,
+      phone: ''
     },
   });
 
   const onSubmit = async (data: InitialFormData) => {
     setIsSubmitting(true);
     try {
-      // Save form data to localStorage for the main claim form to use
       localStorage.setItem('contactFormData', JSON.stringify(data));
       router.push('/claim');
     } catch (error) {
@@ -110,38 +105,23 @@ export default function Hero() {
                   <p className="text-gray-500">
                     Free Consultation • No Obligation • 24/7 Support
                   </p>
-                  <div className="mt-4 text-gray-600">
-                    <label className="flex items-start cursor-pointer">
-                      <input
-                        type="checkbox"
-                        {...register('tcpaConsent')}
-                        className="mt-1 h-5 w-5 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                      />
-                      <span className="ml-3 text-left">
-                        By submitting, you agree to our{' '}
-                        <a href="/terms" className="text-primary-600 hover:text-primary-500">
-                          Terms of Service
-                        </a>{' '}
-                        and{' '}
-                        <a href="/privacy" className="text-primary-600 hover:text-primary-500">
-                          Privacy Policy
-                        </a>
-                        . You also consent to receive calls, texts & emails (including via automated systems) from Claim Connectors, Law Office of Michael Binder & partners about your claim and marketing. Consent isn't required to purchase services. Msg & data rates may apply. Reply STOP to opt-out of SMS.
-                      </span>
-                    </label>
-                    {errors.tcpaConsent && (
-                      <p className="mt-2 text-sm text-red-600">{errors.tcpaConsent.message}</p>
-                    )}
-                  </div>
+                  <p className="mt-2 text-gray-500">
+                    By submitting, you agree to our{' '}
+                    <a href="/terms" className="text-primary-600 hover:text-primary-500">
+                      Terms of Service
+                    </a>{' '}
+                    and{' '}
+                    <a href="/privacy" className="text-primary-600 hover:text-primary-500">
+                      Privacy Policy
+                    </a>
+                  </p>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={isSubmitting || !watch('tcpaConsent')}
+                  disabled={isSubmitting}
                   className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white ${
-                    !watch('tcpaConsent')
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : isSubmitting
+                    isSubmitting
                       ? 'bg-primary-500 cursor-wait'
                       : 'bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'
                   }`}
