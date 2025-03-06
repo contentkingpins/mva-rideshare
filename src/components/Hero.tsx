@@ -126,7 +126,7 @@ export default function Hero() {
                       : 'bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500'
                   }`}
                 >
-                  {isSubmitting ? 'Submitting...' : 'Submit Your Claim'}
+                  {isSubmitting ? 'Submitting...' : 'Continue'}
                 </button>
               </form>
             </div>
