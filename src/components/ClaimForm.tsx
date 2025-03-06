@@ -145,6 +145,8 @@ export default function ClaimForm() {
 
     try {
       // Submit lead data to API
+      console.log('Submitting data to API:', { ...formData, ...data, source: 'claim-form' });
+      
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
@@ -157,8 +159,12 @@ export default function ClaimForm() {
         }),
       });
 
+      // Capture response details for debugging
+      const responseData = await response.json().catch(() => null);
+      console.log('API response:', { status: response.status, ok: response.ok, data: responseData });
+
       if (!response.ok) {
-        throw new Error('Failed to submit claim');
+        throw new Error(responseData?.error || 'Failed to submit claim');
       }
 
       // Continue with success flow
@@ -170,7 +176,13 @@ export default function ClaimForm() {
       console.error('Error submitting claim:', error);
       setIsProcessing(false);
       setIsComplete(false); // Ensure complete isn't shown
-      setDenialReason('There was an error submitting your claim. Please try again or contact us directly.');
+      
+      // Use more specific error message if available
+      const errorMessage = error instanceof Error 
+        ? error.message
+        : 'There was an error submitting your claim. Please try again or contact us directly.';
+      
+      setDenialReason(errorMessage);
       setShowDenial(true);
     }
   };
