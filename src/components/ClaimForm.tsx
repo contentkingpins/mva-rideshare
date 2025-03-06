@@ -284,24 +284,22 @@ export default function ClaimForm() {
                 )}
               </div>
 
-              <div className="mt-4">
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <h3 className="text-base font-semibold mb-2">TCPA Consent</h3>
-                  <div className="text-sm text-gray-600">
-                    <label className="flex items-start cursor-pointer">
-                      <input
-                        type="checkbox"
-                        {...contactForm.register('tcpaConsent')}
-                        className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                      />
-                      <span className="ml-3">
-                        By checking this box, I consent to receive calls, texts & emails (including via automated systems) from Claim Connectors, Law Office of Michael Binder & partners about my claim and marketing. Consent isn't required to purchase services. Msg & data rates may apply. Reply STOP to opt-out of SMS.
-                      </span>
-                    </label>
-                    {contactForm.formState.errors.tcpaConsent && (
-                      <p className="mt-2 text-sm text-red-600">{contactForm.formState.errors.tcpaConsent.message}</p>
-                    )}
-                  </div>
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h3 className="text-base font-semibold mb-2">TCPA Consent</h3>
+                <div className="text-sm text-gray-600">
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      {...contactForm.register('tcpaConsent')}
+                      className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                    <span className="ml-3">
+                      By checking this box, I consent to receive calls, texts & emails (including via automated systems) from Claim Connectors, Law Office of Michael Binder & partners about my claim and marketing. Consent isn't required to purchase services. Msg & data rates may apply. Reply STOP to opt-out of SMS.
+                    </span>
+                  </label>
+                  {contactForm.formState.errors.tcpaConsent && (
+                    <p className="mt-2 text-sm text-red-600">{contactForm.formState.errors.tcpaConsent.message}</p>
+                  )}
                 </div>
               </div>
               
