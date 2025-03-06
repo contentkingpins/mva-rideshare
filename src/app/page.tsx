@@ -2,6 +2,7 @@ import HeroSection from '@/components/HeroSection';
 import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
 import Footer from '@/components/Footer';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -17,6 +18,11 @@ export default function Home() {
           <div>ENV: {process.env.NODE_ENV}</div>
           <div>AWS Config: {!!process.env['key_id'] && !!process.env['secret'] && !!process.env['region'] ? '✅' : '❌'}</div>
           <div>Table: {process.env['table name'] ? '✅' : '❌'}</div>
+          <div>
+            <Link href="/test" className="text-blue-300 hover:text-blue-100 underline mt-1 block">
+              Open Debug Console
+            </Link>
+          </div>
         </div>
       )}
     </main>
