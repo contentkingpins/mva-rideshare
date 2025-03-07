@@ -14,7 +14,7 @@ export async function PATCH(
         { 
           success: false, 
           message: result.message,
-          error: result.error
+          details: result.details
         },
         { status: 500 }
       );
@@ -30,7 +30,7 @@ export async function PATCH(
       { 
         success: false, 
         message: 'Error updating lead status',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
