@@ -12,6 +12,30 @@ export default function TestPage() {
           <ul className="space-y-2">
             <li>
               <Link 
+                href="/api/create-table" 
+                className="text-blue-600 hover:underline"
+                target="_blank"
+              >
+                🛠️ Create DynamoDB Table
+              </Link>
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold text-red-600">Run this first!</span> Creates the table if it doesn't exist
+              </p>
+            </li>
+            <li>
+              <Link 
+                href="/api/debug-write" 
+                className="text-blue-600 hover:underline"
+                target="_blank"
+              >
+                ✏️ Test Write Operation
+              </Link>
+              <p className="text-sm text-gray-600">
+                Performs direct write test and verifies data was saved
+              </p>
+            </li>
+            <li>
+              <Link 
                 href="/api/dynamodb-setup" 
                 className="text-blue-600 hover:underline"
                 target="_blank"
@@ -20,6 +44,18 @@ export default function TestPage() {
               </Link>
               <p className="text-sm text-gray-600">
                 Checks AWS credentials, creates table if needed, tests read/write operations
+              </p>
+            </li>
+            <li>
+              <Link 
+                href="/api/credentials-check" 
+                className="text-blue-600 hover:underline"
+                target="_blank"
+              >
+                🔑 Check AWS Credentials
+              </Link>
+              <p className="text-sm text-gray-600">
+                Verifies your AWS credentials are correctly configured
               </p>
             </li>
             <li>
