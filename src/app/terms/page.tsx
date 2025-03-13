@@ -4,10 +4,11 @@ import React from 'react';
 import { useState } from 'react';
 import Link from 'next/link';
 
-export const metadata = {
-  title: 'Terms of Service | Claim Connectors',
-  description: 'Terms of Service for Claim Connectors - Understand our policies and your rights.',
-};
+// Metadata cannot be exported from client components
+// export const metadata = {
+//   title: 'Terms of Service | Claim Connectors',
+//   description: 'Terms of Service for Claim Connectors - Understand our policies and your rights.',
+// };
 
 export default function TermsPage() {
   return (

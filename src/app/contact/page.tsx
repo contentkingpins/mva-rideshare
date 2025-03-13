@@ -4,11 +4,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
-export const metadata = {
-  title: 'Contact Us | Claim Connectors',
-  description: 'Get in touch with our team of rideshare accident experts. We are here to help with your claim.',
-};
-
 export default function ContactPage() {
   const [formState, setFormState] = useState({
     name: '',

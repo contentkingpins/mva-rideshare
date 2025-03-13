@@ -3,10 +3,11 @@
 import { useEffect } from 'react';
 import ClaimForm from '@/components/claim/ClaimForm';
 
-export const metadata = {
-  title: 'Submit Your Claim | Claim Connectors',
-  description: 'Submit your rideshare accident claim and get the compensation you deserve. Fast, easy, and hassle-free process.',
-};
+// Metadata is already defined in layout.tsx, can't be used in client components
+// export const metadata = {
+//   title: 'Submit Your Claim | Claim Connectors',
+//   description: 'Submit your rideshare accident claim and get the compensation you deserve. Fast, easy, and hassle-free process.',
+// };
 
 export default function ClaimPage() {
   return (
