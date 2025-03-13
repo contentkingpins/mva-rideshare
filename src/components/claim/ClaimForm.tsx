@@ -16,7 +16,12 @@ const claimSchema = z.object({
   // Step 1: Basic contact information
   firstName: z.string().min(2, { message: 'First name is required' }),
   lastName: z.string().min(2, { message: 'Last name is required' }),
-  phone: z.string().min(10, { message: 'Valid phone number is required' }),
+  phone: z.string()
+    .min(10, { message: 'Phone number must be at least 10 digits' })
+    .transform(val => val.replace(/\D/g, '')) // Remove non-digit characters
+    .refine(val => val.length >= 10 && val.length <= 15, {
+      message: 'Phone number must be between 10 and 15 digits'
+    }),
   email: z.string().email({ message: 'Valid email is required' }),
   
   // Step 2: Accident involvement
@@ -84,44 +89,77 @@ export default function ClaimForm() {
 
   // Save form data for the current step and proceed to the next
   const saveAndContinue = async (data: Partial<ClaimFormData>) => {
-    // Merge with existing data
-    const updatedData = { ...formData, ...data };
-    setFormData(updatedData);
+    console.log('Calling saveAndContinue with data:', data);
     
-    // Check for rejection criteria
-    if (currentStep === 3) {
-      const noComplaint = !data.filedComplaint;
-      const noPoliceReport = !data.hasPoliceReport;
+    try {
+      // Merge with existing data
+      const updatedData = { ...formData, ...data };
+      setFormData(updatedData);
       
-      if (noComplaint && noPoliceReport) {
-        setIsRejected(true);
-        setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+      // Check for rejection criteria
+      if (currentStep === 3) {
+        const noComplaint = !data.filedComplaint;
+        const noPoliceReport = !data.hasPoliceReport;
+        
+        if (noComplaint && noPoliceReport) {
+          setIsRejected(true);
+          setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+          return;
+        }
+      }
+      
+      // If we're at step 3 and not rejected, simulate processing in step 4
+      if (currentStep === 3) {
+        setCurrentStep(4);
+        setIsLoading(true);
+        
+        // Simulate processing time
+        setTimeout(() => {
+          setIsLoading(false);
+          setCurrentStep(5);
+        }, 5000);
+        
         return;
       }
-    }
-    
-    // If we're at step 3 and not rejected, simulate processing in step 4
-    if (currentStep === 3) {
-      setCurrentStep(4);
-      setIsLoading(true);
       
-      // Simulate processing time
-      setTimeout(() => {
-        setIsLoading(false);
-        setCurrentStep(5);
-      }, 5000);
-      
-      return;
+      // Move to the next step
+      console.log(`Moving from step ${currentStep} to step ${currentStep + 1}`);
+      setCurrentStep(prevStep => prevStep + 1);
+    } catch (error) {
+      console.error('Error in saveAndContinue:', error);
     }
-    
-    // Move to the next step
-    setCurrentStep(prevStep => prevStep + 1);
   };
 
   // Handle form submission for the current step
   const onSubmit = async (data: ClaimFormData) => {
+    console.log(`Step ${currentStep} submission data:`, data);
+    console.log('Current form errors:', errors);
+    
     switch (currentStep) {
       case 1:
+        console.log('Attempting to proceed to step 2');
+        
+        // Manually validate required fields for step 1
+        const isFirstNameValid = data.firstName && data.firstName.length >= 2;
+        const isLastNameValid = data.lastName && data.lastName.length >= 2;
+        const isPhoneValid = data.phone && data.phone.replace(/\D/g, '').length >= 10;
+        const isEmailValid = data.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
+        
+        console.log('Validation results:', {
+          isFirstNameValid,
+          isLastNameValid,
+          isPhoneValid,
+          isEmailValid
+        });
+        
+        if (!isFirstNameValid || !isLastNameValid || !isPhoneValid || !isEmailValid) {
+          console.log('Step 1 validation failed');
+          
+          // Manually trigger validation to show errors
+          await trigger(['firstName', 'lastName', 'phone', 'email']);
+          return;
+        }
+        
         // Save contact data to localStorage
         localStorage.setItem('contactFormData', JSON.stringify({
           firstName: data.firstName,
@@ -129,6 +167,7 @@ export default function ClaimForm() {
           phone: data.phone,
           email: data.email,
         }));
+        
         saveAndContinue(data);
         break;
       case 2:

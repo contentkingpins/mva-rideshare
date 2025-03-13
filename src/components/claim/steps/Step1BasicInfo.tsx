@@ -55,11 +55,15 @@ export default function Step1BasicInfo({ register, errors }: Step1Props) {
           type="tel"
           className={`input ${errors.phone ? 'border-red-500' : ''}`}
           placeholder="(555) 555-5555"
-          {...register('phone')}
+          {...register('phone', {
+            required: 'Phone number is required',
+            setValueAs: (value) => value.replace(/\D/g, '') // Strip non-digits on submission
+          })}
         />
         {errors.phone && (
           <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
         )}
+        <p className="mt-1 text-xs text-gray-500">Include area code, e.g., 5551234567 or (555) 123-4567</p>
       </div>
       
       <div>
