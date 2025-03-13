@@ -46,18 +46,27 @@ export default function HeroSection() {
 
   return (
     <section className="relative text-white overflow-hidden">
-      {/* Background image with overlay */}
+      {/* Background image with reduced opacity overlay */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/images/shutterstock_2428486561.jpg"
-          alt="Rideshare accident background"
-          fill
-          priority
-          style={{ objectFit: 'cover' }}
-        />
-        <div className="absolute inset-0 bg-primary-900/85 backdrop-blur-sm"></div>
+        <motion.div
+          initial={{ opacity: 0.8 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.5 }}
+          className="h-full w-full"
+        >
+          <Image
+            src="/images/shutterstock_2428486561.jpg"
+            alt="Rideshare accident background"
+            fill
+            priority
+            style={{ objectFit: 'cover' }}
+            className="brightness-110 contrast-105"
+          />
+        </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/60 to-primary-800/50"></div>
       </div>
 
+      {/* Semi-transparent content background for better text readability */}
       <div className="container py-16 md:py-24 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Hero Content */}
@@ -65,12 +74,12 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-6"
+            className="space-y-6 bg-primary-900/40 backdrop-blur-sm p-6 rounded-lg"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white drop-shadow-md">
               Injured in a Rideshare Accident? Make Sure Your Rights Are Protected!
             </h1>
-            <p className="text-xl md:text-2xl text-primary-100">
+            <p className="text-xl md:text-2xl text-white drop-shadow">
               Submit your accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.
             </p>
             <div className="flex flex-wrap gap-4">
