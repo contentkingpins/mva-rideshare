@@ -13,16 +13,16 @@ export default function AccidentImage() {
     >
       <div className="relative h-64 sm:h-72 w-full">
         <Image
-          src="/images/car-accident.jpg"
-          alt="Car accident scene showing a collision between two vehicles"
+          src="/images/rideshare-accident.jpg"
+          alt="Car accident scene showing a woman on phone and a man examining damage to vehicles"
           fill
           style={{ objectFit: 'cover' }}
-          className="brightness-95"
+          className="brightness-100"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-center justify-end p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col items-center justify-end p-4">
           <span className="text-white text-lg font-semibold drop-shadow-md text-center">
-            Don't wait to get the compensation you deserve
+            Get experienced help after your rideshare accident
           </span>
         </div>
       </div>

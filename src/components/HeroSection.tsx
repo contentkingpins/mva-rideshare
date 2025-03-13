@@ -231,7 +231,7 @@ export default function HeroSection() {
       {/* Desktop: Floating Image */}
       <div className="hidden lg:block absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/4 z-0 opacity-20 pointer-events-none">
         <Image 
-          src="/images/car-accident.jpg"
+          src="/images/rideshare-accident.jpg"
           alt="Car accident background"
           width={600}
           height={400}
