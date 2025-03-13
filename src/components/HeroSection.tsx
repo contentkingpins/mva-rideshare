@@ -45,8 +45,20 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative bg-gradient-to-r from-primary-700 to-primary-900 text-white">
-      <div className="container py-16 md:py-24">
+    <section className="relative text-white overflow-hidden">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/images/shutterstock_2428486561.jpg"
+          alt="Rideshare accident background"
+          fill
+          priority
+          style={{ objectFit: 'cover' }}
+        />
+        <div className="absolute inset-0 bg-primary-900/85 backdrop-blur-sm"></div>
+      </div>
+
+      <div className="container py-16 md:py-24 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Hero Content */}
           <motion.div
@@ -95,50 +107,9 @@ export default function HeroSection() {
                 <span>No Win, No Fee</span>
               </div>
             </div>
-
-            {/* Mobile Image */}
-            <div className="block md:hidden mt-8">
-              <div className="relative rounded-lg overflow-hidden shadow-xl">
-                <Image
-                  src="/images/shutterstock_2428486561.jpg"
-                  alt="Rideshare accident scene"
-                  width={600}
-                  height={400}
-                  className="object-cover w-full h-48"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-                  <div className="p-4 text-white">
-                    <p className="font-medium">Get the compensation you deserve</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </motion.div>
           
-          {/* Tablet Image - hidden on mobile and desktop */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="hidden md:block lg:hidden"
-          >
-            <div className="relative rounded-lg overflow-hidden shadow-xl">
-              <Image
-                src="/images/shutterstock_2428486561.jpg"
-                alt="Rideshare accident scene"
-                width={800}
-                height={600}
-                className="object-cover w-full h-96"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
-                <div className="p-6 text-white">
-                  <p className="text-xl font-medium">Get the compensation you deserve after a rideshare accident</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-          
-          {/* Contact Form - hidden on mobile and tablet, shown on desktop */}
+          {/* Contact Form - now visible on all screen sizes */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -249,7 +220,7 @@ export default function HeroSection() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
           </svg>
-          Call Now for a Free Case Review
+          Call for Free Case Review
         </a>
       </div>
     </section>
