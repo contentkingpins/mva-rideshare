@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -21,7 +21,22 @@ type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function HeroSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+  
+  // Check viewport size
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
   
   const {
     register,
@@ -45,178 +60,197 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative text-white overflow-hidden">
-      {/* Background image with reduced opacity overlay */}
-      <div className="absolute inset-0 z-0">
-        <motion.div
-          initial={{ opacity: 0.8 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.5 }}
-          className="h-full w-full"
-        >
-          <Image
-            src="/images/shutterstock_2428486561.jpg"
-            alt="Rideshare accident background"
-            fill
-            priority
-            style={{ objectFit: 'cover' }}
-            className="brightness-110 contrast-105"
-          />
-        </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/60 to-primary-800/50"></div>
-      </div>
-
-      {/* Semi-transparent content background for better text readability */}
-      <div className="container py-16 md:py-24 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Hero Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-6 bg-primary-900/40 backdrop-blur-sm p-6 rounded-lg"
-          >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-white drop-shadow-md">
-              Injured in a Rideshare Accident? Make Sure Your Rights Are Protected!
-            </h1>
-            <p className="text-xl md:text-2xl text-white drop-shadow">
-              Submit your accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link 
-                href="#contact-form"
-                className="btn-primary text-lg"
-              >
-                Start Your Claim Now
-              </Link>
-              <a 
-                href="tel:8885555555" 
-                className="lg:hidden btn-outline border-white text-white hover:bg-white/10 text-lg"
-              >
-                Call Now for a Free Case Review
-              </a>
-            </div>
-            <div className="flex flex-wrap gap-6 pt-4">
-              <div className="flex items-center gap-2">
-                <svg className="w-6 h-6 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                </svg>
-                <span>1000+ Successful Claims</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-6 h-6 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                </svg>
-                <span>Millions Recovered</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-6 h-6 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                </svg>
-                <span>No Win, No Fee</span>
-              </div>
-            </div>
-          </motion.div>
+    <section className="relative overflow-hidden">
+      {/* Hero Container */}
+      <div className="relative min-h-[600px] lg:min-h-[650px] w-full">
+        {/* Background image - optimized for all devices */}
+        <div className="absolute inset-0 z-0">
+          <picture>
+            {/* Mobile-optimized vertical crop image */}
+            <source 
+              media="(max-width: 767px)" 
+              srcSet="/images/shutterstock_2428486561.jpg"
+            />
+            {/* Tablet-optimized image */}
+            <source 
+              media="(max-width: 1023px)" 
+              srcSet="/images/shutterstock_2428486561.jpg"
+            />
+            {/* Desktop-optimized image */}
+            <Image
+              src="/images/shutterstock_2428486561.jpg"
+              alt="Rideshare accident scene"
+              fill
+              priority
+              sizes="100vw"
+              style={{ objectFit: 'cover', objectPosition: 'center' }}
+              className="brightness-105 contrast-105"
+            />
+          </picture>
           
-          {/* Contact Form - now visible on all screen sizes */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            id="contact-form"
-            className="bg-white text-gray-900 rounded-lg shadow-xl p-6 md:p-8 mt-8 md:mt-0"
-          >
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">Start Your Claim Now</h2>
-            
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="firstName" className="label">First Name</label>
-                  <input
-                    id="firstName"
-                    type="text"
-                    className={`input ${errors.firstName ? 'border-red-500' : ''}`}
-                    placeholder="John"
-                    {...register('firstName')}
-                  />
-                  {errors.firstName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-                  )}
+          {/* Gradient overlay - lighter than before */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/30 via-primary-800/25 to-primary-700/20"></div>
+        </div>
+
+        {/* Content Container */}
+        <div className="container relative z-10 h-full">
+          <div className="flex flex-col lg:flex-row items-center h-full pt-16 pb-24 lg:py-16 gap-8 lg:gap-12">
+            {/* Text Content - Adaptive for different screens */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="w-full lg:w-1/2 text-white lg:pr-6 pt-8"
+            >
+              <div className="bg-primary-900/20 backdrop-blur-[2px] rounded-xl p-6 md:p-8 shadow-lg border border-white/10">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4 drop-shadow-sm">
+                  Injured in a Rideshare Accident? Make Sure Your Rights Are Protected!
+                </h1>
+                <p className="text-lg md:text-xl text-white/90 drop-shadow-sm mb-6">
+                  Submit your accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.
+                </p>
+                
+                {/* Mobile-only CTA button */}
+                <div className="flex flex-wrap gap-4 mb-6 lg:hidden">
+                  <Link 
+                    href="#contact-form"
+                    className="btn-primary text-lg w-full"
+                  >
+                    Start Your Claim Now
+                  </Link>
                 </div>
                 
-                <div>
-                  <label htmlFor="lastName" className="label">Last Name</label>
-                  <input
-                    id="lastName"
-                    type="text"
-                    className={`input ${errors.lastName ? 'border-red-500' : ''}`}
-                    placeholder="Doe"
-                    {...register('lastName')}
-                  />
-                  {errors.lastName && (
-                    <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary-700/30 p-2 rounded-full">
+                      <svg className="w-5 h-5 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <span className="font-medium">1000+ Claims</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary-700/30 p-2 rounded-full">
+                      <svg className="w-5 h-5 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <span className="font-medium">Millions Recovered</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="bg-primary-700/30 p-2 rounded-full">
+                      <svg className="w-5 h-5 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <span className="font-medium">No Win, No Fee</span>
+                  </div>
                 </div>
               </div>
-              
-              <div>
-                <label htmlFor="phone" className="label">Phone Number</label>
-                <input
-                  id="phone"
-                  type="tel"
-                  className={`input ${errors.phone ? 'border-red-500' : ''}`}
-                  placeholder="(555) 555-5555"
-                  {...register('phone')}
-                />
-                {errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-                )}
+            </motion.div>
+            
+            {/* Contact Form - Optimized for all devices */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              id="contact-form"
+              className="w-full lg:w-1/2 lg:mt-0"
+            >
+              <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 border border-gray-100">
+                <h2 className="text-2xl font-bold mb-6 text-gray-900">Start Your Claim Now</h2>
+                
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="firstName" className="label">First Name</label>
+                      <input
+                        id="firstName"
+                        type="text"
+                        className={`input ${errors.firstName ? 'border-red-500' : ''}`}
+                        placeholder="John"
+                        {...register('firstName')}
+                      />
+                      {errors.firstName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="lastName" className="label">Last Name</label>
+                      <input
+                        id="lastName"
+                        type="text"
+                        className={`input ${errors.lastName ? 'border-red-500' : ''}`}
+                        placeholder="Doe"
+                        {...register('lastName')}
+                      />
+                      {errors.lastName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="phone" className="label">Phone Number</label>
+                    <input
+                      id="phone"
+                      type="tel"
+                      className={`input ${errors.phone ? 'border-red-500' : ''}`}
+                      placeholder="(555) 555-5555"
+                      {...register('phone')}
+                    />
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="email" className="label">Email Address</label>
+                    <input
+                      id="email"
+                      type="email"
+                      className={`input ${errors.email ? 'border-red-500' : ''}`}
+                      placeholder="john@example.com"
+                      {...register('email')}
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                    )}
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    className="btn-primary w-full text-lg py-4"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                      </span>
+                    ) : (
+                      'Submit Your Claim'
+                    )}
+                  </button>
+                  
+                  <p className="text-xs text-gray-500 text-center mt-4">
+                    By submitting, you agree to our{' '}
+                    <Link href="/privacy" className="text-primary-600 hover:underline">
+                      Privacy Policy
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="/terms" className="text-primary-600 hover:underline">
+                      Terms of Service
+                    </Link>
+                  </p>
+                </form>
               </div>
-              
-              <div>
-                <label htmlFor="email" className="label">Email Address</label>
-                <input
-                  id="email"
-                  type="email"
-                  className={`input ${errors.email ? 'border-red-500' : ''}`}
-                  placeholder="john@example.com"
-                  {...register('email')}
-                />
-                {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                )}
-              </div>
-              
-              <button
-                type="submit"
-                className="btn-primary w-full text-lg py-4"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  'Submit Your Claim'
-                )}
-              </button>
-              
-              <p className="text-xs text-gray-500 text-center mt-4">
-                By submitting, you agree to our{' '}
-                <Link href="/privacy" className="text-primary-600 hover:underline">
-                  Privacy Policy
-                </Link>{' '}
-                and{' '}
-                <Link href="/terms" className="text-primary-600 hover:underline">
-                  Terms of Service
-                </Link>
-              </p>
-            </form>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
       </div>
       
