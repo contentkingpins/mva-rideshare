@@ -6,6 +6,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import AccidentImage from './AccidentImage';
+import Image from 'next/image';
 
 // Define the form schema using Zod
 const contactSchema = z.object({
@@ -49,7 +51,7 @@ export default function HeroSection() {
     <section className="relative bg-gradient-to-r from-primary-700 to-primary-900 text-white">
       <div className="container py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Hero Content */}
+          {/* Hero Content with Image on Mobile */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -96,6 +98,21 @@ export default function HeroSection() {
                 <span>No Win, No Fee</span>
               </div>
             </div>
+            
+            {/* Accident Image - Mobile Only */}
+            <div className="mt-6 block md:hidden">
+              <AccidentImage />
+            </div>
+          </motion.div>
+          
+          {/* Desktop: Show Form or Image */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="hidden md:flex lg:hidden justify-center"
+          >
+            <AccidentImage />
           </motion.div>
           
           {/* Contact Form */}
@@ -209,6 +226,17 @@ export default function HeroSection() {
             )}
           </motion.div>
         </div>
+      </div>
+      
+      {/* Desktop: Floating Image */}
+      <div className="hidden lg:block absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/4 z-0 opacity-20 pointer-events-none">
+        <Image 
+          src="/images/car-accident.jpg"
+          alt="Car accident background"
+          width={600}
+          height={400}
+          className="rounded-xl blur-sm"
+        />
       </div>
       
       {/* Mobile Call Button (Fixed at Bottom) */}
