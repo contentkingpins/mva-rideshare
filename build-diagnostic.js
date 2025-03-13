@@ -3,6 +3,9 @@ const path = require('path');
 const os = require('os');
 
 console.log('=== Build Diagnostic Tool ===');
+console.log(`Running diagnostic at: ${new Date().toISOString()}`);
+console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`Platform: ${os.platform()} ${os.release()}`);
 
 // Check Node.js and npm versions
 console.log(`Node.js version: ${process.version}`);
@@ -29,7 +32,7 @@ criticalFiles.forEach(file => {
       envContent.split('\n').forEach(line => {
         if (line.trim()) {
           const [key] = line.split('=');
-          console.log(`- ${key}`);
+          console.log(`- ${key}: ${key.includes('SECRET') || key.includes('KEY') ? '[HIDDEN]' : 'Set'}`);
         }
       });
     } catch (error) {
@@ -38,23 +41,19 @@ criticalFiles.forEach(file => {
   }
 });
 
-// Check env file
-const envFile = path.join(process.cwd(), '.env.local');
-if (fs.existsSync(envFile)) {
-  const envContent = fs.readFileSync(envFile, 'utf8');
-  const envVars = envContent.split('\n')
-    .filter(line => line.trim() && !line.startsWith('#'))
-    .map(line => line.split('=')[0].trim());
-
-  console.log('Environment variables in .env.local:');
-  envVars.forEach(varName => console.log(`- ${varName}`));
-}
+// Check Amplify environment variables
+console.log('\nChecking Amplify environment variables:');
+const amplifyVars = ['key_id', 'secret', 'region', 'table_name'];
+amplifyVars.forEach(varName => {
+  const value = process.env[varName] || (varName === 'table_name' ? process.env['table name'] : null);
+  console.log(`- ${varName}: ${value ? '✅ Set' : '❌ Missing'}`);
+});
 
 // Ensure AWS credentials are properly mapped
 const key_id = process.env.key_id;
 const secret = process.env.secret;
 const region = process.env.region || 'us-east-1';
-const tableName = process.env['table name'] || 'rideshare-mva';
+const tableName = process.env['table_name'] || process.env['table name'] || 'rideshare-mva';
 
 // Map our custom env vars to standard AWS SDK env vars
 if (key_id && !process.env.AWS_ACCESS_KEY_ID) {
@@ -95,7 +94,11 @@ requiredEnvVars.forEach(envVar => {
 
 if (missingVars.length > 0) {
   console.log('\n⚠️ Missing required environment variables:', missingVars.join(', '));
-  console.log('Please ensure these variables are set in your Amplify environment settings.');
+  console.log('Please ensure these variables are set in your Amplify environment settings:');
+  console.log('1. Go to AWS Amplify Console');
+  console.log('2. Navigate to your Amplify app');
+  console.log('3. Go to App settings → Environment variables');
+  console.log('4. Add the missing variables');
   // Don't exit with error during build phase
 }
 
@@ -104,6 +107,7 @@ console.log('\nAWS SDK environment variables:');
 console.log(`AWS_ACCESS_KEY_ID: ${process.env.AWS_ACCESS_KEY_ID ? '✅ Set' : '❌ Missing'}`);
 console.log(`AWS_SECRET_ACCESS_KEY: ${process.env.AWS_SECRET_ACCESS_KEY ? '✅ Set' : '❌ Missing'}`);
 console.log(`AWS_REGION: ${process.env.AWS_REGION ? '✅ Set' : '❌ Missing'}`);
+console.log(`DYNAMODB_TABLE_NAME: ${process.env.DYNAMODB_TABLE_NAME ? '✅ Set' : '❌ Missing'}`);
 
 // Check package.json configuration
 try {
@@ -156,6 +160,9 @@ try {
     console.log('✅ Created .env.production with AWS credentials for runtime access');
   } else {
     console.warn('⚠️ AWS credentials missing - could not create runtime env file');
+    console.warn('Please ensure the following environment variables are set in Amplify:');
+    console.warn('- key_id: Your AWS Access Key ID');
+    console.warn('- secret: Your AWS Secret Access Key');
   }
 } catch (error) {
   console.error('Error creating runtime env file:', error.message);

@@ -9,6 +9,11 @@ frontend:
         - |
           if [ -z "$key_id" ] || [ -z "$secret" ]; then
             echo "Error: AWS credentials are not set"
+            echo "Please add the following environment variables in your Amplify app settings:"
+            echo "- key_id: Your AWS Access Key ID"
+            echo "- secret: Your AWS Secret Access Key"
+            echo "- region: AWS Region (optional, defaults to us-east-1)"
+            echo "- table_name: DynamoDB table name (optional, defaults to rideshare-mva)"
             exit 1
           fi
         - echo "AWS_ACCESS_KEY_ID=${key_id}" > .env.local
@@ -21,6 +26,7 @@ frontend:
       commands:
         - echo "Building Next.js application..."
         - npm run build || (echo "Build failed" && exit 1)
+        - echo "Build completed successfully"
   artifacts:
     baseDirectory: .next
     files:

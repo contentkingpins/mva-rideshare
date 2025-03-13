@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
+import AccidentImage from './AccidentImage';
 
 const steps = [
   {
@@ -69,6 +70,11 @@ export default function HowItWorks() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Our simple 4-step process makes getting compensation for your rideshare accident quick and easy.
           </p>
+        </div>
+        
+        {/* Accident Image Display */}
+        <div className="mb-12 flex justify-center">
+          <AccidentImage />
         </div>
         
         <motion.div 
