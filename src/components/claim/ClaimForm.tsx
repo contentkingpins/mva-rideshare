@@ -23,10 +23,7 @@ const claimSchema = z.object({
   role: z.enum(['passenger', 'guest', 'otherVehicle'], { 
     required_error: 'Please select your role in the accident'
   }),
-  rideshareUserInfo: z.string().optional().refine(val => {
-    if (!val) return true;
-    return val.length > 0;
-  }, { message: 'Rideshare user information is required' }),
+  rideshareUserInfo: z.string().optional(),
   
   // Step 3: Legal qualification
   filedComplaint: z.boolean().optional(),
@@ -137,8 +134,18 @@ export default function ClaimForm() {
       case 2:
         // If role is 'guest', make sure rideshareUserInfo is provided
         if (data.role === 'guest' && !data.rideshareUserInfo) {
+          // Set a validation error instead of just returning
+          setValue('rideshareUserInfo', '');
+          trigger('rideshareUserInfo');
           return;
         }
+        
+        // Ensure role is selected before continuing
+        if (!data.role) {
+          return;
+        }
+        
+        // Continue to next step
         saveAndContinue(data);
         break;
       case 3:
@@ -225,6 +232,8 @@ export default function ClaimForm() {
                 register={register} 
                 errors={errors} 
                 watch={watch}
+                setValue={setValue}
+                trigger={trigger}
               />
             )}
 
