@@ -25,7 +25,7 @@ const claimSchema = z.object({
   email: z.string().email({ message: 'Valid email is required' }),
   
   // Step 2: Accident involvement
-  role: z.enum(['passenger', 'guest', 'otherVehicle'], { 
+  role: z.enum(['passenger', 'guest', 'otherVehicle', 'driver', 'other_vehicle'], { 
     required_error: 'Please select your role in the accident'
   }),
   rideshareUserInfo: z.string().optional(),
@@ -66,6 +66,17 @@ export default function ClaimForm() {
   const role = watch('role');
   const filedComplaint = watch('filedComplaint');
   const hasPoliceReport = watch('hasPoliceReport');
+
+  // Clear errors when switching steps
+  useEffect(() => {
+    console.log('Current step changed to:', currentStep);
+    // Clear any field errors that might be stale
+    if (currentStep === 2) {
+      // When entering step 2, make sure we clear any previous validation errors
+      setValue('role', getValues('role'), { shouldValidate: false });
+      setValue('rideshareUserInfo', getValues('rideshareUserInfo') || '', { shouldValidate: false });
+    }
+  }, [currentStep, setValue, getValues]);
 
   // Load saved contact data from localStorage on initial render
   useEffect(() => {
@@ -171,18 +182,24 @@ export default function ClaimForm() {
         saveAndContinue(data);
         break;
       case 2:
+        console.log('Step 2 submission attempt with data:', data);
         // If role is 'guest', make sure rideshareUserInfo is provided
-        if (data.role === 'guest' && !data.rideshareUserInfo) {
+        if (data.role === 'guest' && (!data.rideshareUserInfo || data.rideshareUserInfo.trim() === '')) {
+          console.log('Guest info required but not provided');
           // Set a validation error instead of just returning
           setValue('rideshareUserInfo', '');
-          trigger('rideshareUserInfo');
+          await trigger('rideshareUserInfo');
           return;
         }
         
         // Ensure role is selected before continuing
         if (!data.role) {
+          console.log('No role selected');
+          await trigger('role');
           return;
         }
+        
+        console.log('Role validation passed:', data.role);
         
         // Continue to next step
         saveAndContinue(data);

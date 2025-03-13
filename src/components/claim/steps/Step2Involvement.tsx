@@ -16,17 +16,25 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
   const role = watch('role');
   const [localErrors, setLocalErrors] = useState<{[key: string]: string}>({});
   
+  // Debug role selection
+  useEffect(() => {
+    console.log('Current role selection:', role);
+  }, [role]);
+  
   // Clear local validation errors when role changes
   useEffect(() => {
     setLocalErrors({});
   }, [role]);
 
   const validateRideshareUserInfo = (value: string | undefined) => {
+    console.log('Validating rideshareUserInfo:', value, 'role:', role);
+    
     if (role === 'guest' && (!value || value.trim() === '')) {
       setLocalErrors(prev => ({
         ...prev,
         rideshareUserInfo: 'Please provide the rideshare user information'
       }));
+      console.log('Validation failed: Guest info required');
       return false;
     }
     
@@ -37,8 +45,12 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
       return newErrors;
     });
     
+    console.log('Validation passed');
     return true;
   };
+
+  // Debug render
+  console.log('Rendering Step2Involvement with errors:', errors, 'localErrors:', localErrors);
 
   return (
     <div className="space-y-6">
@@ -55,7 +67,10 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
         </label>
         
         <div className="space-y-3">
-          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
+          <div 
+            className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
+            onClick={() => setValue && setValue('role', 'passenger')}
+          >
             <input
               id="role-passenger"
               type="radio"
@@ -69,7 +84,10 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
+          <div 
+            className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
+            onClick={() => setValue && setValue('role', 'guest')}
+          >
             <input
               id="role-guest"
               type="radio"
@@ -83,7 +101,10 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
+          <div 
+            className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
+            onClick={() => setValue && setValue('role', 'otherVehicle')}
+          >
             <input
               id="role-other-vehicle"
               type="radio"
