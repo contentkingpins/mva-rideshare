@@ -1,7 +1,9 @@
+"use client";
+
 import HeroSection from '@/components/HeroSection';
 import HowItWorks from '@/components/HowItWorks';
 import Testimonials from '@/components/Testimonials';
-import Footer from '@/components/Footer';
+import FAQ from '@/components/FAQ';
 import Link from 'next/link';
 
 export default function Home() {
@@ -10,7 +12,7 @@ export default function Home() {
       <HeroSection />
       <HowItWorks />
       <Testimonials />
-      <Footer />
+      <FAQ />
       
       {/* Add a small diagnostic section at the very bottom, only visible in development */}
       {process.env.NODE_ENV === 'development' && (

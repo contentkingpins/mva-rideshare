@@ -1,5 +1,7 @@
-import ClaimForm from '@/components/ClaimForm';
-import Footer from '@/components/Footer';
+"use client";
+
+import { useEffect } from 'react';
+import ClaimForm from '@/components/claim/ClaimForm';
 
 export const metadata = {
   title: 'Submit Your Claim | Claim Connectors',
@@ -8,14 +10,13 @@ export const metadata = {
 
 export default function ClaimPage() {
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="container py-12">
-        <h1 className="text-center text-4xl font-bold text-gray-900 mb-8">Submit Your Claim</h1>
-        <div className="max-w-3xl mx-auto">
+    <div className="bg-gray-50 py-12 md:py-20">
+      <div className="container max-w-4xl">
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">Your Rideshare Accident Claim</h1>
+        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
           <ClaimForm />
         </div>
       </div>
-      <Footer />
-    </main>
+    </div>
   );
 } 

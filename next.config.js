@@ -2,10 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // Remove images configuration since we're not using external images
-  // images: {
-  //   domains: ['images.unsplash.com'],
-  // },
+  images: {
+    domains: [],
+  },
+  // Enable static exports for improved performance
+  output: 'standalone',
   // Remove standalone output as it might cause issues with Amplify
   // Remove onDemandEntries as it's not needed for production
   poweredByHeader: false,

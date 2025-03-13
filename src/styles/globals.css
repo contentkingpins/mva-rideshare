@@ -64,6 +64,14 @@
   .section {
     @apply py-12 md:py-20;
   }
+
+  .step-indicator {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-primary-100 text-primary-700 font-bold;
+  }
+
+  .step-indicator-active {
+    @apply bg-primary-700 text-white;
+  }
 }
 
 @layer utilities {

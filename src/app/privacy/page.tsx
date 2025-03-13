@@ -1,118 +1,69 @@
-import React from 'react';
+import Link from 'next/link';
+
+export const metadata = {
+  title: 'Privacy Policy | Claim Connectors',
+  description: 'Privacy policy for Claim Connectors - Learn how we protect your data and information.',
+};
 
 export default function PrivacyPage() {
   return (
-    <main className="container py-12 md:py-16">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-gray-900">Privacy Policy</h1>
-        
-        <div className="prose prose-lg max-w-none">
-          <p className="text-xl text-gray-600 mb-8">
-            Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-          </p>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Introduction</h2>
-            <p>
-              Claim Connectors ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Information We Collect</h2>
-            <h3 className="text-xl font-semibold mb-3">Personal Information</h3>
-            <p className="mb-4">We may collect personal information that you voluntarily provide to us when you:</p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>Submit a claim through our website</li>
-              <li>Contact us through our contact form</li>
-              <li>Sign up for our newsletter</li>
-              <li>Request a consultation</li>
-            </ul>
-            <p>This information may include:</p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>Name and contact information</li>
-              <li>Accident details and related documentation</li>
-              <li>Medical information related to your claim</li>
-              <li>Insurance information</li>
+    <div className="bg-gray-50 py-12 md:py-20">
+      <div className="container max-w-4xl">
+        <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-8">Privacy Policy</h1>
+          
+          <div className="prose prose-lg max-w-none">
+            <p className="lead">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            
+            <p>At Claim Connectors, we take your privacy seriously. This Privacy Policy describes how we collect, use, and share information about you when you use our website and services.</p>
+            
+            <h2>Information We Collect</h2>
+            <p>We collect information you provide directly to us, such as when you fill out a form, submit a claim, or contact us. This information may include:</p>
+            <ul>
+              <li>Contact information (name, email address, phone number)</li>
+              <li>Accident details and information about your rideshare experience</li>
               <li>Any other information you choose to provide</li>
             </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">How We Use Your Information</h2>
-            <p className="mb-4">We use the information we collect to:</p>
-            <ul className="list-disc pl-6 mb-4">
+            
+            <h2>How We Use Your Information</h2>
+            <p>We use the information we collect to:</p>
+            <ul>
               <li>Process and evaluate your claim</li>
               <li>Connect you with appropriate legal representation</li>
-              <li>Communicate with you about your claim</li>
-              <li>Improve our services and website</li>
+              <li>Communicate with you about your claim and our services</li>
+              <li>Improve our website and services</li>
               <li>Comply with legal obligations</li>
-              <li>Send you relevant updates and information</li>
             </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Information Sharing</h2>
-            <p className="mb-4">We may share your information with:</p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>Legal partners who handle your case</li>
-              <li>Service providers who assist our operations</li>
-              <li>Law enforcement when required by law</li>
+            
+            <h2>Information Sharing</h2>
+            <p>We may share your information with:</p>
+            <ul>
+              <li>Legal partners who can assist with your claim</li>
+              <li>Service providers who help us operate our business</li>
+              <li>As required by law or to protect our rights</li>
             </ul>
-            <p>We do not sell your personal information to third parties.</p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Data Security</h2>
+            
+            <h2>Your Choices</h2>
+            <p>You can opt out of marketing communications at any time. You may also request that we delete your information, subject to legal requirements that may require us to retain certain data.</p>
+            
+            <h2>Changes to This Policy</h2>
+            <p>We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the new Privacy Policy on this page and updating the "Last updated" date.</p>
+            
+            <h2>Contact Us</h2>
+            <p>If you have any questions about this Privacy Policy, please contact us at:</p>
             <p>
-              We implement appropriate technical and organizational security measures to protect your information. However, no data transmission over the Internet is completely secure. We cannot guarantee the security of information transmitted to our website.
+              Email: <a href="mailto:info@claimconnectors.com">info@claimconnectors.com</a><br />
+              Phone: <a href="tel:8885555555">(888) 555-5555</a>
             </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Your Rights</h2>
-            <p className="mb-4">You have the right to:</p>
-            <ul className="list-disc pl-6 mb-4">
-              <li>Access your personal information</li>
-              <li>Correct inaccurate information</li>
-              <li>Request deletion of your information</li>
-              <li>Opt-out of marketing communications</li>
-              <li>Request a copy of your data</li>
-            </ul>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Cookies and Tracking</h2>
-            <p>
-              We use cookies and similar tracking technologies to improve your browsing experience, analyze site traffic, and understand where our visitors come from. You can control cookies through your browser settings.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Children's Privacy</h2>
-            <p>
-              Our services are not intended for individuals under 18 years of age. We do not knowingly collect personal information from children.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Changes to This Policy</h2>
-            <p>
-              We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date.
-            </p>
-          </section>
-
-          <section className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
-            <p>
-              If you have questions about this Privacy Policy, please contact us at:
-            </p>
-            <div className="mt-4">
-              <p>Email: privacy@claimconnectors.com</p>
-            </div>
-          </section>
+          </div>
+          
+          <div className="mt-12 text-center">
+            <Link href="/" className="btn-primary">
+              Return to Home
+            </Link>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 } 
