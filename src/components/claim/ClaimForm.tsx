@@ -98,117 +98,85 @@ export default function ClaimForm() {
     }
   }, [setValue]);
 
-  // Save form data for the current step and proceed to the next
-  const saveAndContinue = async (data: Partial<ClaimFormData>) => {
-    console.log('Calling saveAndContinue with data:', data);
-    
-    try {
-      // Merge with existing data
-      const updatedData = { ...formData, ...data };
-      setFormData(updatedData);
-      
-      // Check for rejection criteria
-      if (currentStep === 3) {
-        const noComplaint = !data.filedComplaint;
-        const noPoliceReport = !data.hasPoliceReport;
-        
-        if (noComplaint && noPoliceReport) {
-          setIsRejected(true);
-          setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
-          return;
-        }
-      }
-      
-      // If we're at step 3 and not rejected, simulate processing in step 4
-      if (currentStep === 3) {
-        setCurrentStep(4);
-        setIsLoading(true);
-        
-        // Simulate processing time
-        setTimeout(() => {
-          setIsLoading(false);
-          setCurrentStep(5);
-        }, 5000);
-        
-        return;
-      }
-      
-      // Move to the next step
-      console.log(`Moving from step ${currentStep} to step ${currentStep + 1}`);
-      setCurrentStep(prevStep => prevStep + 1);
-    } catch (error) {
-      console.error('Error in saveAndContinue:', error);
-    }
-  };
-
   // Handle form submission for the current step
   const onSubmit = async (data: ClaimFormData) => {
-    console.log(`Step ${currentStep} submission data:`, data);
-    console.log('Current form errors:', errors);
-    
-    switch (currentStep) {
-      case 1:
-        console.log('Attempting to proceed to step 2');
-        
-        // Manually validate required fields for step 1
-        const isFirstNameValid = data.firstName && data.firstName.length >= 2;
-        const isLastNameValid = data.lastName && data.lastName.length >= 2;
-        const isPhoneValid = data.phone && data.phone.replace(/\D/g, '').length >= 10;
-        const isEmailValid = data.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
-        
-        console.log('Validation results:', {
-          isFirstNameValid,
-          isLastNameValid,
-          isPhoneValid,
-          isEmailValid
-        });
-        
-        if (!isFirstNameValid || !isLastNameValid || !isPhoneValid || !isEmailValid) {
-          console.log('Step 1 validation failed');
+    try {
+      switch (currentStep) {
+        case 1:
+          // Validate step 1 fields
+          const isFirstNameValid = data.firstName && data.firstName.length >= 2;
+          const isLastNameValid = data.lastName && data.lastName.length >= 2;
+          const isPhoneValid = data.phone && data.phone.replace(/\D/g, '').length >= 10;
+          const isEmailValid = data.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
           
-          // Manually trigger validation to show errors
-          await trigger(['firstName', 'lastName', 'phone', 'email']);
-          return;
-        }
-        
-        // Save contact data to localStorage
-        localStorage.setItem('contactFormData', JSON.stringify({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          phone: data.phone,
-          email: data.email,
-        }));
-        
-        saveAndContinue(data);
-        break;
-      case 2:
-        console.log('Step 2 submission attempt with data:', data);
-        // If role is 'guest', make sure rideshareUserInfo is provided
-        if (data.role === 'guest' && (!data.rideshareUserInfo || data.rideshareUserInfo.trim() === '')) {
-          console.log('Guest info required but not provided');
-          // Set a validation error instead of just returning
-          setValue('rideshareUserInfo', '');
-          await trigger('rideshareUserInfo');
-          return;
-        }
-        
-        // Ensure role is selected before continuing
-        if (!data.role) {
-          console.log('No role selected');
-          await trigger('role');
-          return;
-        }
-        
-        console.log('Role validation passed:', data.role);
-        
-        // Continue to next step
-        saveAndContinue(data);
-        break;
-      case 3:
-        saveAndContinue(data);
-        break;
-      default:
-        console.log('Completed form data:', data);
+          if (!isFirstNameValid || !isLastNameValid || !isPhoneValid || !isEmailValid) {
+            // Show validation errors
+            await trigger(['firstName', 'lastName', 'phone', 'email']);
+            return;
+          }
+          
+          // Save contact data to localStorage
+          localStorage.setItem('contactFormData', JSON.stringify({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            phone: data.phone,
+            email: data.email,
+          }));
+          
+          // Proceed to next step
+          setFormData(prev => ({ ...prev, ...data }));
+          setCurrentStep(2);
+          break;
+          
+        case 2:
+          // Validate step 2 fields
+          if (!data.role) {
+            await trigger('role');
+            return;
+          }
+          
+          // For guest role, validate guest info
+          if (data.role === 'guest') {
+            if (!data.rideshareUserInfo || data.rideshareUserInfo.trim() === '') {
+              await trigger('rideshareUserInfo');
+              return;
+            }
+          }
+          
+          // Update form data and proceed to next step
+          setFormData(prev => ({ ...prev, ...data }));
+          setCurrentStep(3);
+          break;
+          
+        case 3:
+          // Validate step 3 fields
+          const noComplaint = !data.filedComplaint;
+          const noPoliceReport = !data.hasPoliceReport;
+          
+          if (noComplaint && noPoliceReport) {
+            setIsRejected(true);
+            setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+            return;
+          }
+          
+          // Process the form (simulate API call)
+          setFormData(prev => ({ ...prev, ...data }));
+          setCurrentStep(4);
+          setIsLoading(true);
+          
+          // Simulate processing time
+          setTimeout(() => {
+            setIsLoading(false);
+            setCurrentStep(5);
+          }, 5000);
+          break;
+          
+        default:
+          // Final step, do nothing
+          break;
+      }
+    } catch (error) {
+      console.error('Error in form submission:', error);
     }
   };
 

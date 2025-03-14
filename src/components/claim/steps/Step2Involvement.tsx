@@ -16,41 +16,24 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
   const role = watch('role');
   const [localErrors, setLocalErrors] = useState<{[key: string]: string}>({});
   
-  // Debug role selection
-  useEffect(() => {
-    console.log('Current role selection:', role);
-  }, [role]);
-  
-  // Clear local validation errors when role changes
-  useEffect(() => {
-    setLocalErrors({});
-  }, [role]);
-
-  const validateRideshareUserInfo = (value: string | undefined) => {
-    console.log('Validating rideshareUserInfo:', value, 'role:', role);
-    
-    if (role === 'guest' && (!value || value.trim() === '')) {
-      setLocalErrors(prev => ({
-        ...prev,
-        rideshareUserInfo: 'Please provide the rideshare user information'
-      }));
-      console.log('Validation failed: Guest info required');
-      return false;
+  // Standard onChange handler for radio buttons
+  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (setValue) {
+      setValue('role', e.target.value as any);
+      // Clear any guest info if not selecting guest role
+      if (e.target.value !== 'guest' && setValue) {
+        setValue('rideshareUserInfo', '');
+      }
     }
-    
-    // Clear error if valid
-    setLocalErrors(prev => {
-      const newErrors = {...prev};
-      delete newErrors.rideshareUserInfo;
-      return newErrors;
-    });
-    
-    console.log('Validation passed');
+  };
+  
+  // Standard validation for guest info
+  const validateRideshareUserInfo = (value: string | undefined) => {
+    if (role === 'guest' && (!value || value.trim() === '')) {
+      return 'Please provide the rideshare user information';
+    }
     return true;
   };
-
-  // Debug render
-  console.log('Rendering Step2Involvement with errors:', errors, 'localErrors:', localErrors);
 
   return (
     <div className="space-y-6">
@@ -67,16 +50,14 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
         </label>
         
         <div className="space-y-3">
-          <div 
-            className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
-            onClick={() => setValue && setValue('role', 'passenger')}
-          >
+          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
             <input
               id="role-passenger"
               type="radio"
               value="passenger"
+              checked={role === 'passenger'}
+              onChange={handleRoleChange}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-              {...register('role', { required: 'Please select your role in the accident' })}
             />
             <label htmlFor="role-passenger" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a passenger in a rideshare vehicle</div>
@@ -84,16 +65,14 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div 
-            className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
-            onClick={() => setValue && setValue('role', 'guest')}
-          >
+          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
             <input
               id="role-guest"
               type="radio"
               value="guest"
+              checked={role === 'guest'}
+              onChange={handleRoleChange}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-              {...register('role', { required: 'Please select your role in the accident' })}
             />
             <label htmlFor="role-guest" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a guest traveling with a rideshare user</div>
@@ -101,16 +80,14 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div 
-            className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer"
-            onClick={() => setValue && setValue('role', 'otherVehicle')}
-          >
+          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
             <input
               id="role-other-vehicle"
               type="radio"
               value="otherVehicle"
+              checked={role === 'otherVehicle'}
+              onChange={handleRoleChange}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-              {...register('role', { required: 'Please select your role in the accident' })}
             />
             <label htmlFor="role-other-vehicle" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was in another vehicle hit by a rideshare car</div>
@@ -119,8 +96,8 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
           </div>
         </div>
         
-        {(errors.role || localErrors.role) && (
-          <p className="mt-2 text-sm text-red-600">{errors.role?.message || localErrors.role}</p>
+        {errors.role && (
+          <p className="mt-2 text-sm text-red-600">{errors.role.message}</p>
         )}
       </div>
 
@@ -135,14 +112,14 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
           </p>
           <textarea
             id="rideshareUserInfo"
-            className={`input min-h-[100px] ${(errors.rideshareUserInfo || localErrors.rideshareUserInfo) ? 'border-red-500' : ''}`}
+            className={`input min-h-[100px] ${errors.rideshareUserInfo ? 'border-red-500' : ''}`}
             placeholder="e.g., John Doe, (555) 123-4567, john.doe@example.com"
             {...register('rideshareUserInfo', {
               validate: validateRideshareUserInfo
             })}
           />
-          {(errors.rideshareUserInfo || localErrors.rideshareUserInfo) && (
-            <p className="mt-1 text-sm text-red-600">{errors.rideshareUserInfo?.message || localErrors.rideshareUserInfo}</p>
+          {errors.rideshareUserInfo && (
+            <p className="mt-1 text-sm text-red-600">{errors.rideshareUserInfo.message}</p>
           )}
         </div>
       )}
