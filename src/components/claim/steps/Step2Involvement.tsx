@@ -20,12 +20,12 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
   
   // Handle role selection and synchronize states
   const handleRoleSelect = (selectedRole: 'passenger' | 'guest' | 'otherVehicle') => {
-    console.log('Role selected:', selectedRole);
+    console.log('[MOBILE DEBUG] Role selected:', selectedRole);
     
     if (setValue) {
       // Set role directly in form
       setValue('role', selectedRole, { shouldValidate: true });
-      console.log('Role value set to:', selectedRole);
+      console.log('[MOBILE DEBUG] Role value set to:', selectedRole);
       
       // Clear guest info if not guest
       if (selectedRole !== 'guest' && setValue) {
@@ -37,22 +37,30 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
         trigger('role');
       }
     } else {
-      console.warn('setValue function is not available');
+      console.warn('[MOBILE DEBUG] setValue function is not available');
     }
   };
   
+  // Add special mobile touch handlers
+  const handleMobileTouch = (e: React.TouchEvent, selectedRole: 'passenger' | 'guest' | 'otherVehicle') => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('[MOBILE DEBUG] Mobile touch on role:', selectedRole);
+    handleRoleSelect(selectedRole);
+  };
+
   // Check the validation status when role changes
   useEffect(() => {
     if (role) {
-      console.log(`Role is set to: ${role}`);
+      console.log(`[MOBILE DEBUG] Role is set to: ${role}`);
     }
   }, [role]);
 
   // Log when the component mounts
   useEffect(() => {
-    console.log('Step2Involvement component mounted');
+    console.log('[MOBILE DEBUG] Step2Involvement component mounted');
     return () => {
-      console.log('Step2Involvement component unmounted');
+      console.log('[MOBILE DEBUG] Step2Involvement component unmounted');
     };
   }, []);
 
@@ -75,6 +83,9 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
           <div 
             className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'passenger' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
             onClick={() => handleRoleSelect('passenger')}
+            onTouchEnd={(e) => handleMobileTouch(e, 'passenger')}
+            role="button"
+            tabIndex={0}
           >
             <input
               id="role-passenger"
@@ -93,6 +104,9 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
           <div 
             className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'guest' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
             onClick={() => handleRoleSelect('guest')}
+            onTouchEnd={(e) => handleMobileTouch(e, 'guest')}
+            role="button"
+            tabIndex={0}
           >
             <input
               id="role-guest"
@@ -111,6 +125,9 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
           <div 
             className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'otherVehicle' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
             onClick={() => handleRoleSelect('otherVehicle')}
+            onTouchEnd={(e) => handleMobileTouch(e, 'otherVehicle')}
+            role="button"
+            tabIndex={0}
           >
             <input
               id="role-other-vehicle"

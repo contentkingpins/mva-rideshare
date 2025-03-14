@@ -33,7 +33,7 @@ export default function Step3Qualification({
   const receivedMedicalTreatment7Days = watch ? watch('receivedMedicalTreatment7Days') : undefined;
 
   // Debug log for component initialization
-  console.log('Step3Qualification rendered with values:', { 
+  console.log('[MOBILE DEBUG] Step3Qualification rendered with values:', { 
     rideshareCompany, 
     filedComplaint, 
     hasPoliceReport,
@@ -45,9 +45,9 @@ export default function Step3Qualification({
 
   // Log when the component mounts
   useEffect(() => {
-    console.log('Step3Qualification component mounted');
+    console.log('[MOBILE DEBUG] Step3Qualification component mounted');
     return () => {
-      console.log('Step3Qualification component unmounted');
+      console.log('[MOBILE DEBUG] Step3Qualification component unmounted');
     };
   }, []);
 
@@ -55,6 +55,7 @@ export default function Step3Qualification({
     if (setValue && trigger) {
       setValue('rideshareCompany', e.target.value as 'uber' | 'lyft');
       trigger('rideshareCompany');
+      console.log('[MOBILE DEBUG] Rideshare company changed to:', e.target.value);
     }
   };
 
@@ -62,6 +63,7 @@ export default function Step3Qualification({
   const handleComplaintChange = (value: boolean) => {
     if (setValue) {
       setValue('filedComplaint', value);
+      console.log('[MOBILE DEBUG] Filed complaint set to:', value);
     }
   };
 
@@ -69,6 +71,7 @@ export default function Step3Qualification({
   const handlePoliceReportChange = (value: boolean) => {
     if (setValue) {
       setValue('hasPoliceReport', value);
+      console.log('[MOBILE DEBUG] Has police report set to:', value);
     }
   };
 
@@ -76,6 +79,7 @@ export default function Step3Qualification({
   const handleAmbulanceChange = (value: boolean) => {
     if (setValue) {
       setValue('wasAmbulanceCalled', value);
+      console.log('[MOBILE DEBUG] Was ambulance called set to:', value);
     }
   };
 
@@ -83,6 +87,8 @@ export default function Step3Qualification({
   const handleMedicalTreatment48HoursChange = (value: boolean) => {
     if (setValue) {
       setValue('receivedMedicalTreatment48Hours', value);
+      console.log('[MOBILE DEBUG] Received medical treatment within 48 hours set to:', value);
+      
       // If they selected "Yes" for 48 hours, we don't need to ask about 7 days
       if (value === true) {
         setValue('receivedMedicalTreatment7Days', false);
@@ -94,7 +100,16 @@ export default function Step3Qualification({
   const handleMedicalTreatment7DaysChange = (value: boolean) => {
     if (setValue) {
       setValue('receivedMedicalTreatment7Days', value);
+      console.log('[MOBILE DEBUG] Received medical treatment within 7 days set to:', value);
     }
+  };
+
+  // Add touch-specific event handlers for mobile
+  const handleMobileRadioTouch = (e: React.TouchEvent, setter: (value: boolean) => void, value: boolean) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('[MOBILE DEBUG] Mobile touch on radio option:', value);
+    setter(value);
   };
 
   return (
@@ -171,7 +186,12 @@ export default function Step3Qualification({
                   onChange={() => handleAmbulanceChange(true)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="ambulance-yes" className="ml-2 text-base cursor-pointer" onClick={() => handleAmbulanceChange(true)}>Yes</label>
+                <label 
+                  htmlFor="ambulance-yes" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handleAmbulanceChange(true)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handleAmbulanceChange, true)}
+                >Yes</label>
               </div>
               <div className="flex items-center">
                 <input
@@ -182,7 +202,12 @@ export default function Step3Qualification({
                   onChange={() => handleAmbulanceChange(false)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="ambulance-no" className="ml-2 text-base cursor-pointer" onClick={() => handleAmbulanceChange(false)}>No</label>
+                <label 
+                  htmlFor="ambulance-no" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handleAmbulanceChange(false)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handleAmbulanceChange, false)}
+                >No</label>
               </div>
             </div>
           </div>
@@ -201,7 +226,12 @@ export default function Step3Qualification({
                   onChange={() => handleMedicalTreatment48HoursChange(true)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="medical-48hours-yes" className="ml-2 text-base cursor-pointer" onClick={() => handleMedicalTreatment48HoursChange(true)}>Yes</label>
+                <label 
+                  htmlFor="medical-48hours-yes" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handleMedicalTreatment48HoursChange(true)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handleMedicalTreatment48HoursChange, true)}
+                >Yes</label>
               </div>
               <div className="flex items-center">
                 <input
@@ -212,7 +242,12 @@ export default function Step3Qualification({
                   onChange={() => handleMedicalTreatment48HoursChange(false)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="medical-48hours-no" className="ml-2 text-base cursor-pointer" onClick={() => handleMedicalTreatment48HoursChange(false)}>No</label>
+                <label 
+                  htmlFor="medical-48hours-no" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handleMedicalTreatment48HoursChange(false)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handleMedicalTreatment48HoursChange, false)}
+                >No</label>
               </div>
             </div>
           </div>
@@ -233,7 +268,12 @@ export default function Step3Qualification({
                     onChange={() => handleMedicalTreatment7DaysChange(true)}
                     className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                   />
-                  <label htmlFor="medical-7days-yes" className="ml-2 text-base cursor-pointer" onClick={() => handleMedicalTreatment7DaysChange(true)}>Yes</label>
+                  <label 
+                    htmlFor="medical-7days-yes" 
+                    className="ml-2 text-base cursor-pointer" 
+                    onClick={() => handleMedicalTreatment7DaysChange(true)}
+                    onTouchEnd={(e) => handleMobileRadioTouch(e, handleMedicalTreatment7DaysChange, true)}
+                  >Yes</label>
                 </div>
                 <div className="flex items-center">
                   <input
@@ -244,7 +284,12 @@ export default function Step3Qualification({
                     onChange={() => handleMedicalTreatment7DaysChange(false)}
                     className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                   />
-                  <label htmlFor="medical-7days-no" className="ml-2 text-base cursor-pointer" onClick={() => handleMedicalTreatment7DaysChange(false)}>No</label>
+                  <label 
+                    htmlFor="medical-7days-no" 
+                    className="ml-2 text-base cursor-pointer" 
+                    onClick={() => handleMedicalTreatment7DaysChange(false)}
+                    onTouchEnd={(e) => handleMobileRadioTouch(e, handleMedicalTreatment7DaysChange, false)}
+                  >No</label>
                 </div>
               </div>
             </div>
@@ -264,7 +309,12 @@ export default function Step3Qualification({
                   onChange={() => handleComplaintChange(true)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="complaint-yes" className="ml-2 text-base cursor-pointer" onClick={() => handleComplaintChange(true)}>Yes</label>
+                <label 
+                  htmlFor="complaint-yes" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handleComplaintChange(true)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handleComplaintChange, true)}
+                >Yes</label>
               </div>
               <div className="flex items-center">
                 <input
@@ -275,7 +325,12 @@ export default function Step3Qualification({
                   onChange={() => handleComplaintChange(false)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="complaint-no" className="ml-2 text-base cursor-pointer" onClick={() => handleComplaintChange(false)}>No</label>
+                <label 
+                  htmlFor="complaint-no" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handleComplaintChange(false)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handleComplaintChange, false)}
+                >No</label>
               </div>
             </div>
           </div>
@@ -294,7 +349,12 @@ export default function Step3Qualification({
                   onChange={() => handlePoliceReportChange(true)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="police-report-yes" className="ml-2 text-base cursor-pointer" onClick={() => handlePoliceReportChange(true)}>Yes</label>
+                <label 
+                  htmlFor="police-report-yes" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handlePoliceReportChange(true)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handlePoliceReportChange, true)}
+                >Yes</label>
               </div>
               <div className="flex items-center">
                 <input
@@ -305,7 +365,12 @@ export default function Step3Qualification({
                   onChange={() => handlePoliceReportChange(false)}
                   className="h-5 w-5 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
-                <label htmlFor="police-report-no" className="ml-2 text-base cursor-pointer" onClick={() => handlePoliceReportChange(false)}>No</label>
+                <label 
+                  htmlFor="police-report-no" 
+                  className="ml-2 text-base cursor-pointer" 
+                  onClick={() => handlePoliceReportChange(false)}
+                  onTouchEnd={(e) => handleMobileRadioTouch(e, handlePoliceReportChange, false)}
+                >No</label>
               </div>
             </div>
           </div>

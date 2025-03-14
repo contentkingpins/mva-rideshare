@@ -86,4 +86,78 @@
   .animate-thrice {
     animation-iteration-count: 3;
   }
+}
+
+/* Mobile touch improvements */
+.mobile-device button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.mobile-device .btn-primary,
+.mobile-device .btn-outline {
+  padding: 15px 20px;  /* Larger touch target */
+  margin: 8px 0;
+  min-height: 50px;
+  position: relative;
+  z-index: 10;  /* Ensure buttons are on top */
+}
+
+/* Add an overlay to improve click area */
+.mobile-device .btn-primary::before,
+.mobile-device .btn-outline::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  z-index: -1;
+}
+
+/* Fix for iOS devices specifically */
+@supports (-webkit-touch-callout: none) {
+  .mobile-device button {
+    cursor: pointer;
+    -webkit-appearance: none;
+  }
+}
+
+/* Improve radio button touch targets */
+.mobile-device input[type="radio"] {
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.mobile-device label {
+  user-select: none;
+}
+
+/* Add more mobile-specific CSS */
+
+/* Hide mobile-only buttons by default */
+.mobile-device-only {
+  display: none;
+}
+
+/* Show mobile-only content only for devices with mobile class */
+.mobile-device .mobile-device-only {
+  display: block;
+}
+
+/* Increase touch targets for iOS */
+@media (pointer: coarse) {
+  button, 
+  input[type="radio"],
+  input[type="checkbox"],
+  select,
+  .cursor-pointer {
+    min-height: 44px;
+  }
+  
+  label.cursor-pointer {
+    padding: 10px 0;
+  }
 } 
