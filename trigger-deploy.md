@@ -3,6 +3,16 @@
 This file exists to trigger new deployments when needed.
 
 ## Latest Deployment
+- Date: March 14, 2025 - 10:15 PM
+- Purpose: Fix build failure in NextJS metadata configuration
+- Changes: 
+  - Removed metadata export from client component (page.tsx)
+  - Created separate metadata.ts file for claim page
+  - Fixed client-side cache control implementation
+  - Resolved conflict between "use client" directive and metadata export
+  - Maintained all emergency fixes from previous deployment
+
+## Previous Deployment
 - Date: March 14, 2025 - 9:30 PM
 - Purpose: Emergency fix for mobile contact form
 - Changes: 
@@ -11,17 +21,6 @@ This file exists to trigger new deployments when needed.
   - Added fallback contact form as emergency solution
   - Added cache control headers to prevent browser caching
   - Increased visibility of form elements on mobile devices
-
-## Previous Deployment
-- Date: March 14, 2025 - 8:30 PM
-- Purpose: Fix mobile form contact information submission
-- Changes: 
-  - Fixed Step1BasicInfo component loading and submission on mobile
-  - Enhanced touch event handling for iOS devices
-  - Added iOS-specific CSS fixes for better mobile interaction
-  - Improved form validation and error handling
-  - Ensured contact information is properly saved to localStorage
-  - Fixed button event propagation issues on mobile devices
 
 ## Older Deployment
 - Date: March 14, 2023 - 7:00 PM
