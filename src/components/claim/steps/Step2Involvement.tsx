@@ -14,53 +14,32 @@ interface Step2Props {
 
 export default function Step2Involvement({ register, errors, watch, setValue, trigger }: Step2Props) {
   const role = watch('role');
-  const [selectedRole, setSelectedRole] = useState<string | undefined>(role);
   
-  // Handle direct selection of a role
-  const selectRole = (roleValue: 'passenger' | 'guest' | 'otherVehicle') => {
+  // Handle role selection and synchronize states
+  const handleRoleSelect = (selectedRole: 'passenger' | 'guest' | 'otherVehicle') => {
     if (setValue) {
-      console.log("Directly selecting role:", roleValue);
+      // Set role directly in form
+      setValue('role', selectedRole, { shouldValidate: true });
       
-      // Update local state
-      setSelectedRole(roleValue);
-      
-      // Clear any guest info if not selecting guest role
-      if (roleValue !== 'guest') {
-        setValue('rideshareUserInfo', '', { shouldValidate: false });
+      // Clear guest info if not guest
+      if (selectedRole !== 'guest' && setValue) {
+        setValue('rideshareUserInfo', '');
       }
       
-      // Set the form value
-      setValue('role', roleValue, { shouldValidate: true });
-      
-      // Force validation
-      if (trigger) {
-        setTimeout(() => {
-          trigger('role').then(isValid => {
-            console.log("Role validation result:", isValid);
-          });
-        }, 100);
-      }
+      // Log the selection for debugging
+      console.log(`Selected role: ${selectedRole}`);
     }
   };
-
-  // Initialization - ensure role is set
+  
+  // Check the validation status immediately
   useEffect(() => {
     if (role) {
-      setSelectedRole(role);
-    } else if (setValue && !role) {
-      console.log("No role in form, initializing default");
-      setValue('role', 'passenger', { shouldValidate: false });
-      setSelectedRole('passenger');
+      console.log(`Role is set to: ${role}`);
+    } else {
+      console.log("No role selected yet");
+      // We don't set a default role here to avoid confusing the user
     }
-  }, [role, setValue]);
-  
-  // Guest info validation
-  const validateRideshareUserInfo = (value: string | undefined) => {
-    if (role === 'guest' && (!value || value.trim() === '')) {
-      return 'Please provide the rideshare user information';
-    }
-    return true;
-  };
+  }, [role]);
 
   return (
     <div className="space-y-6">
@@ -77,68 +56,63 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
         </label>
         
         <div className="space-y-3">
-          {/* Passenger option */}
+          {/* Radio buttons with proper form binding */}
           <div 
-            className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${selectedRole === 'passenger' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
-            onClick={() => selectRole('passenger')}
+            className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'passenger' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
+            onClick={() => handleRoleSelect('passenger')}
           >
             <input
               id="role-passenger"
               type="radio"
               value="passenger"
-              checked={selectedRole === 'passenger'}
-              onChange={() => selectRole('passenger')}
+              checked={role === 'passenger'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+              {...register('role', { required: 'Please select your role' })}
+              onChange={() => handleRoleSelect('passenger')}
             />
-            <label htmlFor="role-passenger" className="ml-3 cursor-pointer w-full" onClick={(e) => e.preventDefault()}>
+            <label htmlFor="role-passenger" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a passenger in a rideshare vehicle</div>
               <p className="text-gray-500 text-sm">You were riding as a paying customer in an Uber or Lyft vehicle.</p>
             </label>
           </div>
           
-          {/* Guest option */}
           <div 
-            className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${selectedRole === 'guest' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
-            onClick={() => selectRole('guest')}
+            className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'guest' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
+            onClick={() => handleRoleSelect('guest')}
           >
             <input
               id="role-guest"
               type="radio"
               value="guest"
-              checked={selectedRole === 'guest'}
-              onChange={() => selectRole('guest')}
+              checked={role === 'guest'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+              {...register('role', { required: 'Please select your role' })}
+              onChange={() => handleRoleSelect('guest')}
             />
-            <label htmlFor="role-guest" className="ml-3 cursor-pointer w-full" onClick={(e) => e.preventDefault()}>
+            <label htmlFor="role-guest" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a guest traveling with a rideshare user</div>
               <p className="text-gray-500 text-sm">You were traveling with someone who ordered the rideshare service.</p>
             </label>
           </div>
           
-          {/* Other vehicle option */}
           <div 
-            className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${selectedRole === 'otherVehicle' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
-            onClick={() => selectRole('otherVehicle')}
+            className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'otherVehicle' ? 'border-primary-500 bg-primary-50' : 'border-gray-200'}`}
+            onClick={() => handleRoleSelect('otherVehicle')}
           >
             <input
               id="role-other-vehicle"
               type="radio"
               value="otherVehicle"
-              checked={selectedRole === 'otherVehicle'}
-              onChange={() => selectRole('otherVehicle')}
+              checked={role === 'otherVehicle'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+              {...register('role', { required: 'Please select your role' })}
+              onChange={() => handleRoleSelect('otherVehicle')}
             />
-            <label htmlFor="role-other-vehicle" className="ml-3 cursor-pointer w-full" onClick={(e) => e.preventDefault()}>
+            <label htmlFor="role-other-vehicle" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was in another vehicle hit by a rideshare car</div>
               <p className="text-gray-500 text-sm">You were driving or riding in a separate vehicle that was involved in an accident with a rideshare vehicle.</p>
             </label>
           </div>
-          
-          {/* Hidden field for form validation */}
-          <input 
-            type="hidden" 
-            {...register('role', { required: 'Please select your role' })}
-          />
         </div>
         
         {errors.role && (
@@ -147,7 +121,7 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
       </div>
 
       {/* Additional information for guests */}
-      {selectedRole === 'guest' && (
+      {role === 'guest' && (
         <div className="mt-6 p-4 border border-primary-100 bg-primary-50 rounded-lg">
           <label htmlFor="rideshareUserInfo" className="block text-lg font-medium text-gray-700 mb-2">
             Please provide the rideshare user's information
@@ -160,7 +134,12 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             className={`input min-h-[100px] ${errors.rideshareUserInfo ? 'border-red-500' : ''}`}
             placeholder="e.g., John Doe, (555) 123-4567, john.doe@example.com"
             {...register('rideshareUserInfo', {
-              validate: validateRideshareUserInfo
+              validate: (value) => {
+                if (role === 'guest' && (!value || value.trim() === '')) {
+                  return 'Please provide the rideshare user information';
+                }
+                return true;
+              }
             })}
           />
           {errors.rideshareUserInfo && (

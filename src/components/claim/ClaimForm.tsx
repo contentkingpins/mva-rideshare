@@ -46,23 +46,26 @@ export default function ClaimForm() {
   const [isRejected, setIsRejected] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const totalSteps = 5;
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid, isSubmitting },
     setValue,
     getValues,
     reset,
     trigger,
     watch,
+    clearErrors,
   } = useForm<ClaimFormData>({
     resolver: zodResolver(claimSchema),
     defaultValues: formData,
+    mode: 'onChange'
   });
 
-  // Watch for changes to the role field
+  // Watch for changes to key fields
   const role = watch('role');
   const filedComplaint = watch('filedComplaint');
   const hasPoliceReport = watch('hasPoliceReport');
@@ -70,13 +73,13 @@ export default function ClaimForm() {
   // Clear errors when switching steps
   useEffect(() => {
     console.log('Current step changed to:', currentStep);
-    // Clear any field errors that might be stale
+    // Reset form error when changing steps
+    setFormError(null);
+    
     if (currentStep === 2) {
-      // When entering step 2, make sure we clear any previous validation errors
-      setValue('role', getValues('role'), { shouldValidate: false });
-      setValue('rideshareUserInfo', getValues('rideshareUserInfo') || '', { shouldValidate: false });
+      clearErrors('role');
     }
-  }, [currentStep, setValue, getValues]);
+  }, [currentStep, clearErrors]);
 
   // Load saved contact data from localStorage on initial render
   useEffect(() => {
@@ -110,91 +113,91 @@ export default function ClaimForm() {
     }
   }, [setValue]);
 
-  // Handle form submission for the current step
+  // Validate current step fields
+  const validateCurrentStep = async () => {
+    switch (currentStep) {
+      case 1:
+        return await trigger(['firstName', 'lastName', 'phone', 'email']);
+      case 2:
+        return await trigger('role');
+      case 3:
+        return await trigger(['rideshareCompany']);
+      default:
+        return true;
+    }
+  };
+
+  // Handle step navigation
+  const handleNextStep = async () => {
+    console.log(`Attempting to move from step ${currentStep} to next step`);
+    const isStepValid = await validateCurrentStep();
+    
+    if (!isStepValid) {
+      console.error("Current step validation failed");
+      setFormError("Please correct the errors before continuing.");
+      return;
+    }
+
+    if (currentStep === 2 && !role) {
+      console.error("No role selected, cannot proceed");
+      setFormError("Please select your role in the accident.");
+      return;
+    }
+
+    if (currentStep === 2 && role === 'guest') {
+      const isGuestInfoValid = await trigger('rideshareUserInfo');
+      if (!isGuestInfoValid) {
+        console.error("Guest info validation failed");
+        return;
+      }
+    }
+
+    // Special handling for step 3
+    if (currentStep === 3) {
+      const noComplaint = !filedComplaint;
+      const noPoliceReport = !hasPoliceReport;
+      
+      if (noComplaint && noPoliceReport) {
+        setIsRejected(true);
+        setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+        return;
+      }
+      
+      // Process the form (simulate API call)
+      setIsLoading(true);
+      
+      // Simulate processing time
+      setTimeout(() => {
+        setIsLoading(false);
+        setCurrentStep(5);
+      }, 5000);
+      
+      setCurrentStep(4);
+      return;
+    }
+
+    // Save form data and move to next step
+    const formValues = getValues();
+    console.log(`Moving to step ${currentStep + 1} with data:`, formValues);
+    setFormData(prev => ({ ...prev, ...formValues }));
+    setCurrentStep(prev => prev + 1);
+  };
+
+  // Handle the form submission
   const onSubmit = async (data: ClaimFormData) => {
     try {
-      console.log(`Submitting step ${currentStep} with data:`, data);
-      
-      switch (currentStep) {
-        case 1:
-          // Simplified validation for step 1 - rely more on zod schema validation
-          const { firstName, lastName, phone, email } = data;
-          
-          // Save contact data to localStorage
-          localStorage.setItem('contactFormData', JSON.stringify({
-            firstName,
-            lastName,
-            phone,
-            email,
-          }));
-          
-          // Always proceed to next step if form is valid (which it should be if we got here)
-          console.log("Moving to step 2 with data:", data);
-          setFormData(prev => ({ ...prev, ...data }));
-          setCurrentStep(2);
-          break;
-          
-        case 2:
-          // Validate step 2 fields
-          console.log("Step 2 submission with role:", data.role);
-          
-          // Force validation if needed
-          if (!data.role) {
-            console.error("No role selected, cannot proceed");
-            await trigger('role');
-            return;
-          }
-          
-          // For guest role, validate guest info
-          if (data.role === 'guest') {
-            if (!data.rideshareUserInfo || data.rideshareUserInfo.trim() === '') {
-              console.error("Missing guest info, triggering validation");
-              await trigger('rideshareUserInfo');
-              return;
-            }
-          }
-          
-          // Update form data and proceed to next step
-          console.log("Moving to step 3 with data:", data);
-          setFormData(prev => ({ ...prev, ...data }));
-          setCurrentStep(3);
-          break;
-          
-        case 3:
-          // Validate step 3 fields
-          const noComplaint = !data.filedComplaint;
-          const noPoliceReport = !data.hasPoliceReport;
-          
-          if (noComplaint && noPoliceReport) {
-            setIsRejected(true);
-            setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
-            return;
-          }
-          
-          // Process the form (simulate API call)
-          setFormData(prev => ({ ...prev, ...data }));
-          setCurrentStep(4);
-          setIsLoading(true);
-          
-          // Simulate processing time
-          setTimeout(() => {
-            setIsLoading(false);
-            setCurrentStep(5);
-          }, 5000);
-          break;
-          
-        default:
-          // Final step, do nothing
-          break;
-      }
+      console.log(`Form submitted with data:`, data);
+      await handleNextStep();
     } catch (error) {
       console.error('Error in form submission:', error);
+      setFormError("There was a problem submitting the form. Please try again.");
     }
   };
 
   // Go back to the previous step
   const goBack = () => {
     setCurrentStep(prevStep => Math.max(1, prevStep - 1));
+    setFormError(null);
   };
 
   // Calculate progress percentage
@@ -244,6 +247,13 @@ export default function ClaimForm() {
           </div>
         ))}
       </div>
+
+      {/* Form error message */}
+      {formError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">
+          {formError}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <AnimatePresence mode="wait">
@@ -305,6 +315,7 @@ export default function ClaimForm() {
                 type="button"
                 onClick={goBack}
                 className="btn-outline"
+                disabled={isSubmitting}
               >
                 Back
               </button>
@@ -313,24 +324,20 @@ export default function ClaimForm() {
             )}
             <button
               type="submit"
-              className="btn-primary"
-              onClick={() => {
-                console.log("Continue button clicked for step", currentStep);
-                
-                // Force immediate validation
-                if (currentStep === 2) {
-                  const currentRole = getValues('role');
-                  console.log("Current selected role before continuing:", currentRole);
-                  
-                  // Quick validation
-                  if (!currentRole) {
-                    console.error("No role selected on continue click");
-                    trigger('role');
-                  }
-                }
-              }}
+              className="btn-primary relative"
+              disabled={isSubmitting}
             >
-              {currentStep === 3 ? 'Submit' : 'Continue'}
+              {isSubmitting ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                currentStep === 3 ? 'Submit' : 'Continue'
+              )}
             </button>
           </div>
         )}
