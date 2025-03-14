@@ -164,7 +164,7 @@ export default function HeroSection() {
               id="contact-form"
               className="hidden lg:block lg:w-1/2 lg:mt-0 px-2 md:px-0"
             >
-              <div className="bg-white rounded-xl shadow-xl p-4 md:p-6 lg:p-8 border border-gray-100">
+              <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 md:p-6 lg:p-8 border border-gray-100">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">Start Your Claim Now</h2>
                 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
