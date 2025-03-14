@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Import all steps directly, no relative imports that might cause issues
+import Step1BasicInfo from './steps/Step1BasicInfo';
 import Step2Involvement from './steps/Step2Involvement';
 import Step3Qualification from './steps/Step3Qualification';
 import Step4Processing from './steps/Step4Processing';
@@ -49,92 +50,6 @@ const claimSchema = z.object({
 });
 
 export type ClaimFormData = z.infer<typeof claimSchema>;
-
-// Create inline component for Step1BasicInfo to avoid import issues
-function Step1BasicInfo({ register, errors }: { 
-  register: any; 
-  errors: any; 
-}) {
-  return (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold mb-2">Contact Information</h2>
-        <p className="text-gray-600">
-          Please provide your basic contact information so we can reach you about your claim.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="firstName" className="label">First Name</label>
-          <input
-            id="firstName"
-            type="text"
-            className={`input ${errors.firstName ? 'border-red-500' : ''}`}
-            placeholder="John"
-            {...register('firstName')}
-          />
-          {errors.firstName && (
-            <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-          )}
-        </div>
-        
-        <div>
-          <label htmlFor="lastName" className="label">Last Name</label>
-          <input
-            id="lastName"
-            type="text"
-            className={`input ${errors.lastName ? 'border-red-500' : ''}`}
-            placeholder="Doe"
-            {...register('lastName')}
-          />
-          {errors.lastName && (
-            <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-          )}
-        </div>
-      </div>
-      
-      <div>
-        <label htmlFor="phone" className="label">Phone Number</label>
-        <input
-          id="phone"
-          type="tel"
-          className={`input ${errors.phone ? 'border-red-500' : ''}`}
-          placeholder="(555) 555-5555"
-          {...register('phone', {
-            required: 'Phone number is required',
-            setValueAs: (value: string) => value.replace(/\D/g, '') // Strip non-digits on submission
-          })}
-        />
-        {errors.phone && (
-          <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-        )}
-        <p className="mt-1 text-xs text-gray-500">Include area code, e.g., 5551234567 or (555) 123-4567</p>
-      </div>
-      
-      <div>
-        <label htmlFor="email" className="label">Email Address</label>
-        <input
-          id="email"
-          type="email"
-          className={`input ${errors.email ? 'border-red-500' : ''}`}
-          placeholder="john@example.com"
-          {...register('email')}
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-        )}
-      </div>
-      
-      <div className="bg-blue-50 p-4 rounded-md text-blue-800 text-sm">
-        <p>
-          <strong>Your Privacy is Important: </strong>
-          We'll only use your contact information to assist with your claim and will never share it with third parties without your consent.
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export default function ClaimForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -235,16 +150,28 @@ export default function ClaimForm() {
           setFormData(prev => ({ ...prev, ...parsedData }));
           
           // If we have complete contact data, skip to step 2
-          if (parsedData.firstName && parsedData.lastName && 
-              parsedData.phone && parsedData.email) {
-            setCurrentStep(2);
+          // Only skip if ALL required contact fields are present and non-empty
+          if (parsedData.firstName && parsedData.firstName.trim() !== '' &&
+              parsedData.lastName && parsedData.lastName.trim() !== '' &&
+              parsedData.phone && parsedData.phone.trim() !== '' &&
+              parsedData.email && parsedData.email.trim() !== '') {
+            // For mobile view, make sure we still start at step 1 to allow users to confirm data
+            if (!isMobileView) {
+              setCurrentStep(2);
+            } else {
+              // For mobile, always start at step 1 to allow users to verify their info
+              setCurrentStep(1);
+            }
+          } else {
+            // If data is incomplete, always start at step 1
+            setCurrentStep(1);
           }
         }
       } catch (e) {
         console.error('Error parsing saved contact data:', e);
       }
     }
-  }, [setValue]);
+  }, [setValue, isMobileView]);
 
   // Validate current step fields
   const validateCurrentStep = async () => {
@@ -341,9 +268,11 @@ export default function ClaimForm() {
     try {
       // Get form values
       const formValues = getValues();
+      console.log("Step 1 form values:", formValues); // Debug log
       
       // Validate required fields
       const isValid = await trigger(['firstName', 'lastName', 'phone', 'email']);
+      console.log("Step 1 validation result:", isValid); // Debug log
       
       if (!isValid) {
         setFormError("Please fill in all required fields correctly.");
@@ -359,6 +288,7 @@ export default function ClaimForm() {
           email: formValues.email
         };
         localStorage.setItem('contactFormData', JSON.stringify(contactData));
+        console.log("Saved contact data to localStorage"); // Debug log
       } catch (e) {
         console.error('Error saving to localStorage:', e);
       }
@@ -370,6 +300,7 @@ export default function ClaimForm() {
       });
       
       // Force immediate step change for mobile
+      console.log("Moving to step 2"); // Debug log
       setCurrentStep(2);
       
     } catch (error) {
@@ -504,6 +435,16 @@ export default function ClaimForm() {
 
   // Go back to the previous step
   const goBack = () => {
+    if (currentStep === 2) {
+      // When going back to step 1, check if we should clear localStorage
+      try {
+        // Optionally clear saved data when returning to step 1
+        // localStorage.removeItem('contactFormData');
+        console.log("Returned to step 1");
+      } catch (e) {
+        console.error('Error interacting with localStorage:', e);
+      }
+    }
     setCurrentStep(prevStep => Math.max(1, prevStep - 1));
     setFormError(null);
   };
@@ -579,6 +520,13 @@ export default function ClaimForm() {
                   register={register} 
                   errors={errors} 
                 />
+                {isMobileView && (
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-gray-600">
+                      Please provide your contact information before proceeding.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
