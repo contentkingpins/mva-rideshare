@@ -62,7 +62,7 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       {/* Hero Container */}
-      <div className="relative min-h-[500px] md:min-h-[600px] lg:min-h-[650px] w-full">
+      <div className="relative min-h-[100vh] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Background image - optimized for all devices */}
         <div className="absolute inset-0 z-0">
           <picture>
@@ -93,10 +93,11 @@ export default function HeroSection() {
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 100vw"
               style={{ 
                 objectFit: 'cover', 
-                objectPosition: 'center 20%',
-                maxHeight: '100vh'
+                objectPosition: 'center top',
+                maxHeight: '100vh',
+                minHeight: '100%'
               }}
-              className="brightness-105 contrast-105"
+              className="brightness-90 contrast-110"
               loading="eager"
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wgARCAAGAAgDAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAME/8QAFAEBAAAAAAAAAAAAAAAAAAAABP/aAAwDAQACEAMQAAABxdFP/8QAFhABAQEAAAAAAAAAAAAAAAAAAQAC/9oACAEBAAEFArOv/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFhAAAwAAAAAAAAAAAAAAAAAAACEx/9oACAEBAAE/IVDP/9oADAMBAAIAAwAAABCj/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFhABAQEAAAAAAAAAAAAAAAAAAREA/9oACAEBAAE/EEiCm//Z"
@@ -104,24 +105,24 @@ export default function HeroSection() {
           </picture>
           
           {/* Gradient overlay - stronger for mobile */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/60 via-primary-800/50 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/75 via-primary-800/70 to-primary-700/65 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
         </div>
 
         {/* Content Container */}
         <div className="container relative z-10 h-full">
-          <div className="flex flex-col lg:flex-row items-center h-full pt-12 md:pt-16 pb-20 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
+          <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-8 md:pt-16 pb-32 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
             {/* Text Content - Adaptive for different screens */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="w-full lg:w-1/2 text-white lg:pr-6 pt-4 md:pt-8"
+              className="w-full lg:w-1/2 text-white lg:pr-6 pt-0 md:pt-8"
             >
-              <div className="bg-primary-900/40 md:bg-primary-900/20 backdrop-blur-[2px] rounded-xl p-4 md:p-6 lg:p-8 shadow-lg border border-white/10">
-                <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold leading-tight mb-3 md:mb-4 drop-shadow-sm">
+              <div className="rounded-xl p-4 md:p-6 lg:p-8">
+                <h1 className="text-3xl md:text-3xl lg:text-5xl font-bold leading-tight mb-3 md:mb-4 drop-shadow-md">
                   Injured in a Rideshare Accident? Make Sure Your Rights Are Protected!
                 </h1>
-                <p className="text-base md:text-lg lg:text-xl text-white/90 drop-shadow-sm mb-4 md:mb-6">
+                <p className="text-lg md:text-lg lg:text-xl text-white drop-shadow-md mb-6">
                   Submit your accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.
                 </p>
                 
@@ -129,32 +130,32 @@ export default function HeroSection() {
                 <div className="flex flex-wrap gap-4 mb-6 lg:hidden">
                   <Link 
                     href="#contact-form"
-                    className="btn-primary text-lg w-full"
+                    className="btn-primary text-lg w-full py-4 text-center"
                   >
                     Start Your Claim Now
                   </Link>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="grid grid-cols-3 gap-4 mt-6">
                   <div className="flex items-center gap-2">
-                    <div className="bg-primary-700/30 p-2 rounded-full">
-                      <svg className="w-5 h-5 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <div className="bg-primary-500/50 p-2 rounded-full">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                       </svg>
                     </div>
                     <span className="font-medium">1000+ Claims</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="bg-primary-700/30 p-2 rounded-full">
-                      <svg className="w-5 h-5 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <div className="bg-primary-500/50 p-2 rounded-full">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                       </svg>
                     </div>
                     <span className="font-medium">Millions Recovered</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="bg-primary-700/30 p-2 rounded-full">
-                      <svg className="w-5 h-5 text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <div className="bg-primary-500/50 p-2 rounded-full">
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                       </svg>
                     </div>
@@ -164,13 +165,13 @@ export default function HeroSection() {
               </div>
             </motion.div>
             
-            {/* Contact Form - Optimized for all devices */}
+            {/* Hide contact form on mobile - we'll show it on click with the link */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               id="contact-form"
-              className="w-full lg:w-1/2 lg:mt-0 px-2 md:px-0"
+              className="hidden lg:block lg:w-1/2 lg:mt-0 px-2 md:px-0"
             >
               <div className="bg-white rounded-xl shadow-xl p-4 md:p-6 lg:p-8 border border-gray-100">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">Start Your Claim Now</h2>
@@ -267,6 +268,20 @@ export default function HeroSection() {
             </motion.div>
           </div>
         </div>
+      </div>
+      
+      {/* Full width CTA for mobile */}
+      <div className="lg:hidden fixed w-full bottom-16 z-40 px-4">
+        <Link 
+          href="/claim"
+          className="btn-primary w-full block text-xl py-5 text-center font-bold shadow-lg rounded-lg"
+          onClick={(e) => {
+            e.preventDefault();
+            router.push('/claim');
+          }}
+        >
+          Start Your Claim Now
+        </Link>
       </div>
       
       {/* Mobile Call Button (Fixed at Bottom) */}
