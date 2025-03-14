@@ -3,6 +3,16 @@
 This file exists to trigger new deployments when needed.
 
 ## Latest Deployment
+- Date: March 14, 2023 - 7:15 PM
+- Purpose: Improve mobile responsiveness for new form questions
+- Changes: 
+  - Enhanced mobile layout for radio buttons in Step3Qualification
+  - Improved form spacing and touch targets for mobile devices
+  - Added responsive layout for date picker and dropdown
+  - Fixed text alignment and info box display on small screens
+  - Increased radio button size for better touch interaction
+
+## Previous Deployment
 - Date: March 14, 2023 - 7:00 PM
 - Purpose: Add new medical and accident questions to the form
 - Changes: 
@@ -12,21 +22,13 @@ This file exists to trigger new deployments when needed.
   - Enhanced validation for new fields
   - Updated schema for new form fields
 
-## Previous Deployment
+## Older Deployment
 - Date: March 14, 2023 - 6:30 PM
 - Purpose: Update final CTA message
 - Changes: 
   - Updated Step5Final component with new escalation message
   - Enhanced call-to-action with "Please click to call now" button
   - Updated rejection state CTA to match final step CTA
-
-## Older Deployment
-- Date: March 14, 2023 - 6:05 PM
-- Purpose: Fix all form navigation issues including Step3Qualification
-- Changes: 
-  - Added proper radio button handling for boolean inputs
-  - Enhanced Step3 with direct form submission
-  - Fixed boolean type handling
 
 ## Notes
 - The application should now connect to DynamoDB successfully
