@@ -31,11 +31,13 @@ const claimSchema = z.object({
   rideshareUserInfo: z.string().optional(),
   
   // Step 3: Legal qualification
-  filedComplaint: z.boolean().optional(),
+  filedComplaint: z.boolean().optional()
+    .transform(val => val === true), // Ensure it's a true boolean
   rideshareCompany: z.enum(['uber', 'lyft'], { 
     required_error: 'Please select the rideshare company'
   }),
-  hasPoliceReport: z.boolean().optional(),
+  hasPoliceReport: z.boolean().optional()
+    .transform(val => val === true), // Ensure it's a true boolean
 });
 
 export type ClaimFormData = z.infer<typeof claimSchema>;
@@ -245,6 +247,49 @@ export default function ClaimForm() {
     setCurrentStep(3);
   };
 
+  // Add a direct form submission handler for step 3
+  const submitStep3 = async () => {
+    console.log("Direct submission for step 3");
+    
+    // Get form values
+    const formValues = getValues();
+    console.log("Form values for step 3:", formValues);
+    
+    // Make sure we have a rideshare company selected
+    if (!formValues.rideshareCompany) {
+      console.error("No rideshare company selected for step 3");
+      setFormError("Please select whether you were in an Uber or Lyft.");
+      return;
+    }
+    
+    // Check if either complaint or police report is true
+    const hasComplaint = formValues.filedComplaint === true;
+    const hasReport = formValues.hasPoliceReport === true;
+    
+    console.log(`Complaint: ${hasComplaint}, Police report: ${hasReport}`);
+    
+    if (!hasComplaint && !hasReport) {
+      console.error("Neither complaint nor police report is present");
+      setIsRejected(true);
+      setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+      return;
+    }
+    
+    // Save form data
+    setFormData(prev => ({ ...prev, ...formValues }));
+    console.log("Form is valid, proceeding to processing");
+    
+    // Process the form (simulate API call)
+    setIsLoading(true);
+    setCurrentStep(4);
+    
+    // Simulate processing time
+    setTimeout(() => {
+      setIsLoading(false);
+      setCurrentStep(5);
+    }, 5000);
+  };
+
   // Handle the form submission
   const onSubmit = async (data: ClaimFormData) => {
     try {
@@ -350,6 +395,9 @@ export default function ClaimForm() {
               <Step3Qualification 
                 register={register} 
                 errors={errors} 
+                watch={watch}
+                setValue={setValue}
+                trigger={trigger}
                 isRejected={isRejected}
                 rejectionReason={rejectionReason}
               />
@@ -395,6 +443,15 @@ export default function ClaimForm() {
               >
                 Continue
               </button>
+            ) : currentStep === 3 ? (
+              <button
+                type="button"
+                onClick={submitStep3}
+                className="btn-primary relative"
+                disabled={isSubmitting}
+              >
+                Submit
+              </button>
             ) : (
               <button
                 type="submit"
@@ -410,7 +467,7 @@ export default function ClaimForm() {
                     Processing...
                   </span>
                 ) : (
-                  currentStep === 3 ? 'Submit' : 'Continue'
+                  'Continue'
                 )}
               </button>
             )}

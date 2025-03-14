@@ -1,16 +1,81 @@
 "use client";
 
-import { UseFormRegister, FieldErrors } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
 import { ClaimFormData } from '../ClaimForm';
 
 interface Step3Props {
   register: UseFormRegister<ClaimFormData>;
   errors: FieldErrors<ClaimFormData>;
+  watch?: UseFormWatch<ClaimFormData>;
+  setValue?: UseFormSetValue<ClaimFormData>;
+  trigger?: UseFormTrigger<ClaimFormData>;
   isRejected: boolean;
   rejectionReason: string;
 }
 
-export default function Step3Qualification({ register, errors, isRejected, rejectionReason }: Step3Props) {
+export default function Step3Qualification({ 
+  register, 
+  errors, 
+  watch, 
+  setValue, 
+  trigger,
+  isRejected, 
+  rejectionReason 
+}: Step3Props) {
+  // Get the current values if watch is available
+  const rideshareCompany = watch ? watch('rideshareCompany') : undefined;
+  const filedComplaint = watch ? watch('filedComplaint') : undefined;
+  const hasPoliceReport = watch ? watch('hasPoliceReport') : undefined;
+
+  // Debug log for component initialization
+  console.log('Step3Qualification rendered with values:', { 
+    rideshareCompany, 
+    filedComplaint, 
+    hasPoliceReport 
+  });
+
+  // Log when the component mounts
+  useEffect(() => {
+    console.log('Step3Qualification component mounted');
+    return () => {
+      console.log('Step3Qualification component unmounted');
+    };
+  }, []);
+
+  // Handle rideshare company selection
+  const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log('Rideshare company selected:', e.target.value);
+    if (setValue && trigger) {
+      setValue('rideshareCompany', e.target.value as 'uber' | 'lyft');
+      trigger('rideshareCompany').then(isValid => {
+        console.log('rideshareCompany validation result:', isValid);
+      });
+    }
+  };
+
+  // Handle complaint radio buttons
+  const handleComplaintChange = (value: boolean) => {
+    console.log('Filed complaint value set to:', value);
+    if (setValue) {
+      setValue('filedComplaint', value);
+    }
+  };
+
+  // Handle police report radio buttons
+  const handlePoliceReportChange = (value: boolean) => {
+    console.log('Has police report value set to:', value);
+    if (setValue) {
+      setValue('hasPoliceReport', value);
+    }
+  };
+
+  // Register fields with custom handlers to avoid onChange duplication
+  const complaintYesRef = register('filedComplaint');
+  const complaintNoRef = register('filedComplaint');
+  const policeReportYesRef = register('hasPoliceReport');
+  const policeReportNoRef = register('hasPoliceReport');
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
@@ -42,7 +107,9 @@ export default function Step3Qualification({ register, errors, isRejected, rejec
             <select
               id="rideshareCompany"
               className={`input ${errors.rideshareCompany ? 'border-red-500' : ''}`}
-              {...register('rideshareCompany')}
+              {...register('rideshareCompany', { required: 'Please select the rideshare company' })}
+              onChange={handleCompanyChange}
+              value={rideshareCompany}
             >
               <option value="">Please select...</option>
               <option value="uber">Uber</option>
@@ -62,21 +129,25 @@ export default function Step3Qualification({ register, errors, isRejected, rejec
                 <input
                   id="complaint-yes"
                   type="radio"
-                  value="true"
                   className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-                  {...register('filedComplaint')}
+                  checked={filedComplaint === true}
+                  onChange={() => handleComplaintChange(true)}
+                  name={complaintYesRef.name}
+                  ref={complaintYesRef.ref}
                 />
-                <label htmlFor="complaint-yes" className="ml-2">Yes</label>
+                <label htmlFor="complaint-yes" className="ml-2 cursor-pointer" onClick={() => handleComplaintChange(true)}>Yes</label>
               </div>
               <div className="flex items-center">
                 <input
                   id="complaint-no"
                   type="radio"
-                  value="false"
                   className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-                  {...register('filedComplaint')}
+                  checked={filedComplaint === false}
+                  onChange={() => handleComplaintChange(false)}
+                  name={complaintNoRef.name}
+                  ref={complaintNoRef.ref}
                 />
-                <label htmlFor="complaint-no" className="ml-2">No</label>
+                <label htmlFor="complaint-no" className="ml-2 cursor-pointer" onClick={() => handleComplaintChange(false)}>No</label>
               </div>
             </div>
           </div>
@@ -90,21 +161,25 @@ export default function Step3Qualification({ register, errors, isRejected, rejec
                 <input
                   id="police-report-yes"
                   type="radio"
-                  value="true"
                   className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-                  {...register('hasPoliceReport')}
+                  checked={hasPoliceReport === true}
+                  onChange={() => handlePoliceReportChange(true)}
+                  name={policeReportYesRef.name}
+                  ref={policeReportYesRef.ref}
                 />
-                <label htmlFor="police-report-yes" className="ml-2">Yes</label>
+                <label htmlFor="police-report-yes" className="ml-2 cursor-pointer" onClick={() => handlePoliceReportChange(true)}>Yes</label>
               </div>
               <div className="flex items-center">
                 <input
                   id="police-report-no"
                   type="radio"
-                  value="false"
                   className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
-                  {...register('hasPoliceReport')}
+                  checked={hasPoliceReport === false}
+                  onChange={() => handlePoliceReportChange(false)}
+                  name={policeReportNoRef.name}
+                  ref={policeReportNoRef.ref}
                 />
-                <label htmlFor="police-report-no" className="ml-2">No</label>
+                <label htmlFor="police-report-no" className="ml-2 cursor-pointer" onClick={() => handlePoliceReportChange(false)}>No</label>
               </div>
             </div>
           </div>
