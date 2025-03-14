@@ -29,16 +29,25 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
   const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (setValue) {
       console.log("Role changed to:", e.target.value);
-      setValue('role', e.target.value as any, { shouldValidate: true });
+      
+      // Set the role value, ensuring it's properly typed as a ClaimFormData role
+      if (e.target.value === 'passenger' || e.target.value === 'guest' || 
+          e.target.value === 'otherVehicle' || e.target.value === 'driver' || 
+          e.target.value === 'other_vehicle') {
+        setValue('role', e.target.value as any, { shouldValidate: true });
+      }
       
       // Clear any guest info if not selecting guest role
       if (e.target.value !== 'guest' && setValue) {
         setValue('rideshareUserInfo', '');
       }
       
-      // Trigger validation after role selection
+      // Trigger validation after role selection - this is crucial for proceeding 
       if (trigger) {
-        trigger('role');
+        console.log("Triggering role validation");
+        setTimeout(() => {
+          trigger('role');
+        }, 100); // Small delay to ensure the value is set
       }
     }
   };
@@ -66,7 +75,13 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
         </label>
         
         <div className="space-y-3">
-          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'passenger' ? 'border-primary-500 bg-primary-50' : ''}`}>
+          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'passenger' ? 'border-primary-500 bg-primary-50' : ''}`}
+               onClick={() => {
+                 if (setValue) {
+                   setValue('role', 'passenger', { shouldValidate: true });
+                   if (trigger) trigger('role');
+                 }
+               }}>
             <input
               id="role-passenger"
               type="radio"
@@ -84,7 +99,13 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'guest' ? 'border-primary-500 bg-primary-50' : ''}`}>
+          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'guest' ? 'border-primary-500 bg-primary-50' : ''}`}
+               onClick={() => {
+                 if (setValue) {
+                   setValue('role', 'guest', { shouldValidate: true });
+                   if (trigger) trigger('role');
+                 }
+               }}>
             <input
               id="role-guest"
               type="radio"
@@ -102,7 +123,13 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'otherVehicle' ? 'border-primary-500 bg-primary-50' : ''}`}>
+          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'otherVehicle' ? 'border-primary-500 bg-primary-50' : ''}`}
+               onClick={() => {
+                 if (setValue) {
+                   setValue('role', 'otherVehicle', { shouldValidate: true });
+                   if (trigger) trigger('role');
+                 }
+               }}>
             <input
               id="role-other-vehicle"
               type="radio"

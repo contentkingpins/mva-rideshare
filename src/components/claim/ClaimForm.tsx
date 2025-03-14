@@ -134,7 +134,10 @@ export default function ClaimForm() {
           
         case 2:
           // Validate step 2 fields
+          console.log("Step 2 submission with role:", data.role);
+          
           if (!data.role) {
+            console.error("No role selected, triggering validation");
             await trigger('role');
             return;
           }
@@ -142,6 +145,7 @@ export default function ClaimForm() {
           // For guest role, validate guest info
           if (data.role === 'guest') {
             if (!data.rideshareUserInfo || data.rideshareUserInfo.trim() === '') {
+              console.error("Missing guest info, triggering validation");
               await trigger('rideshareUserInfo');
               return;
             }
@@ -307,6 +311,19 @@ export default function ClaimForm() {
             <button
               type="submit"
               className="btn-primary"
+              onClick={() => {
+                console.log("Continue button clicked for step", currentStep);
+                if (currentStep === 2) {
+                  const currentRole = getValues('role');
+                  console.log("Current selected role:", currentRole);
+                  
+                  // Force validation if needed
+                  if (!currentRole) {
+                    console.error("No role selected on continue click");
+                    trigger('role');
+                  }
+                }
+              }}
             >
               {currentStep === 3 ? 'Submit' : 'Continue'}
             </button>
