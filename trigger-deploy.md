@@ -3,6 +3,16 @@
 This file exists to trigger new deployments when needed.
 
 ## Latest Deployment
+- Date: March 14, 2023 - 7:00 PM
+- Purpose: Add new medical and accident questions to the form
+- Changes: 
+  - Added accident date field to Step3Qualification
+  - Added ambulance called question to Step3Qualification
+  - Added medical treatment timing questions with conditional logic
+  - Enhanced validation for new fields
+  - Updated schema for new form fields
+
+## Previous Deployment
 - Date: March 14, 2023 - 6:30 PM
 - Purpose: Update final CTA message
 - Changes: 
@@ -10,21 +20,13 @@ This file exists to trigger new deployments when needed.
   - Enhanced call-to-action with "Please click to call now" button
   - Updated rejection state CTA to match final step CTA
 
-## Previous Deployment
+## Older Deployment
 - Date: March 14, 2023 - 6:05 PM
 - Purpose: Fix all form navigation issues including Step3Qualification
 - Changes: 
   - Added proper radio button handling for boolean inputs
   - Enhanced Step3 with direct form submission
   - Fixed boolean type handling
-
-## Older Deployment
-- Date: March 14, 2023 - 5:45 PM
-- Purpose: Fix form navigation in Step2Involvement component with direct button handler
-- Changes: 
-  - Added direct button handler to bypass form submission
-  - Enhanced debugging for form navigation
-  - Fixed role selection validation
 
 ## Notes
 - The application should now connect to DynamoDB successfully

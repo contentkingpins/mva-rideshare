@@ -27,12 +27,20 @@ export default function Step3Qualification({
   const rideshareCompany = watch ? watch('rideshareCompany') : undefined;
   const filedComplaint = watch ? watch('filedComplaint') : undefined;
   const hasPoliceReport = watch ? watch('hasPoliceReport') : undefined;
+  const accidentDate = watch ? watch('accidentDate') : undefined;
+  const wasAmbulanceCalled = watch ? watch('wasAmbulanceCalled') : undefined;
+  const receivedMedicalTreatment48Hours = watch ? watch('receivedMedicalTreatment48Hours') : undefined;
+  const receivedMedicalTreatment7Days = watch ? watch('receivedMedicalTreatment7Days') : undefined;
 
   // Debug log for component initialization
   console.log('Step3Qualification rendered with values:', { 
     rideshareCompany, 
     filedComplaint, 
-    hasPoliceReport 
+    hasPoliceReport,
+    accidentDate,
+    wasAmbulanceCalled,
+    receivedMedicalTreatment48Hours,
+    receivedMedicalTreatment7Days
   });
 
   // Log when the component mounts
@@ -67,6 +75,34 @@ export default function Step3Qualification({
     console.log('Has police report value set to:', value);
     if (setValue) {
       setValue('hasPoliceReport', value);
+    }
+  };
+
+  // Handle ambulance radio buttons
+  const handleAmbulanceChange = (value: boolean) => {
+    console.log('Was ambulance called value set to:', value);
+    if (setValue) {
+      setValue('wasAmbulanceCalled', value);
+    }
+  };
+
+  // Handle medical treatment within 48 hours radio buttons
+  const handleMedicalTreatment48HoursChange = (value: boolean) => {
+    console.log('Received medical treatment within 48 hours value set to:', value);
+    if (setValue) {
+      setValue('receivedMedicalTreatment48Hours', value);
+      // If they selected "Yes" for 48 hours, we don't need to ask about 7 days
+      if (value === true) {
+        setValue('receivedMedicalTreatment7Days', false as any);
+      }
+    }
+  };
+
+  // Handle medical treatment within 7 days radio buttons
+  const handleMedicalTreatment7DaysChange = (value: boolean) => {
+    console.log('Received medical treatment within 7 days value set to:', value);
+    if (setValue) {
+      setValue('receivedMedicalTreatment7Days', value);
     }
   };
 
@@ -113,6 +149,114 @@ export default function Step3Qualification({
               <p className="mt-1 text-sm text-red-600">{errors.rideshareCompany.message}</p>
             )}
           </div>
+
+          <div className="space-y-4">
+            <label htmlFor="accidentDate" className="block text-lg font-medium text-gray-700">
+              When did the accident occur?
+            </label>
+            <input
+              type="date"
+              id="accidentDate"
+              className={`input ${errors.accidentDate ? 'border-red-500' : ''}`}
+              {...register('accidentDate', { required: 'Please provide the accident date' })}
+            />
+            {errors.accidentDate && (
+              <p className="mt-1 text-sm text-red-600">{errors.accidentDate.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            <label className="block text-lg font-medium text-gray-700">
+              Was an ambulance called to the scene?
+            </label>
+            <div className="flex space-x-6">
+              <div className="flex items-center">
+                <input
+                  id="ambulance-yes"
+                  type="radio"
+                  value="true"
+                  checked={wasAmbulanceCalled === true}
+                  onChange={() => handleAmbulanceChange(true)}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                />
+                <label htmlFor="ambulance-yes" className="ml-2 cursor-pointer" onClick={() => handleAmbulanceChange(true)}>Yes</label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="ambulance-no"
+                  type="radio"
+                  value="false"
+                  checked={wasAmbulanceCalled === false}
+                  onChange={() => handleAmbulanceChange(false)}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                />
+                <label htmlFor="ambulance-no" className="ml-2 cursor-pointer" onClick={() => handleAmbulanceChange(false)}>No</label>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <label className="block text-lg font-medium text-gray-700">
+              Did you receive medical treatment within 48 hours of the accident?
+            </label>
+            <div className="flex space-x-6">
+              <div className="flex items-center">
+                <input
+                  id="medical-48hours-yes"
+                  type="radio"
+                  value="true"
+                  checked={receivedMedicalTreatment48Hours === true}
+                  onChange={() => handleMedicalTreatment48HoursChange(true)}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                />
+                <label htmlFor="medical-48hours-yes" className="ml-2 cursor-pointer" onClick={() => handleMedicalTreatment48HoursChange(true)}>Yes</label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="medical-48hours-no"
+                  type="radio"
+                  value="false"
+                  checked={receivedMedicalTreatment48Hours === false}
+                  onChange={() => handleMedicalTreatment48HoursChange(false)}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                />
+                <label htmlFor="medical-48hours-no" className="ml-2 cursor-pointer" onClick={() => handleMedicalTreatment48HoursChange(false)}>No</label>
+              </div>
+            </div>
+          </div>
+
+          {/* Conditionally show 7-day medical treatment question if they answered No to 48 hours */}
+          {receivedMedicalTreatment48Hours === false && (
+            <div className="space-y-4">
+              <label className="block text-lg font-medium text-gray-700">
+                Did you receive medical treatment within 7 days of the accident?
+              </label>
+              <div className="flex space-x-6">
+                <div className="flex items-center">
+                  <input
+                    id="medical-7days-yes"
+                    type="radio"
+                    value="true"
+                    checked={receivedMedicalTreatment7Days === true}
+                    onChange={() => handleMedicalTreatment7DaysChange(true)}
+                    className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                  />
+                  <label htmlFor="medical-7days-yes" className="ml-2 cursor-pointer" onClick={() => handleMedicalTreatment7DaysChange(true)}>Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    id="medical-7days-no"
+                    type="radio"
+                    value="false"
+                    checked={receivedMedicalTreatment7Days === false}
+                    onChange={() => handleMedicalTreatment7DaysChange(false)}
+                    className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                  />
+                  <label htmlFor="medical-7days-no" className="ml-2 cursor-pointer" onClick={() => handleMedicalTreatment7DaysChange(false)}>No</label>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="space-y-4">
             <label className="block text-lg font-medium text-gray-700">
@@ -181,7 +325,7 @@ export default function Step3Qualification({
               </svg>
               <span>
                 <strong>Note: </strong>
-                A police report or rideshare complaint significantly improves your chances of a successful claim.
+                Medical treatment following an accident significantly improves your case. Documentation of treatment will be requested during your claim.
               </span>
             </p>
           </div>

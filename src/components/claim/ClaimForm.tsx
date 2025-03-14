@@ -38,6 +38,13 @@ const claimSchema = z.object({
   }),
   hasPoliceReport: z.boolean().optional()
     .transform(val => val === true), // Ensure it's a true boolean
+  accidentDate: z.string().min(1, { message: 'Accident date is required' }),
+  wasAmbulanceCalled: z.boolean().optional()
+    .transform(val => val === true),
+  receivedMedicalTreatment48Hours: z.boolean().optional()
+    .transform(val => val === true),
+  receivedMedicalTreatment7Days: z.boolean().optional()
+    .transform(val => val === true),
 });
 
 export type ClaimFormData = z.infer<typeof claimSchema>;
@@ -71,6 +78,8 @@ export default function ClaimForm() {
   const role = watch('role');
   const filedComplaint = watch('filedComplaint');
   const hasPoliceReport = watch('hasPoliceReport');
+  const receivedMedicalTreatment48Hours = watch('receivedMedicalTreatment48Hours');
+  const receivedMedicalTreatment7Days = watch('receivedMedicalTreatment7Days');
 
   // Clear errors when switching steps
   useEffect(() => {
@@ -130,7 +139,8 @@ export default function ClaimForm() {
         }
         return await trigger('role');
       case 3:
-        return await trigger(['rideshareCompany']);
+        // Update to include validation for new fields
+        return await trigger(['rideshareCompany', 'accidentDate', 'wasAmbulanceCalled', 'receivedMedicalTreatment48Hours']);
       default:
         return true;
     }
@@ -262,6 +272,13 @@ export default function ClaimForm() {
       return;
     }
     
+    // Check if accident date is provided
+    if (!formValues.accidentDate) {
+      console.error("No accident date provided");
+      setFormError("Please provide the date when the accident occurred.");
+      return;
+    }
+    
     // Check if either complaint or police report is true
     const hasComplaint = formValues.filedComplaint === true;
     const hasReport = formValues.hasPoliceReport === true;
@@ -272,6 +289,25 @@ export default function ClaimForm() {
       console.error("Neither complaint nor police report is present");
       setIsRejected(true);
       setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+      return;
+    }
+    
+    // Check for medical treatment
+    const hadMedicalTreatment48Hours = formValues.receivedMedicalTreatment48Hours === true;
+    const hadMedicalTreatment7Days = formValues.receivedMedicalTreatment7Days === true;
+    
+    // If they didn't receive treatment within 48 hours and we don't have info about 7 days
+    if (!hadMedicalTreatment48Hours && formValues.receivedMedicalTreatment7Days === undefined) {
+      console.error("Missing information about medical treatment within 7 days");
+      setFormError("Please indicate if you received medical treatment within 7 days of the accident.");
+      return;
+    }
+    
+    // If neither medical treatment option is selected, reject the claim
+    if (!hadMedicalTreatment48Hours && !hadMedicalTreatment7Days) {
+      console.error("No medical treatment received");
+      setIsRejected(true);
+      setRejectionReason('To process a rideshare injury claim, you must have received medical treatment within 7 days of the accident.');
       return;
     }
     
