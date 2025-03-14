@@ -56,8 +56,28 @@ export default function ClaimForm() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [isMobileView, setIsMobileView] = useState(false);
   const totalSteps = 5;
 
+  // Detect if user is on mobile
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobileView(window.innerWidth < 640); // sm breakpoint
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
+  // Debug mobile detection
+  useEffect(() => {
+    console.log('Mobile view detected:', isMobileView);
+  }, [isMobileView]);
+  
   const {
     register,
     handleSubmit,
@@ -228,102 +248,124 @@ export default function ClaimForm() {
   };
 
   // Add a direct form submission handler for step 2
-  const submitStep2 = async () => {
-    console.log("Direct submission for step 2");
+  const submitStep2 = async (e?: React.MouseEvent) => {
+    // Prevent any default behavior if event is present
+    if (e) e.preventDefault();
     
-    // Get form values
-    const formValues = getValues();
-    console.log("Form values for step 2:", formValues);
+    console.log("Direct submission for step 2 triggered");
     
-    // Make sure we have a role selected
-    if (!formValues.role) {
-      console.error("No role selected for step 2");
-      setFormError("Please select your role in the accident.");
-      return;
+    try {
+      // Get form values
+      const formValues = getValues();
+      console.log("Form values for step 2:", formValues);
+      
+      // Make sure we have a role selected
+      if (!formValues.role) {
+        console.error("No role selected for step 2");
+        setFormError("Please select your role in the accident.");
+        return;
+      }
+      
+      // Special handling for guest role
+      if (formValues.role === 'guest' && (!formValues.rideshareUserInfo || formValues.rideshareUserInfo.trim() === '')) {
+        console.error("Guest info required but missing");
+        setFormError("Please provide information about the rideshare user.");
+        return;
+      }
+      
+      // Save form data
+      setFormData(prev => ({ ...prev, ...formValues }));
+      console.log("Advancing to step 3");
+      
+      // Force a slight delay to ensure state update
+      setTimeout(() => {
+        // Advance to next step
+        setCurrentStep(3);
+        console.log("Step changed to 3");
+      }, 50);
+    } catch (error) {
+      console.error("Error in submitStep2:", error);
+      setFormError("An unexpected error occurred. Please try again.");
     }
-    
-    // Special handling for guest role
-    if (formValues.role === 'guest' && (!formValues.rideshareUserInfo || formValues.rideshareUserInfo.trim() === '')) {
-      console.error("Guest info required but missing");
-      setFormError("Please provide information about the rideshare user.");
-      return;
-    }
-    
-    // Save form data
-    setFormData(prev => ({ ...prev, ...formValues }));
-    console.log("Advancing to step 3");
-    
-    // Advance to next step
-    setCurrentStep(3);
   };
 
   // Add a direct form submission handler for step 3
-  const submitStep3 = async () => {
-    console.log("Direct submission for step 3");
+  const submitStep3 = async (e?: React.MouseEvent) => {
+    // Prevent any default behavior if event is present
+    if (e) e.preventDefault();
     
-    // Get form values
-    const formValues = getValues();
-    console.log("Form values for step 3:", formValues);
+    console.log("Direct submission for step 3 triggered");
     
-    // Make sure we have a rideshare company selected
-    if (!formValues.rideshareCompany) {
-      console.error("No rideshare company selected for step 3");
-      setFormError("Please select whether you were in an Uber or Lyft.");
-      return;
+    try {
+      // Get form values
+      const formValues = getValues();
+      console.log("Form values for step 3:", formValues);
+      
+      // Make sure we have a rideshare company selected
+      if (!formValues.rideshareCompany) {
+        console.error("No rideshare company selected for step 3");
+        setFormError("Please select whether you were in an Uber or Lyft.");
+        return;
+      }
+      
+      // Check if accident date is provided
+      if (!formValues.accidentDate) {
+        console.error("No accident date provided");
+        setFormError("Please provide the date when the accident occurred.");
+        return;
+      }
+      
+      // Check if either complaint or police report is true
+      const hasComplaint = formValues.filedComplaint === true;
+      const hasReport = formValues.hasPoliceReport === true;
+      
+      console.log(`Complaint: ${hasComplaint}, Police report: ${hasReport}`);
+      
+      if (!hasComplaint && !hasReport) {
+        console.error("Neither complaint nor police report is present");
+        setIsRejected(true);
+        setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+        return;
+      }
+      
+      // Check for medical treatment
+      const hadMedicalTreatment48Hours = formValues.receivedMedicalTreatment48Hours === true;
+      const hadMedicalTreatment7Days = formValues.receivedMedicalTreatment7Days === true;
+      
+      // If they didn't receive treatment within 48 hours and we don't have info about 7 days
+      if (!hadMedicalTreatment48Hours && formValues.receivedMedicalTreatment7Days === undefined) {
+        console.error("Missing information about medical treatment within 7 days");
+        setFormError("Please indicate if you received medical treatment within 7 days of the accident.");
+        return;
+      }
+      
+      // If neither medical treatment option is selected, reject the claim
+      if (!hadMedicalTreatment48Hours && !hadMedicalTreatment7Days) {
+        console.error("No medical treatment received");
+        setIsRejected(true);
+        setRejectionReason('To process a rideshare injury claim, you must have received medical treatment within 7 days of the accident.');
+        return;
+      }
+      
+      // Save form data
+      setFormData(prev => ({ ...prev, ...formValues }));
+      console.log("Form is valid, proceeding to processing");
+      
+      // Process the form (simulate API call)
+      setIsLoading(true);
+      setCurrentStep(4);
+      console.log("Step changed to 4 (processing)");
+      
+      // Simulate processing time
+      setTimeout(() => {
+        setIsLoading(false);
+        setCurrentStep(5);
+        console.log("Step changed to 5 (final)");
+      }, 5000);
+    } catch (error) {
+      console.error("Error in submitStep3:", error);
+      setFormError("An unexpected error occurred. Please try again.");
     }
-    
-    // Check if accident date is provided
-    if (!formValues.accidentDate) {
-      console.error("No accident date provided");
-      setFormError("Please provide the date when the accident occurred.");
-      return;
-    }
-    
-    // Check if either complaint or police report is true
-    const hasComplaint = formValues.filedComplaint === true;
-    const hasReport = formValues.hasPoliceReport === true;
-    
-    console.log(`Complaint: ${hasComplaint}, Police report: ${hasReport}`);
-    
-    if (!hasComplaint && !hasReport) {
-      console.error("Neither complaint nor police report is present");
-      setIsRejected(true);
-      setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
-      return;
-    }
-    
-    // Check for medical treatment
-    const hadMedicalTreatment48Hours = formValues.receivedMedicalTreatment48Hours === true;
-    const hadMedicalTreatment7Days = formValues.receivedMedicalTreatment7Days === true;
-    
-    // If they didn't receive treatment within 48 hours and we don't have info about 7 days
-    if (!hadMedicalTreatment48Hours && formValues.receivedMedicalTreatment7Days === undefined) {
-      console.error("Missing information about medical treatment within 7 days");
-      setFormError("Please indicate if you received medical treatment within 7 days of the accident.");
-      return;
-    }
-    
-    // If neither medical treatment option is selected, reject the claim
-    if (!hadMedicalTreatment48Hours && !hadMedicalTreatment7Days) {
-      console.error("No medical treatment received");
-      setIsRejected(true);
-      setRejectionReason('To process a rideshare injury claim, you must have received medical treatment within 7 days of the accident.');
-      return;
-    }
-    
-    // Save form data
-    setFormData(prev => ({ ...prev, ...formValues }));
-    console.log("Form is valid, proceeding to processing");
-    
-    // Process the form (simulate API call)
-    setIsLoading(true);
-    setCurrentStep(4);
-    
-    // Simulate processing time
-    setTimeout(() => {
-      setIsLoading(false);
-      setCurrentStep(5);
-    }, 5000);
   };
 
   // Handle the form submission
@@ -455,12 +497,12 @@ export default function ClaimForm() {
 
         {/* Navigation buttons */}
         {currentStep < 4 && !isRejected && (
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between mt-8 gap-3">
             {currentStep > 1 ? (
               <button
                 type="button"
                 onClick={goBack}
-                className="btn-outline"
+                className="btn-outline px-5 py-3 sm:px-6 sm:py-3 text-base w-1/3 sm:w-auto touch-manipulation"
                 disabled={isSubmitting}
               >
                 Back
@@ -474,8 +516,9 @@ export default function ClaimForm() {
               <button
                 type="button"
                 onClick={submitStep2}
-                className="btn-primary relative"
+                className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
                 disabled={isSubmitting}
+                aria-label="Continue to next step"
               >
                 Continue
               </button>
@@ -483,16 +526,18 @@ export default function ClaimForm() {
               <button
                 type="button"
                 onClick={submitStep3}
-                className="btn-primary relative"
+                className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
                 disabled={isSubmitting}
+                aria-label="Submit information"
               >
                 Submit
               </button>
             ) : (
               <button
                 type="submit"
-                className="btn-primary relative"
+                className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
                 disabled={isSubmitting}
+                aria-label="Continue to next step"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
