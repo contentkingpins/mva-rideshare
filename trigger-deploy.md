@@ -3,7 +3,18 @@
 This file exists to trigger new deployments when needed.
 
 ## Latest Deployment
-- Date: March 14, 2023 - 7:30 PM
+- Date: March 14, 2025 - 8:30 PM
+- Purpose: Fix mobile form contact information submission
+- Changes: 
+  - Fixed Step1BasicInfo component loading and submission on mobile
+  - Enhanced touch event handling for iOS devices
+  - Added iOS-specific CSS fixes for better mobile interaction
+  - Improved form validation and error handling
+  - Ensured contact information is properly saved to localStorage
+  - Fixed button event propagation issues on mobile devices
+
+## Previous Deployment
+- Date: March 14, 2025 - 7:30 PM
 - Purpose: Fix mobile form navigation issues
 - Changes: 
   - Fixed continue button not working on mobile devices
@@ -12,16 +23,6 @@ This file exists to trigger new deployments when needed.
   - Improved error handling for form navigation
   - Added accessibility attributes to buttons
   - Fixed event handling to prevent default behaviors
-
-## Previous Deployment
-- Date: March 14, 2023 - 7:15 PM
-- Purpose: Improve mobile responsiveness for new form questions
-- Changes: 
-  - Enhanced mobile layout for radio buttons in Step3Qualification
-  - Improved form spacing and touch targets for mobile devices
-  - Added responsive layout for date picker and dropdown
-  - Fixed text alignment and info box display on small screens
-  - Increased radio button size for better touch interaction
 
 ## Older Deployment
 - Date: March 14, 2023 - 7:00 PM
