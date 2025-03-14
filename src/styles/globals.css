@@ -162,8 +162,6 @@
   }
 }
 
-/* Add iOS specific fixes */
-
 /* Special handling for iOS WebKit */
 @supports (-webkit-touch-callout: none) {
   /* iOS-specific styles */
@@ -197,34 +195,6 @@
     opacity: 0.9;
   }
   
-  /* Improve tappable area on iOS */
-  .mobile-device-only button {
-    min-width: 44px;
-    min-height: 44px;
-  }
-}
-
-/* Fix for iOS sticky hover states */
-@media (hover: hover) {
-  .btn-primary:hover, 
-  .btn-outline:hover {
-    opacity: 0.9;
-  }
-}
-
-/* Show iOS-only button on iOS devices */
-@supports (-webkit-touch-callout: none) {
-  .ios-only-button {
-    display: block !important;
-  }
-  
-  /* Make clickable areas larger for iOS */
-  .mobile-device .step1-container button,
-  .mobile-device .step1-container input,
-  .mobile-device .step1-container label {
-    margin: 10px 0;
-  }
-  
   /* Ensure form inputs are easily tappable */
   .mobile-device input[type="text"],
   .mobile-device input[type="email"],
@@ -233,21 +203,12 @@
     height: 48px;
     padding: 8px 12px;
   }
-  
-  /* Debug styling - will only show in development */
-  .debug-step1 .step1-container {
-    position: relative;
-  }
-  
-  .debug-step1 .step1-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    border: 2px dashed rgba(255, 0, 0, 0.3);
-    z-index: 100;
+}
+
+/* Fix for iOS sticky hover states */
+@media (hover: hover) {
+  .btn-primary:hover, 
+  .btn-outline:hover {
+    opacity: 0.9;
   }
 } 

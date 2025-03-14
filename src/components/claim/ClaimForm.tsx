@@ -83,15 +83,6 @@ export default function ClaimForm() {
       } else {
         document.body.classList.remove('mobile-device');
       }
-      
-      console.log('[MOBILE DEBUG] Mobile detection:', { 
-        isMobile: mobileDetected,
-        screenWidth: window.innerWidth, 
-        userAgent: navigator.userAgent,
-        hasTouch: hasTouch,
-        isMobileScreen: isMobileScreen,
-        isMobileUA: isMobileUA
-      });
     };
     
     // Check immediately
@@ -105,11 +96,6 @@ export default function ClaimForm() {
       document.body.classList.remove('mobile-device');
     };
   }, []);
-
-  // Debug mobile detection
-  useEffect(() => {
-    console.log('Mobile view state updated:', isMobileView);
-  }, [isMobileView]);
   
   const {
     register,
@@ -136,7 +122,6 @@ export default function ClaimForm() {
 
   // Clear errors when switching steps
   useEffect(() => {
-    console.log('Current step changed to:', currentStep);
     // Reset form error when changing steps
     setFormError(null);
     
@@ -154,8 +139,6 @@ export default function ClaimForm() {
         
         // Ensure we're setting all fields correctly
         if (parsedData) {
-          console.log("Found saved contact data:", parsedData);
-          
           // Set each field individually to ensure proper validation
           if (parsedData.firstName) setValue('firstName', parsedData.firstName);
           if (parsedData.lastName) setValue('lastName', parsedData.lastName);
@@ -167,7 +150,6 @@ export default function ClaimForm() {
           // If we have complete contact data, skip to step 2
           if (parsedData.firstName && parsedData.lastName && 
               parsedData.phone && parsedData.email) {
-            console.log("Skipping to step 2 with complete contact data");
             setCurrentStep(2);
           }
         }
@@ -179,7 +161,6 @@ export default function ClaimForm() {
 
   // Validate current step fields
   const validateCurrentStep = async () => {
-    console.log(`Validating step ${currentStep}`);
     switch (currentStep) {
       case 1:
         return await trigger(['firstName', 'lastName', 'phone', 'email']);
@@ -201,51 +182,37 @@ export default function ClaimForm() {
 
   // Handle step navigation
   const handleNextStep = async () => {
-    console.log(`Attempting to move from step ${currentStep} to next step`);
-    
-    // Log all form values for debugging
+    // Get current form values
     const allValues = getValues();
-    console.log('Current form values:', allValues);
     
     const isStepValid = await validateCurrentStep();
-    console.log(`Step ${currentStep} validation result:`, isStepValid);
     
     if (!isStepValid) {
-      console.error("Current step validation failed");
       setFormError("Please correct the errors before continuing.");
       return;
     }
 
     // Get current role value
     const currentRole = getValues('role');
-    console.log(`Current role value: ${currentRole}`);
 
     if (currentStep === 2 && !currentRole) {
-      console.error("No role selected, cannot proceed");
       setFormError("Please select your role in the accident.");
       return;
     }
 
     if (currentStep === 2 && currentRole === 'guest') {
       const guestInfo = getValues('rideshareUserInfo');
-      console.log('Guest info value:', guestInfo);
       
       if (!guestInfo || guestInfo.trim() === '') {
-        console.error("Guest info required but missing");
         setFormError("Please provide information about the rideshare user.");
         return;
       }
     }
 
-    // Log current state before advancing
-    console.log(`Form is valid, proceeding from step ${currentStep} to ${currentStep + 1}`);
-
     // Special handling for step 3
     if (currentStep === 3) {
       const noComplaint = !filedComplaint;
       const noPoliceReport = !hasPoliceReport;
-      
-      console.log(`Filed complaint: ${filedComplaint}, Has police report: ${hasPoliceReport}`);
       
       if (noComplaint && noPoliceReport) {
         setIsRejected(true);
@@ -268,16 +235,10 @@ export default function ClaimForm() {
 
     // Save form data and move to next step
     const formValues = getValues();
-    console.log(`Moving to step ${currentStep + 1} with data:`, formValues);
     setFormData(prev => ({ ...prev, ...formValues }));
     
     // Actually advance the step
-    setCurrentStep(prev => {
-      console.log(`Changing step from ${prev} to ${prev + 1}`);
-      return prev + 1;
-    });
-
-    console.log(`Step should now be ${currentStep + 1}`);
+    setCurrentStep(prev => prev + 1);
   };
 
   // Add a direct form submission handler for step 1
@@ -285,22 +246,16 @@ export default function ClaimForm() {
     // Prevent any default behavior if event is present
     if (e) {
       e.preventDefault();
-      console.log("[MOBILE DEBUG] Preventing default in submitStep1 for event type:", e.type);
     }
-    
-    console.log("[MOBILE DEBUG] Direct submission for step 1 triggered");
-    console.log("[MOBILE DEBUG] isMobileView:", isMobileView);
     
     try {
       // Get form values
       const formValues = getValues();
-      console.log("[MOBILE DEBUG] Form values for step 1:", formValues);
       
       // Validate required fields
       const isValid = await trigger(['firstName', 'lastName', 'phone', 'email']);
       
       if (!isValid) {
-        console.error("[MOBILE DEBUG] Step 1 validation failed");
         setFormError("Please fill in all required fields correctly.");
         return;
       }
@@ -314,34 +269,21 @@ export default function ClaimForm() {
           email: formValues.email
         };
         localStorage.setItem('contactFormData', JSON.stringify(contactData));
-        console.log("[MOBILE DEBUG] Saved contact data to localStorage");
       } catch (e) {
-        console.error("[MOBILE DEBUG] Error saving to localStorage:", e);
+        console.error('Error saving to localStorage:', e);
       }
       
       // Save form data
       setFormData(prev => {
         const newData = { ...prev, ...formValues };
-        console.log("[MOBILE DEBUG] Updated form data:", newData);
         return newData;
       });
-      
-      console.log("[MOBILE DEBUG] BEFORE changing step to 2. Current step:", currentStep);
       
       // Force immediate step change for mobile
       setCurrentStep(2);
       
-      // Double-check the state update happened
-      setTimeout(() => {
-        console.log("[MOBILE DEBUG] AFTER changing step. Current step:", currentStep);
-        if (currentStep !== 2) {
-          console.log("[MOBILE DEBUG] Forcing second attempt to change step");
-          setCurrentStep(2);
-        }
-      }, 100);
-      
     } catch (error) {
-      console.error("[MOBILE DEBUG] Error in submitStep1:", error);
+      console.error('Error in submitStep1:', error);
       setFormError("An unexpected error occurred. Please try again.");
     }
   };
@@ -351,27 +293,20 @@ export default function ClaimForm() {
     // Prevent any default behavior if event is present
     if (e) {
       e.preventDefault();
-      console.log("Preventing default in submitStep2 for event type:", e.type);
     }
-    
-    console.log("[MOBILE DEBUG] Direct submission for step 2 triggered");
-    console.log("[MOBILE DEBUG] isMobileView:", isMobileView);
     
     try {
       // Get form values
       const formValues = getValues();
-      console.log("[MOBILE DEBUG] Form values for step 2:", formValues);
       
       // Make sure we have a role selected
       if (!formValues.role) {
-        console.error("[MOBILE DEBUG] No role selected for step 2");
         setFormError("Please select your role in the accident.");
         return;
       }
       
       // Special handling for guest role
       if (formValues.role === 'guest' && (!formValues.rideshareUserInfo || formValues.rideshareUserInfo.trim() === '')) {
-        console.error("[MOBILE DEBUG] Guest info required but missing");
         setFormError("Please provide information about the rideshare user.");
         return;
       }
@@ -379,26 +314,14 @@ export default function ClaimForm() {
       // Save form data
       setFormData(prev => {
         const newData = { ...prev, ...formValues };
-        console.log("[MOBILE DEBUG] Updated form data:", newData);
         return newData;
       });
-      
-      console.log("[MOBILE DEBUG] BEFORE changing step to 3. Current step:", currentStep);
       
       // Force immediate step change for mobile
       setCurrentStep(3);
       
-      // Double-check the state update happened
-      setTimeout(() => {
-        console.log("[MOBILE DEBUG] AFTER changing step. Current step:", currentStep);
-        if (currentStep !== 3) {
-          console.log("[MOBILE DEBUG] Forcing second attempt to change step");
-          setCurrentStep(3);
-        }
-      }, 100);
-      
     } catch (error) {
-      console.error("[MOBILE DEBUG] Error in submitStep2:", error);
+      console.error('Error in submitStep2:', error);
       setFormError("An unexpected error occurred. Please try again.");
     }
   };
@@ -408,27 +331,20 @@ export default function ClaimForm() {
     // Prevent any default behavior if event is present
     if (e) {
       e.preventDefault();
-      console.log("Preventing default in submitStep3 for event type:", e.type);
     }
-    
-    console.log("[MOBILE DEBUG] Direct submission for step 3 triggered");
-    console.log("[MOBILE DEBUG] isMobileView:", isMobileView);
     
     try {
       // Get form values
       const formValues = getValues();
-      console.log("[MOBILE DEBUG] Form values for step 3:", formValues);
       
       // Make sure we have a rideshare company selected
       if (!formValues.rideshareCompany) {
-        console.error("[MOBILE DEBUG] No rideshare company selected for step 3");
         setFormError("Please select whether you were in an Uber or Lyft.");
         return;
       }
       
       // Check if accident date is provided
       if (!formValues.accidentDate) {
-        console.error("[MOBILE DEBUG] No accident date provided");
         setFormError("Please provide the date when the accident occurred.");
         return;
       }
@@ -437,10 +353,7 @@ export default function ClaimForm() {
       const hasComplaint = formValues.filedComplaint === true;
       const hasReport = formValues.hasPoliceReport === true;
       
-      console.log(`[MOBILE DEBUG] Complaint: ${hasComplaint}, Police report: ${hasReport}`);
-      
       if (!hasComplaint && !hasReport) {
-        console.error("[MOBILE DEBUG] Neither complaint nor police report is present");
         setIsRejected(true);
         setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
         return;
@@ -452,14 +365,12 @@ export default function ClaimForm() {
       
       // If they didn't receive treatment within 48 hours and we don't have info about 7 days
       if (!hadMedicalTreatment48Hours && formValues.receivedMedicalTreatment7Days === undefined) {
-        console.error("[MOBILE DEBUG] Missing information about medical treatment within 7 days");
         setFormError("Please indicate if you received medical treatment within 7 days of the accident.");
         return;
       }
       
       // If neither medical treatment option is selected, reject the claim
       if (!hadMedicalTreatment48Hours && !hadMedicalTreatment7Days) {
-        console.error("[MOBILE DEBUG] No medical treatment received");
         setIsRejected(true);
         setRejectionReason('To process a rideshare injury claim, you must have received medical treatment within 7 days of the accident.');
         return;
@@ -468,38 +379,23 @@ export default function ClaimForm() {
       // Save form data
       setFormData(prev => {
         const newData = { ...prev, ...formValues };
-        console.log("[MOBILE DEBUG] Updated form data:", newData);
         return newData;
       });
-      
-      console.log("[MOBILE DEBUG] Form is valid, proceeding to processing");
       
       // Process the form (simulate API call)
       setIsLoading(true);
       
-      console.log("[MOBILE DEBUG] BEFORE changing step to 4. Current step:", currentStep);
-      
       // Force state update for processing step
       setCurrentStep(4);
       
-      // Double-check the state update happened
+      // Simulate processing time
       setTimeout(() => {
-        console.log("[MOBILE DEBUG] AFTER changing step. Current step:", currentStep);
-        if (currentStep !== 4) {
-          console.log("[MOBILE DEBUG] Forcing second attempt to change step");
-          setCurrentStep(4);
-        }
-        
-        // Simulate processing time
-        setTimeout(() => {
-          setIsLoading(false);
-          setCurrentStep(5);
-          console.log("[MOBILE DEBUG] Step changed to 5 (final)");
-        }, 5000);
-      }, 100);
+        setIsLoading(false);
+        setCurrentStep(5);
+      }, 5000);
       
     } catch (error) {
-      console.error("[MOBILE DEBUG] Error in submitStep3:", error);
+      console.error('Error in submitStep3:', error);
       setFormError("An unexpected error occurred. Please try again.");
     }
   };
@@ -507,7 +403,6 @@ export default function ClaimForm() {
   // Handle the form submission
   const onSubmit = async (data: ClaimFormData) => {
     try {
-      console.log(`Form submitted with data:`, data);
       await handleNextStep();
     } catch (error) {
       console.error('Error in form submission:', error);
@@ -523,87 +418,6 @@ export default function ClaimForm() {
 
   // Calculate progress percentage
   const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
-
-  // Add a helper function for mobile button clicks
-  const handleMobileButtonClick = (step: number) => {
-    console.log(`[MOBILE DEBUG] Mobile button click handler for step ${step}`);
-    
-    if (step === 1) {
-      console.log("[MOBILE DEBUG] Directly calling submitStep1 from mobile handler");
-      submitStep1();
-    } else if (step === 2) {
-      console.log("[MOBILE DEBUG] Directly calling submitStep2 from mobile handler");
-      submitStep2();
-    } else if (step === 3) {
-      console.log("[MOBILE DEBUG] Directly calling submitStep3 from mobile handler");
-      submitStep3();
-    } else {
-      console.log("[MOBILE DEBUG] Using standard form submit for step", step);
-      handleSubmit(onSubmit)();
-    }
-  };
-
-  // Add debug mode for step 1
-  useEffect(() => {
-    if (currentStep === 1 && isMobileView) {
-      console.log('[MOBILE DEBUG] Step 1 active in mobile view');
-      
-      // Debug info about the environment
-      console.log('[MOBILE DEBUG] Window dimensions:', {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        pixelRatio: window.devicePixelRatio
-      });
-      
-      console.log('[MOBILE DEBUG] User agent:', navigator.userAgent);
-      
-      // Add debug class to body
-      document.body.classList.add('debug-step1');
-      
-      // Create debug overlay for mobile testing
-      if (process.env.NODE_ENV !== 'production') {
-        const debugDiv = document.createElement('div');
-        debugDiv.id = 'mobile-debug-overlay';
-        debugDiv.style.position = 'fixed';
-        debugDiv.style.bottom = '40px';
-        debugDiv.style.left = '10px';
-        debugDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';
-        debugDiv.style.color = 'white';
-        debugDiv.style.padding = '5px';
-        debugDiv.style.borderRadius = '5px';
-        debugDiv.style.fontSize = '10px';
-        debugDiv.style.zIndex = '9999';
-        debugDiv.innerHTML = 'Debug: Step 1 Mobile';
-        
-        // Add a direct trigger button for extreme cases
-        const debugButton = document.createElement('button');
-        debugButton.innerText = 'FORCE NEXT';
-        debugButton.style.display = 'block';
-        debugButton.style.margin = '5px 0';
-        debugButton.style.padding = '5px';
-        debugButton.style.backgroundColor = 'red';
-        debugButton.style.color = 'white';
-        debugButton.style.border = 'none';
-        debugButton.style.borderRadius = '3px';
-        debugButton.onclick = () => {
-          console.log('[MOBILE DEBUG] Force next button clicked');
-          setCurrentStep(2);
-        };
-        
-        debugDiv.appendChild(debugButton);
-        document.body.appendChild(debugDiv);
-        
-        return () => {
-          document.body.removeChild(debugDiv);
-          document.body.classList.remove('debug-step1');
-        };
-      }
-      
-      return () => {
-        document.body.classList.remove('debug-step1');
-      };
-    }
-  }, [currentStep, isMobileView]);
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -657,13 +471,7 @@ export default function ClaimForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)}
-        onTouchStart={(e) => {
-          if (currentStep === 1) {
-            console.log("[MOBILE DEBUG] Form touch start detected");
-          }
-        }}
-      >
+      <form onSubmit={handleSubmit(onSubmit)}>
         <AnimatePresence mode="wait">
           <motion.div
             key={currentStep}
@@ -674,30 +482,11 @@ export default function ClaimForm() {
           >
             {/* Step 1: Basic Info */}
             {currentStep === 1 && (
-              <div className="step1-container" 
-                onTouchStart={() => console.log("[MOBILE DEBUG] Step1 container touch")}
-                onTouchEnd={(e) => {
-                  console.log("[MOBILE DEBUG] Step1 container touch end");
-                  e.stopPropagation();
-                }}
-              >
+              <div className="step1-container">
                 <Step1BasicInfo 
                   register={register} 
                   errors={errors} 
                 />
-                {/* Extra Continue Button inside form for iOS */}
-                <div className="mt-4 text-center ios-only-button" style={{display: 'none'}}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      submitStep1(e);
-                    }}
-                    className="btn-primary inline-block py-3 px-8 text-lg"
-                  >
-                    iOS Continue
-                  </button>
-                </div>
               </div>
             )}
 
@@ -755,151 +544,60 @@ export default function ClaimForm() {
               <div />
             )}
             
-            {/* Special handling for step 2 */}
             {currentStep === 1 ? (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    console.log("CLICK EVENT FIRED for step 1 button");
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    if (!isSubmitting) {
-                      console.log("Button clicked - submitStep1");
-                      submitStep1(e);
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    console.log("TOUCH END EVENT FIRED for step 1 button");
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    if (!isSubmitting) {
-                      console.log("Touch event - submitStep1");
-                      submitStep1(e);
-                    }
-                  }}
-                  className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
-                  disabled={isSubmitting}
-                  aria-label="Continue to next step"
-                  style={{touchAction: "none"}}
-                >
-                  Continue
-                </button>
-                {/* Mobile-only hidden button */}
-                <div className="mobile-device-only">
-                  <button
-                    type="button"
-                    onClick={() => handleMobileButtonClick(1)}
-                    className="btn-primary fixed bottom-4 right-4 z-50 px-6 py-3 rounded-full shadow-lg"
-                    style={{ opacity: 0.9 }}
-                  >
-                    Tap to Continue
-                  </button>
-                </div>
-              </>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isSubmitting) {
+                    submitStep1(e);
+                  }
+                }}
+                className="btn-primary px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
+                disabled={isSubmitting}
+                aria-label="Continue to next step"
+              >
+                Continue
+              </button>
             ) : currentStep === 2 ? (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    console.log("CLICK EVENT FIRED for step 2 button");
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    if (!isSubmitting) {
-                      console.log("Button clicked - submitStep2");
-                      submitStep2(e);
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    console.log("TOUCH END EVENT FIRED for step 2 button");
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    if (!isSubmitting) {
-                      console.log("Touch event - submitStep2");
-                      submitStep2(e);
-                    }
-                  }}
-                  className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
-                  disabled={isSubmitting}
-                  aria-label="Continue to next step"
-                  style={{touchAction: "none"}}
-                >
-                  Continue
-                </button>
-                {/* Mobile-only hidden button */}
-                <div className="mobile-device-only">
-                  <button
-                    type="button"
-                    onClick={() => handleMobileButtonClick(2)}
-                    className="btn-primary fixed bottom-4 right-4 z-50 px-6 py-3 rounded-full shadow-lg"
-                    style={{ opacity: 0.9 }}
-                  >
-                    Tap to Continue
-                  </button>
-                </div>
-              </>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isSubmitting) {
+                    submitStep2(e);
+                  }
+                }}
+                className="btn-primary px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
+                disabled={isSubmitting}
+                aria-label="Continue to next step"
+              >
+                Continue
+              </button>
             ) : currentStep === 3 ? (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    console.log("CLICK EVENT FIRED for step 3 button");
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    if (!isSubmitting) {
-                      console.log("Button clicked - submitStep3");
-                      submitStep3(e);
-                    }
-                  }}
-                  onTouchEnd={(e) => {
-                    console.log("TOUCH END EVENT FIRED for step 3 button");
-                    e.preventDefault();
-                    e.stopPropagation(); // Prevent event bubbling
-                    if (!isSubmitting) {
-                      console.log("Touch event - submitStep3");
-                      submitStep3(e);
-                    }
-                  }}
-                  className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
-                  disabled={isSubmitting}
-                  aria-label="Submit information"
-                  style={{touchAction: "none"}}
-                >
-                  Submit
-                </button>
-                {/* Mobile-only hidden button */}
-                <div className="mobile-device-only">
-                  <button
-                    type="button"
-                    onClick={() => handleMobileButtonClick(3)}
-                    className="btn-primary fixed bottom-4 right-4 z-50 px-6 py-3 rounded-full shadow-lg"
-                    style={{ opacity: 0.9 }}
-                  >
-                    Tap to Submit
-                  </button>
-                </div>
-              </>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!isSubmitting) {
+                    submitStep3(e);
+                  }
+                }}
+                className="btn-primary px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
+                disabled={isSubmitting}
+                aria-label="Submit information"
+              >
+                Submit
+              </button>
             ) : (
               <button
                 type="submit"
-                onClick={(e) => {
-                  console.log("CLICK EVENT FIRED for default button");
-                  if (currentStep < 4) {
-                    e.preventDefault();
-                    handleSubmit(onSubmit)(e);
-                  }
-                }}
-                onTouchEnd={(e) => {
-                  console.log("TOUCH END EVENT FIRED for default button");
-                  if (currentStep < 4) {
-                    e.preventDefault();
-                    handleSubmit(onSubmit)(e);
-                  }
-                }}
-                className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
+                className="btn-primary px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
                 disabled={isSubmitting}
                 aria-label="Continue to next step"
-                style={{touchAction: "none"}}
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
