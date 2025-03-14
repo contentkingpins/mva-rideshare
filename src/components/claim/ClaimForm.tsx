@@ -113,6 +113,8 @@ export default function ClaimForm() {
   // Handle form submission for the current step
   const onSubmit = async (data: ClaimFormData) => {
     try {
+      console.log(`Submitting step ${currentStep} with data:`, data);
+      
       switch (currentStep) {
         case 1:
           // Simplified validation for step 1 - rely more on zod schema validation
@@ -136,8 +138,9 @@ export default function ClaimForm() {
           // Validate step 2 fields
           console.log("Step 2 submission with role:", data.role);
           
+          // Force validation if needed
           if (!data.role) {
-            console.error("No role selected, triggering validation");
+            console.error("No role selected, cannot proceed");
             await trigger('role');
             return;
           }
@@ -313,11 +316,13 @@ export default function ClaimForm() {
               className="btn-primary"
               onClick={() => {
                 console.log("Continue button clicked for step", currentStep);
+                
+                // Force immediate validation
                 if (currentStep === 2) {
                   const currentRole = getValues('role');
-                  console.log("Current selected role:", currentRole);
+                  console.log("Current selected role before continuing:", currentRole);
                   
-                  // Force validation if needed
+                  // Quick validation
                   if (!currentRole) {
                     console.error("No role selected on continue click");
                     trigger('role');
