@@ -137,7 +137,13 @@ export default function ClaimForm() {
   // Handle step navigation
   const handleNextStep = async () => {
     console.log(`Attempting to move from step ${currentStep} to next step`);
+    
+    // Log all form values for debugging
+    const allValues = getValues();
+    console.log('Current form values:', allValues);
+    
     const isStepValid = await validateCurrentStep();
+    console.log(`Step ${currentStep} validation result:`, isStepValid);
     
     if (!isStepValid) {
       console.error("Current step validation failed");
@@ -157,6 +163,8 @@ export default function ClaimForm() {
 
     if (currentStep === 2 && currentRole === 'guest') {
       const guestInfo = getValues('rideshareUserInfo');
+      console.log('Guest info value:', guestInfo);
+      
       if (!guestInfo || guestInfo.trim() === '') {
         console.error("Guest info required but missing");
         setFormError("Please provide information about the rideshare user.");
@@ -164,10 +172,15 @@ export default function ClaimForm() {
       }
     }
 
+    // Log current state before advancing
+    console.log(`Form is valid, proceeding from step ${currentStep} to ${currentStep + 1}`);
+
     // Special handling for step 3
     if (currentStep === 3) {
       const noComplaint = !filedComplaint;
       const noPoliceReport = !hasPoliceReport;
+      
+      console.log(`Filed complaint: ${filedComplaint}, Has police report: ${hasPoliceReport}`);
       
       if (noComplaint && noPoliceReport) {
         setIsRejected(true);
@@ -192,7 +205,44 @@ export default function ClaimForm() {
     const formValues = getValues();
     console.log(`Moving to step ${currentStep + 1} with data:`, formValues);
     setFormData(prev => ({ ...prev, ...formValues }));
-    setCurrentStep(prev => prev + 1);
+    
+    // Actually advance the step
+    setCurrentStep(prev => {
+      console.log(`Changing step from ${prev} to ${prev + 1}`);
+      return prev + 1;
+    });
+
+    console.log(`Step should now be ${currentStep + 1}`);
+  };
+
+  // Add a direct form submission handler for step 2
+  const submitStep2 = async () => {
+    console.log("Direct submission for step 2");
+    
+    // Get form values
+    const formValues = getValues();
+    console.log("Form values for step 2:", formValues);
+    
+    // Make sure we have a role selected
+    if (!formValues.role) {
+      console.error("No role selected for step 2");
+      setFormError("Please select your role in the accident.");
+      return;
+    }
+    
+    // Special handling for guest role
+    if (formValues.role === 'guest' && (!formValues.rideshareUserInfo || formValues.rideshareUserInfo.trim() === '')) {
+      console.error("Guest info required but missing");
+      setFormError("Please provide information about the rideshare user.");
+      return;
+    }
+    
+    // Save form data
+    setFormData(prev => ({ ...prev, ...formValues }));
+    console.log("Advancing to step 3");
+    
+    // Advance to next step
+    setCurrentStep(3);
   };
 
   // Handle the form submission
@@ -334,23 +384,36 @@ export default function ClaimForm() {
             ) : (
               <div />
             )}
-            <button
-              type="submit"
-              className="btn-primary relative"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Processing...
-                </span>
-              ) : (
-                currentStep === 3 ? 'Submit' : 'Continue'
-              )}
-            </button>
+            
+            {/* Special handling for step 2 */}
+            {currentStep === 2 ? (
+              <button
+                type="button"
+                onClick={submitStep2}
+                className="btn-primary relative"
+                disabled={isSubmitting}
+              >
+                Continue
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="btn-primary relative"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  currentStep === 3 ? 'Submit' : 'Continue'
+                )}
+              </button>
+            )}
           </div>
         )}
 
