@@ -97,20 +97,20 @@ export default function HeroSection() {
                 maxHeight: '100vh',
                 minHeight: '100%'
               }}
-              className="brightness-90 contrast-110"
+              className="brightness-85 contrast-110"
               loading="eager"
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wgARCAAGAAgDAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAME/8QAFAEBAAAAAAAAAAAAAAAAAAAABP/aAAwDAQACEAMQAAABxdFP/8QAFhABAQEAAAAAAAAAAAAAAAAAAQAC/9oACAEBAAEFArOv/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFhAAAwAAAAAAAAAAAAAAAAAAACEx/9oACAEBAAE/IVDP/9oADAMBAAIAAwAAABCj/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFhABAQEAAAAAAAAAAAAAAAAAAREA/9oACAEBAAE/EEiCm//Z"
             />
           </picture>
           
-          {/* Gradient overlay - stronger for mobile */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/75 via-primary-800/70 to-primary-700/65 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
+          {/* Gradient overlay - subtle professional gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-primary-900/85 via-primary-800/75 to-primary-700/80 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
         </div>
 
         {/* Content Container */}
-        <div className="container relative z-10 h-full">
-          <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-8 md:pt-16 pb-32 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
+        <div className="container relative z-10 h-full px-5 md:px-6">
+          <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-16 md:pt-16 pb-36 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
             {/* Text Content - Adaptive for different screens */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -118,26 +118,17 @@ export default function HeroSection() {
               transition={{ duration: 0.5 }}
               className="w-full lg:w-1/2 text-white lg:pr-6 pt-0 md:pt-8"
             >
-              <div className="rounded-xl p-4 md:p-6 lg:p-8">
-                <h1 className="text-3xl md:text-3xl lg:text-5xl font-bold leading-tight mb-3 md:mb-4 drop-shadow-md">
+              <div className="max-w-lg mx-auto md:mx-0">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4 md:mb-5 drop-shadow-sm">
                   Injured in a Rideshare Accident? Make Sure Your Rights Are Protected!
                 </h1>
-                <p className="text-lg md:text-lg lg:text-xl text-white drop-shadow-md mb-6">
+                <p className="text-lg md:text-lg lg:text-xl text-white text-opacity-95 leading-relaxed drop-shadow-sm mb-8">
                   Submit your accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.
                 </p>
                 
-                {/* Mobile-only CTA button */}
-                <div className="flex flex-wrap gap-4 mb-6 lg:hidden">
-                  <Link 
-                    href="#contact-form"
-                    className="btn-primary text-lg w-full py-4 text-center"
-                  >
-                    Start Your Claim Now
-                  </Link>
-                </div>
-                
-                <div className="grid grid-cols-3 gap-4 mt-6">
-                  <div className="flex items-center gap-2">
+                {/* Professional feature list */}
+                <div className="hidden md:grid md:grid-cols-3 gap-4 mt-8">
+                  <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
                       <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
@@ -145,7 +136,7 @@ export default function HeroSection() {
                     </div>
                     <span className="font-medium">1000+ Claims</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
                       <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
@@ -153,7 +144,7 @@ export default function HeroSection() {
                     </div>
                     <span className="font-medium">Millions Recovered</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
                       <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
@@ -270,11 +261,41 @@ export default function HeroSection() {
         </div>
       </div>
       
+      {/* Mobile Features List */}
+      <div className="lg:hidden w-full fixed bottom-24 z-40 bg-white/90 backdrop-blur-md pt-3 pb-4 px-4 border-t border-gray-200">
+        <div className="grid grid-cols-3 text-center w-full max-w-lg mx-auto">
+          <div className="flex flex-col items-center">
+            <div className="bg-primary-500 p-2 rounded-full mb-1">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+              </svg>
+            </div>
+            <span className="text-xs font-medium text-gray-900">1000+ Claims</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="bg-primary-500 p-2 rounded-full mb-1">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+              </svg>
+            </div>
+            <span className="text-xs font-medium text-gray-900">Millions Recovered</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="bg-primary-500 p-2 rounded-full mb-1">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+              </svg>
+            </div>
+            <span className="text-xs font-medium text-gray-900">No Win, No Fee</span>
+          </div>
+        </div>
+      </div>
+      
       {/* Full width CTA for mobile */}
-      <div className="lg:hidden fixed w-full bottom-16 z-40 px-4">
+      <div className="lg:hidden fixed w-full bottom-16 z-50 px-4">
         <Link 
           href="/claim"
-          className="btn-primary w-full block text-xl py-5 text-center font-bold shadow-lg rounded-lg"
+          className="btn-primary w-full block text-xl py-4 text-center font-semibold shadow-xl rounded-lg"
           onClick={(e) => {
             e.preventDefault();
             router.push('/claim');
@@ -285,7 +306,7 @@ export default function HeroSection() {
       </div>
       
       {/* Mobile Call Button (Fixed at Bottom) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-primary-800 p-4 shadow-lg z-50">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-primary-800 p-3 shadow-lg z-50">
         <a 
           href="tel:8885555555" 
           className="btn-secondary w-full flex items-center justify-center gap-2"
