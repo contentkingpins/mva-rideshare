@@ -62,7 +62,7 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       {/* Hero Container */}
-      <div className="relative min-h-[600px] lg:min-h-[650px] w-full">
+      <div className="relative min-h-[500px] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Background image - optimized for all devices */}
         <div className="absolute inset-0 z-0">
           <picture>
@@ -91,7 +91,11 @@ export default function HeroSection() {
               fill
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 100vw"
-              style={{ objectFit: 'cover', objectPosition: 'center' }}
+              style={{ 
+                objectFit: 'cover', 
+                objectPosition: 'center 20%',
+                maxHeight: '100vh'
+              }}
               className="brightness-105 contrast-105"
               loading="eager"
               placeholder="blur"
@@ -99,25 +103,25 @@ export default function HeroSection() {
             />
           </picture>
           
-          {/* Gradient overlay - lighter than before */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/30 via-primary-800/25 to-primary-700/20"></div>
+          {/* Gradient overlay - stronger for mobile */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/60 via-primary-800/50 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
         </div>
 
         {/* Content Container */}
         <div className="container relative z-10 h-full">
-          <div className="flex flex-col lg:flex-row items-center h-full pt-16 pb-24 lg:py-16 gap-8 lg:gap-12">
+          <div className="flex flex-col lg:flex-row items-center h-full pt-12 md:pt-16 pb-20 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
             {/* Text Content - Adaptive for different screens */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="w-full lg:w-1/2 text-white lg:pr-6 pt-8"
+              className="w-full lg:w-1/2 text-white lg:pr-6 pt-4 md:pt-8"
             >
-              <div className="bg-primary-900/20 backdrop-blur-[2px] rounded-xl p-6 md:p-8 shadow-lg border border-white/10">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4 drop-shadow-sm">
+              <div className="bg-primary-900/40 md:bg-primary-900/20 backdrop-blur-[2px] rounded-xl p-4 md:p-6 lg:p-8 shadow-lg border border-white/10">
+                <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold leading-tight mb-3 md:mb-4 drop-shadow-sm">
                   Injured in a Rideshare Accident? Make Sure Your Rights Are Protected!
                 </h1>
-                <p className="text-lg md:text-xl text-white/90 drop-shadow-sm mb-6">
+                <p className="text-base md:text-lg lg:text-xl text-white/90 drop-shadow-sm mb-4 md:mb-6">
                   Submit your accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.
                 </p>
                 
@@ -166,10 +170,10 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               id="contact-form"
-              className="w-full lg:w-1/2 lg:mt-0"
+              className="w-full lg:w-1/2 lg:mt-0 px-2 md:px-0"
             >
-              <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 border border-gray-100">
-                <h2 className="text-2xl font-bold mb-6 text-gray-900">Start Your Claim Now</h2>
+              <div className="bg-white rounded-xl shadow-xl p-4 md:p-6 lg:p-8 border border-gray-100">
+                <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">Start Your Claim Now</h2>
                 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
