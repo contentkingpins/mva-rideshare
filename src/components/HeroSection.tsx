@@ -62,7 +62,7 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden">
       {/* Hero Container */}
-      <div className="relative min-h-[100vh] md:min-h-[600px] lg:min-h-[650px] w-full">
+      <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Background image - optimized for all devices */}
         <div className="absolute inset-0 z-0">
           <picture>
@@ -93,11 +93,12 @@ export default function HeroSection() {
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 100vw"
               style={{ 
                 objectFit: 'cover', 
-                objectPosition: 'center top',
+                objectPosition: isMobile ? '50% 40%' : 'center top',
                 maxHeight: '100vh',
-                minHeight: '100%'
+                minHeight: '100%',
+                transform: 'none'
               }}
-              className="brightness-85 contrast-110"
+              className="brightness-100 contrast-105"
               loading="eager"
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wgARCAAGAAgDAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAME/8QAFAEBAAAAAAAAAAAAAAAAAAAABP/aAAwDAQACEAMQAAABxdFP/8QAFhABAQEAAAAAAAAAAAAAAAAAAQAC/9oACAEBAAEFArOv/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFhAAAwAAAAAAAAAAAAAAAAAAACEx/9oACAEBAAE/IVDP/9oADAMBAAIAAwAAABCj/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFhABAQEAAAAAAAAAAAAAAAAAAREA/9oACAEBAAE/EEiCm//Z"
@@ -105,7 +106,7 @@ export default function HeroSection() {
           </picture>
           
           {/* Gradient overlay - subtle professional gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-900/85 via-primary-800/75 to-primary-700/80 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
         </div>
 
         {/* Content Container */}
