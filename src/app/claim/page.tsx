@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
+import type { Metadata } from 'next';
 import ClaimForm from '@/components/claim/ClaimForm';
 
 // Metadata is already defined in layout.tsx, can't be used in client components
@@ -8,6 +9,15 @@ import ClaimForm from '@/components/claim/ClaimForm';
 //   title: 'Submit Your Claim | Claim Connectors',
 //   description: 'Submit your rideshare accident claim and get the compensation you deserve. Fast, easy, and hassle-free process.',
 // };
+
+export const metadata: Metadata = {
+  title: 'File Your Rideshare Claim | MVA Rideshare Claims',
+  description: 'Complete our simple form to start your rideshare accident claim today. Get the compensation you deserve for your Uber or Lyft accident.',
+  // Use other for cache control headers
+  other: {
+    'cache-control': 'no-cache, no-store, must-revalidate, max-age=0',
+  },
+};
 
 export default function ClaimPage() {
   return (

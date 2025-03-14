@@ -77,9 +77,22 @@ export default function ClaimForm() {
       const mobileDetected = isMobileScreen || isMobileUA || hasTouch;
       setIsMobileView(mobileDetected);
       
+      // Debug output for mobile detection
+      console.log('[MOBILE DEBUG] Mobile detection status:', {
+        isMobileScreen,
+        isMobileUA,
+        hasTouch,
+        mobileDetected
+      });
+      console.log('[MOBILE DEBUG] Window dimensions:', {
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+      
       // Apply mobile-specific body class for CSS targeting
       if (mobileDetected) {
         document.body.classList.add('mobile-device');
+        console.log('[MOBILE DEBUG] Added mobile-device class to body');
       } else {
         document.body.classList.remove('mobile-device');
       }
@@ -129,6 +142,18 @@ export default function ClaimForm() {
       clearErrors('role');
     }
   }, [currentStep, clearErrors]);
+
+  // Add debug console log to track rendering
+  useEffect(() => {
+    if (currentStep === 1) {
+      console.log('[FORM DEBUG] Rendering Step 1 (Basic Info)', {
+        currentStep,
+        isValid,
+        errors: Object.keys(errors).length > 0 ? errors : 'No errors',
+        isMobileView
+      });
+    }
+  }, [currentStep, errors, isValid, isMobileView]);
 
   // Load saved contact data from localStorage on initial render
   useEffect(() => {
@@ -482,11 +507,76 @@ export default function ClaimForm() {
           >
             {/* Step 1: Basic Info */}
             {currentStep === 1 && (
-              <div className="step1-container">
+              <div className="step1-container" style={{border: '2px dashed red', padding: '10px', marginBottom: '10px'}}>
+                <h3 className="text-lg font-bold mb-2">DEBUG: Contact form should appear below</h3>
                 <Step1BasicInfo 
                   register={register} 
                   errors={errors} 
                 />
+                
+                {/* Emergency fallback contact form */}
+                <div className="mt-6 pt-6 border-t-2 border-gray-300">
+                  <h3 className="text-lg font-bold mb-4">Emergency Fallback Contact Form</h3>
+                  <p className="text-sm text-gray-600 mb-4">If you cannot see the contact form above, please use this form instead:</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                    <div>
+                      <label htmlFor="firstName-fallback" className="label">First Name</label>
+                      <input
+                        id="firstName-fallback"
+                        type="text"
+                        className={`input ${errors.firstName ? 'border-red-500' : ''}`}
+                        placeholder="John"
+                        {...register('firstName')}
+                      />
+                      {errors.firstName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="lastName-fallback" className="label">Last Name</label>
+                      <input
+                        id="lastName-fallback"
+                        type="text"
+                        className={`input ${errors.lastName ? 'border-red-500' : ''}`}
+                        placeholder="Doe"
+                        {...register('lastName')}
+                      />
+                      {errors.lastName && (
+                        <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label htmlFor="phone-fallback" className="label">Phone Number</label>
+                    <input
+                      id="phone-fallback"
+                      type="tel"
+                      className={`input ${errors.phone ? 'border-red-500' : ''}`}
+                      placeholder="(555) 555-5555"
+                      {...register('phone')}
+                    />
+                    {errors.phone && (
+                      <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+                    )}
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label htmlFor="email-fallback" className="label">Email Address</label>
+                    <input
+                      id="email-fallback"
+                      type="email"
+                      className={`input ${errors.email ? 'border-red-500' : ''}`}
+                      placeholder="john@example.com"
+                      {...register('email')}
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 

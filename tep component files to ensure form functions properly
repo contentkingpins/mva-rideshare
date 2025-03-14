@@ -1,0 +1,458 @@
+[33mcommit 6a1c3ba38d4a2b5253d91a2081ca86b93f22d6a9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: contentkingpins <asiegel@contentkingpins.com>
+Date:   Fri Mar 14 18:24:46 2025 -0400
+
+    Cleanup: Remove debugging elements and redundant buttons while maintaining mobile functionality
+---
+ src/components/claim/ClaimForm.tsx | 414 [32m+++++[m[31m--------------------------------[m
+ src/styles/globals.css             |  53 [32m+[m[31m----[m
+ 2 files changed, 63 insertions(+), 404 deletions(-)
+
+[1mdiff --git a/src/components/claim/ClaimForm.tsx b/src/components/claim/ClaimForm.tsx[m
+[1mindex bdd0d7c..edc440b 100644[m
+[1m--- a/src/components/claim/ClaimForm.tsx[m
+[1m+++ b/src/components/claim/ClaimForm.tsx[m
+[36m@@ -83,15 +83,6 @@[m [mexport default function ClaimForm() {[m
+       } else {[m
+         document.body.classList.remove('mobile-device');[m
+       }[m
+[31m-      [m
+[31m-      console.log('[MOBILE DEBUG] Mobile detection:', { [m
+[31m-        isMobile: mobileDetected,[m
+[31m-        screenWidth: window.innerWidth, [m
+[31m-        userAgent: navigator.userAgent,[m
+[31m-        hasTouch: hasTouch,[m
+[31m-        isMobileScreen: isMobileScreen,[m
+[31m-        isMobileUA: isMobileUA[m
+[31m-      });[m
+     };[m
+     [m
+     // Check immediately[m
+[36m@@ -105,11 +96,6 @@[m [mexport default function ClaimForm() {[m
+       document.body.classList.remove('mobile-device');[m
+     };[m
+   }, []);[m
+[31m-[m
+[31m-  // Debug mobile detection[m
+[31m-  useEffect(() => {[m
+[31m-    console.log('Mobile view state updated:', isMobileView);[m
+[31m-  }, [isMobileView]);[m
+   [m
+   const {[m
+     register,[m
+[36m@@ -136,7 +122,6 @@[m [mexport default function ClaimForm() {[m
+ [m
+   // Clear errors when switching steps[m
+   useEffect(() => {[m
+[31m-    console.log('Current step changed to:', currentStep);[m
+     // Reset form error when changing steps[m
+     setFormError(null);[m
+     [m
+[36m@@ -154,8 +139,6 @@[m [mexport default function ClaimForm() {[m
+         [m
+         // Ensure we're setting all fields correctly[m
+         if (parsedData) {[m
+[31m-          console.log("Found saved contact data:", parsedData);[m
+[31m-          [m
+           // Set each field individually to ensure proper validation[m
+           if (parsedData.firstName) setValue('firstName', parsedData.firstName);[m
+           if (parsedData.lastName) setValue('lastName', parsedData.lastName);[m
+[36m@@ -167,7 +150,6 @@[m [mexport default function ClaimForm() {[m
+           // If we have complete contact data, skip to step 2[m
+           if (parsedData.firstName && parsedData.lastName && [m
+               parsedData.phone && parsedData.email) {[m
+[31m-            console.log("Skipping to step 2 with complete contact data");[m
+             setCurrentStep(2);[m
+           }[m
+         }[m
+[36m@@ -179,7 +161,6 @@[m [mexport default function ClaimForm() {[m
+ [m
+   // Validate current step fields[m
+   const validateCurrentStep = async () => {[m
+[31m-    console.log(`Validating step ${currentStep}`);[m
+     switch (currentStep) {[m
+       case 1:[m
+         return await trigger(['firstName', 'lastName', 'phone', 'email']);[m
+[36m@@ -201,52 +182,38 @@[m [mexport default function ClaimForm() {[m
+ [m
+   // Handle step navigation[m
+   const handleNextStep = async () => {[m
+[31m-    console.log(`Attempting to move from step ${currentStep} to next step`);[m
+[31m-    [m
+[31m-    // Log all form values for debugging[m
+[32m+[m[32m    // Get current form values[m
+     const allValues = getValues();[m
+[31m-    console.log('Current form values:', allValues);[m
+     [m
+     const isStepValid = await validateCurrentStep();[m
+[31m-    console.log(`Step ${currentStep} validation result:`, isStepValid);[m
+     [m
+     if (!isStepValid) {[m
+[31m-      console.error("Current step validation failed");[m
+       setFormError("Please correct the errors before continuing.");[m
+       return;[m
+     }[m
+ [m
+     // Get current role value[m
+     const currentRole = getValues('role');[m
+[31m-    console.log(`Current role value: ${currentRole}`);[m
+ [m
+     if (currentStep === 2 && !currentRole) {[m
+[31m-      console.error("No role selected, cannot proceed");[m
+       setFormError("Please select your role in the accident.");[m
+       return;[m
+     }[m
+ [m
+     if (currentStep === 2 && currentRole === 'guest') {[m
+       const guestInfo = getValues('rideshareUserInfo');[m
+[31m-      console.log('Guest info value:', guestInfo);[m
+       [m
+       if (!guestInfo || guestInfo.trim() === '') {[m
+[31m-        console.error("Guest info required but missing");[m
+         setFormError("Please provide information about the rideshare user.");[m
+         return;[m
+       }[m
+     }[m
+ [m
+[31m-    // Log current state before advancing[m
+[31m-    console.log(`Form is valid, proceeding from step ${currentStep} to ${currentStep + 1}`);[m
+[31m-[m
+     // Special handling for step 3[m
+     if (currentStep === 3) {[m
+       const noComplaint = !filedComplaint;[m
+       const noPoliceReport = !hasPoliceReport;[m
+       [m
+[31m-      console.log(`Filed complaint: ${filedComplaint}, Has police report: ${hasPoliceReport}`);[m
+[31m-      [m
+       if (noComplaint && noPoliceReport) {[m
+         setIsRejected(true);[m
+         setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');[m
+[36m@@ -268,16 +235,10 @@[m [mexport default function ClaimForm() {[m
+ [m
+     // Save form data and move to next step[m
+     const formValues = getValues();[m
+[31m-    console.log(`Moving to step ${currentStep + 1} with data:`, formValues);[m
+     setFormData(prev => ({ ...prev, ...formValues }));[m
+     [m
+     // Actually advance the step[m
+[31m-    setCurrentStep(prev => {[m
+[31m-      console.log(`Changing step from ${prev} to ${prev + 1}`);[m
+[31m-      return prev + 1;[m
+[31m-    });[m
+[31m-[m
+[31m-    console.log(`Step should now be ${currentStep + 1}`);[m
+[32m+[m[32m    setCurrentStep(prev => prev + 1);[m
+   };[m
+ [m
+   // Add a direct form submission handler for step 1[m
+[36m@@ -285,22 +246,16 @@[m [mexport default function ClaimForm() {[m
+     // Prevent any default behavior if event is present[m
+     if (e) {[m
+       e.preventDefault();[m
+[31m-      console.log("[MOBILE DEBUG] Preventing default in submitStep1 for event type:", e.type);[m
+     }[m
+     [m
+[31m-    console.log("[MOBILE DEBUG] Direct submission for step 1 triggered");[m
+[31m-    console.log("[MOBILE DEBUG] isMobileView:", isMobileView);[m
+[31m-    [m
+     try {[m
+       // Get form values[m
+       const formValues = getValues();[m
+[31m-      console.log("[MOBILE DEBUG] Form values for step 1:", formValues);[m
+       [m
+       // Validate required fields[m
+       const isValid = await trigger(['firstName', 'lastName', 'phone', 'email']);[m
+       [m
+       if (!isValid) {[m
+[31m-        console.error("[MOBILE DEBUG] Step 1 validation failed");[m
+         setFormError("Please fill in all required fields correctly.");[m
+         return;[m
+       }[m
+[36m@@ -314,34 +269,21 @@[m [mexport default function ClaimForm() {[m
+           email: formValues.email[m
+         };[m
+         localStorage.setItem('contactFormData', JSON.stringify(contactData));[m
+[31m-        console.log("[MOBILE DEBUG] Saved contact data to localStorage");[m
+       } catch (e) {[m
+[31m-        console.error("[MOBILE DEBUG] Error saving to localStorage:", e);[m
+[32m+[m[32m        console.error('Error saving to localStorage:', e);[m
+       }[m
+       [m
+       // Save form data[m
+       setFormData(prev => {[m
+         const newData = { ...prev, ...formValues };[m
+[31m-        console.log("[MOBILE DEBUG] Updated form data:", newData);[m
+         return newData;[m
+       });[m
+       [m
+[31m-      console.log("[MOBILE DEBUG] BEFORE changing step to 2. Current step:", currentStep);[m
+[31m-      [m
+       // Force immediate step change for mobile[m
+       setCurrentStep(2);[m
+       [m
+[31m-      // Double-check the state update happened[m
+[31m-      setTimeout(() => {[m
+[31m-        console.log("[MOBILE DEBUG] AFTER changing step. Current step:", currentStep);[m
+[31m-        if (currentStep !== 2) {[m
+[31m-          console.log("[MOBILE DEBUG] Forcing second attempt to change step");[m
+[31m-          setCurrentStep(2);[m
+[31m-        }[m
+[31m-      }, 100);[m
+[31m-      [m
+     } catch (error) {[m
+[31m-      console.error("[MOBILE DEBUG] Error in submitStep1:", error);[m
+[32m+[m[32m      console.error('Error in submitStep1:', error);[m
+       setFormError("An unexpected error occurred. Please try again.");[m
+     }[m
+   };[m
+[36m@@ -351,27 +293,20 @@[m [mexport default function ClaimForm() {[m
+     // Prevent any default behavior if event is present[m
+     if (e) {[m
+       e.preventDefault();[m
+[31m-      console.log("Preventing default in submitStep2 for event type:", e.type);[m
+     }[m
+     [m
+[31m-    console.log("[MOBILE DEBUG] Direct submission for step 2 triggered");[m
+[31m-    console.log("[MOBILE DEBUG] isMobileView:", isMobileView);[m
+[31m-    [m
+     try {[m
+       // Get form values[m
+       const formValues = getValues();[m
+[31m-      console.log("[MOBILE DEBUG] Form values for step 2:", formValues);[m
+       [m
+       // Make sure we have a role selected[m
+       if (!formValues.role) {[m
+[31m-        console.error("[MOBILE DEBUG] No role selected for step 2");[m
+         setFormError("Please select your role in the accident.");[m
+         return;[m
+       }[m
+       [m
+       // Special handling for guest role[m
+       if (formValues.role === 'guest' && (!formValues.rideshareUserInfo || formValues.rideshareUserInfo.trim() === '')) {[m
+[31m-        console.error("[MOBILE DEBUG] Guest info required but missing");[m
+         setFormError("Please provide information about the rideshare user.");[m
+         return;[m
+       }[m
+[36m@@ -379,26 +314,14 @@[m [mexport default function ClaimForm() {[m
+       // Save form data[m
+       setFormData(prev => {[m
+         const newData = { ...prev, ...formValues };[m
+[31m-        console.log("[MOBILE DEBUG] Updated form data:", newData);[m
+         return newData;[m
+       });[m
+       [m
+[31m-      console.log("[MOBILE DEBUG] BEFORE changing step to 3. Current step:", currentStep);[m
+[31m-      [m
+       // Force immediate step change for mobile[m
+       setCurrentStep(3);[m
+       [m
+[31m-      // Double-check the state update happened[m
+[31m-      setTimeout(() => {[m
+[31m-        console.log("[MOBILE DEBUG] AFTER changing step. Current step:", currentStep);[m
+[31m-        if (currentStep !== 3) {[m
+[31m-          console.log("[MOBILE DEBUG] Forcing second attempt to change step");[m
+[31m-          setCurrentStep(3);[m
+[31m-        }[m
+[31m-      }, 100);[m
+[31m-      [m
+     } catch (error) {[m
+[31m-      console.error("[MOBILE DEBUG] Error in submitStep2:", error);[m
+[32m+[m[32m      console.error('Error in submitStep2:', error);[m
+       setFormError("An unexpected error occurred. Please try again.");[m
+     }[m
+   };[m
+[36m@@ -408,27 +331,20 @@[m [mexport default function ClaimForm() {[m
+     // Prevent any default behavior if event is present[m
+     if (e) {[m
+       e.preventDefault();[m
+[31m-      console.log("Preventing default in submitStep3 for event type:", e.type);[m
+     }[m
+     [m
+[31m-    console.log("[MOBILE DEBUG] Direct submission for step 3 triggered");[m
+[31m-    console.log("[MOBILE DEBUG] isMobileView:", isMobileView);[m
+[31m-    [m
+     try {[m
+       // Get form values[m
+       const formValues = getValues();[m
+[31m-      console.log("[MOBILE DEBUG] Form values for step 3:", formValues);[m
+       [m
+       // Make sure we have a rideshare company selected[m
+       if (!formValues.rideshareCompany) {[m
+[31m-        console.error("[MOBILE DEBUG] No rideshare company selected for step 3");[m
+         setFormError("Please select whether you were in an Uber or Lyft.");[m
+         return;[m
+       }[m
+       [m
+       // Check if accident date is provided[m
+       if (!formValues.accidentDate) {[m
+[31m-        console.error("[MOBILE DEBUG] No accident date provided");[m
+         setFormError("Please provide the date when the accident occurred.");[m
+         return;[m
+       }[m
+[36m@@ -437,10 +353,7 @@[m [mexport default function ClaimForm() {[m
+       const hasComplaint = formValues.filedComplaint === true;[m
+       const hasReport = formValues.hasPoliceReport === true;[m
+       [m
+[31m-      console.log(`[MOBILE DEBUG] Complaint: ${hasComplaint}, Police report: ${hasReport}`);[m
+[31m-      [m
+       if (!hasComplaint && !hasReport) {[m
+[31m-        console.error("[MOBILE DEBUG] Neither complaint nor police report is present");[m
+         setIsRejected(true);[m
+         setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');[m
+         return;[m
+[36m@@ -452,14 +365,12 @@[m [mexport default function ClaimForm() {[m
+       [m
+       // If they didn't receive treatment within 48 hours and we don't have info about 7 days[m
+       if (!hadMedicalTreatment48Hours && formValues.receivedMedicalTreatment7Days === undefined) {[m
+[31m-        console.error("[MOBILE DEBUG] Missing information about medical treatment within 7 days");[m
+         setFormError("Please indicate if you received medical treatment within 7 days of the accident.");[m
+         return;[m
+       }[m
+       [m
+       // If neither medical treatment option is selected, reject the claim[m
+       if (!hadMedicalTreatment48Hours && !hadMedicalTreatment7Days) {[m
+[31m-        console.error("[MOBILE DEBUG] No medical treatment received");[m
+         setIsRejected(true);[m
+         setRejectionReason('To process a rideshare injury claim, you must have received medical treatment within 7 days of the accident.');[m
+         return;[m
+[36m@@ -468,38 +379,23 @@[m [mexport default function ClaimForm() {[m
+       // Save form data[m
+       setFormData(prev => {[m
+         const newData = { ...prev, ...formValues };[m
+[31m-        console.log("[MOBILE DEBUG] Updated form data:", newData);[m
+         return newData;[m
+       });[m
+       [m
+[31m-      console.log("[MOBILE DEBUG] Form is valid, proceeding to processing");[m
+[31m-      [m
+       // Process the form (simulate API call)[m
+       setIsLoading(true);[m
+       [m
+[31m-      console.log("[MOBILE DEBUG] BEFORE changing step to 4. Current step:", currentStep);[m
+[31m-      [m
+       // Force state update for processing step[m
+       setCurrentStep(4);[m
+       [m
+[31m-      // Double-check the state update happened[m
+[32m+[m[32m      // Simulate processing time[m
+       setTimeout(() => {[m
+[31m-        console.log("[MOBILE DEBUG] AFTER changing step. Current step:", currentStep);[m
+[31m-        if (currentStep !== 4) {[m
+[31m-          console.log("[MOBILE DEBUG] Forcing second attempt to change step");[m
+[31m-          setCurrentStep(4);[m
+[31m-        }[m
+[31m-        [m
+[31m-        // Simulate processing time[m
+[31m-        setTimeout(() => {[m
+[31m-          setIsLoading(false);[m
+[31m-          setCurrentStep(5);[m
+[31m-          console.log("[MOBILE DEBUG] Step changed to 5 (final)");[m
+[31m-        }, 5000);[m
+[31m-      }, 100);[m
+[32m+[m[32m        setIsLoading(false);[m
+[32m+[m[32m        setCurrentStep(5);[m
+[32m+[m[32m      }, 5000);[m
+       [m
+     } catch (error) {[m
+[31m-      console.error("[MOBILE DEBUG] Error in submitStep3:", error);[m
+[32m+[m[32m      console.error('Error in submitStep3:', error);[m
+       setFormError("An unexpected error occurred. Please try again.");[m
+     }[m
+   };[m
+[36m@@ -507,7 +403,6 @@[m [mexport default function ClaimForm() {[m
+   // Handle the form submission[m
+   const onSubmit = async (data: ClaimFormData) => {[m
+     try {[m
+[31m-      console.log(`Form submitted with data:`, data);[m
+       await handleNextStep();[m
+     } catch (error) {[m
+       console.error('Error in form submission:', error);[m
+[36m@@ -524,87 +419,6 @@[m [mexport default function ClaimForm() {[m
+   // Calculate progress percentage[m
+   const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;[m
+ [m
+[31m-  // Add a helper function for mobile button clicks[m
+[31m-  const handleMobileButtonClick = (step: number) => {[m
+[31m-    console.log(`[MOBILE DEBUG] Mobile button click handler for step ${step}`);[m
+[31m-    [m
+[31m-    if (step === 1) {[m
+[31m-      console.log("[MOBILE DEBUG] Directly calling submitStep1 from mobile handler");[m
+[31m-      submitStep1();[m
+[31m-    } else if (step === 2) {[m
+[31m-      console.log("[MOBILE DEBUG] Directly calling submitStep2 from mobile handler");[m
+[31m-      submitStep2();[m
+[31m-    } else if (step === 3) {[m
+[31m-      console.log("[MOBILE DEBUG] Directly calling submitStep3 from mobile handler");[m
+[31m-      submitStep3();[m
+[31m-    } else {[m
+[31m-      console.log("[MOBILE DEBUG] Using standard form submit for step", step);[m
+[31m-      handleSubmit(onSubmit)();[m
+[31m-    }[m
+[31m-  };[m
+[31m-[m
+[31m-  // Add debug mode for step 1[m
+[31m-  useEffect(() => {[m
+[31m-    if (currentStep === 1 && isMobileView) {[m
+[31m-      console.log('[MOBILE DEBUG] Step 1 active in mobile view');[m
+[31m-      [m
+[31m-      // Debug info about the environment[m
+[31m-      console.log('[MOBILE DEBUG] Window dimensions:', {[m
+[31m-        width: window.innerWidth,[m
+[31m-        height: window.innerHeight,[m
+[31m-        pixelRatio: window.devicePixelRatio[m
+[31m-      });[m
+[31m-      [m
+[31m-      console.log('[MOBILE DEBUG] User agent:', navigator.userAgent);[m
+[31m-      [m
+[31m-      // Add debug class to body[m
+[31m-      document.body.classList.add('debug-step1');[m
+[31m-      [m
+[31m-      // Create debug overlay for mobile testing[m
+[31m-      if (process.env.NODE_ENV !== 'production') {[m
+[31m-        const debugDiv = document.createElement('div');[m
+[31m-        debugDiv.id = 'mobile-debug-overlay';[m
+[31m-        debugDiv.style.position = 'fixed';[m
+[31m-        debugDiv.style.bottom = '40px';[m
+[31m-        debugDiv.style.left = '10px';[m
+[31m-        debugDiv.style.backgroundColor = 'rgba(0,0,0,0.7)';[m
+[31m-        debugDiv.style.color = 'white';[m
+[31m-        debugDiv.style.padding = '5px';[m
+[31m-        debugDiv.style.borderRadius = '5px';[m
+[31m-        debugDiv.style.fontSize = '10px';[m
+[31m-        debugDiv.style.zIndex = '9999';[m
+[31m-        debugDiv.innerHTML = 'Debug: Step 1 Mobile';[m
+[31m-        [m
+[31m-        // Add a direct trigger button for extreme cases[m
+[31m-        const debugButton = document.createElement('button');[m
+[31m-        debugButton.innerText = 'FORCE NEXT';[m
+[31m-        debugButton.style.display = 'block';[m
+[31m-        debugButton.style.margin = '5px 0';[m
+[31m-        debugButton.style.padding = '5px';[m
+[31m-        debugButton.style.backgroundColor = 'red';[m
+[31m-        debugButton.style.color = 'white';[m
+[31m-        debugButton.style.border = 'none';[m
+[31m-        debugButton.style.borderRadius = '3px';[m
+[31m-        debugButton.onclick = () => {[m
+[31m-          console.log('[MOBILE DEBUG] Force next button clicked');[m
+[31m-          setCurrentStep(2);[m
+[31m-        };[m
+[31m-        [m
+[31m-        debugDiv.appendChild(debugButton);[m
+[31m-        document.body.appendChild(debugDiv);[m
+[31m-        [m
+[31m-        return () => {[m
+[31m-          document.body.removeChild(debugDiv);[m
+[31m-          document.body.classList.remove('debug-step1');[m
+[31m-        };[m
+[31m-      }[m
+[31m-      [m
+[31m-      return () => {[m
+[31m-        document.body.classList.remove('debug-step1');[m
+[31m-      };[m
+[31m-    }[m
+[31m-  }, [currentStep, isMobileView]);[m
+[31m-[m
+   return ([m
+     <div className="max-w-3xl mx-auto">[m
+       {/* Progress bar */}[m
+[36m@@ -657,13 +471,7 @@[m
