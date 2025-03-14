@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import Step1BasicInfo from './steps/Step1BasicInfo';
+
+// Import all steps directly, no relative imports that might cause issues
 import Step2Involvement from './steps/Step2Involvement';
 import Step3Qualification from './steps/Step3Qualification';
 import Step4Processing from './steps/Step4Processing';
@@ -49,6 +50,92 @@ const claimSchema = z.object({
 
 export type ClaimFormData = z.infer<typeof claimSchema>;
 
+// Create inline component for Step1BasicInfo to avoid import issues
+function Step1BasicInfo({ register, errors }: { 
+  register: any; 
+  errors: any; 
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold mb-2">Contact Information</h2>
+        <p className="text-gray-600">
+          Please provide your basic contact information so we can reach you about your claim.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="firstName" className="label">First Name</label>
+          <input
+            id="firstName"
+            type="text"
+            className={`input ${errors.firstName ? 'border-red-500' : ''}`}
+            placeholder="John"
+            {...register('firstName')}
+          />
+          {errors.firstName && (
+            <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+          )}
+        </div>
+        
+        <div>
+          <label htmlFor="lastName" className="label">Last Name</label>
+          <input
+            id="lastName"
+            type="text"
+            className={`input ${errors.lastName ? 'border-red-500' : ''}`}
+            placeholder="Doe"
+            {...register('lastName')}
+          />
+          {errors.lastName && (
+            <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+          )}
+        </div>
+      </div>
+      
+      <div>
+        <label htmlFor="phone" className="label">Phone Number</label>
+        <input
+          id="phone"
+          type="tel"
+          className={`input ${errors.phone ? 'border-red-500' : ''}`}
+          placeholder="(555) 555-5555"
+          {...register('phone', {
+            required: 'Phone number is required',
+            setValueAs: (value: string) => value.replace(/\D/g, '') // Strip non-digits on submission
+          })}
+        />
+        {errors.phone && (
+          <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+        )}
+        <p className="mt-1 text-xs text-gray-500">Include area code, e.g., 5551234567 or (555) 123-4567</p>
+      </div>
+      
+      <div>
+        <label htmlFor="email" className="label">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          className={`input ${errors.email ? 'border-red-500' : ''}`}
+          placeholder="john@example.com"
+          {...register('email')}
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+        )}
+      </div>
+      
+      <div className="bg-blue-50 p-4 rounded-md text-blue-800 text-sm">
+        <p>
+          <strong>Your Privacy is Important: </strong>
+          We'll only use your contact information to assist with your claim and will never share it with third parties without your consent.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function ClaimForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<Partial<ClaimFormData>>({});
@@ -77,22 +164,9 @@ export default function ClaimForm() {
       const mobileDetected = isMobileScreen || isMobileUA || hasTouch;
       setIsMobileView(mobileDetected);
       
-      // Debug output for mobile detection
-      console.log('[MOBILE DEBUG] Mobile detection status:', {
-        isMobileScreen,
-        isMobileUA,
-        hasTouch,
-        mobileDetected
-      });
-      console.log('[MOBILE DEBUG] Window dimensions:', {
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-      
       // Apply mobile-specific body class for CSS targeting
       if (mobileDetected) {
         document.body.classList.add('mobile-device');
-        console.log('[MOBILE DEBUG] Added mobile-device class to body');
       } else {
         document.body.classList.remove('mobile-device');
       }
@@ -109,7 +183,7 @@ export default function ClaimForm() {
       document.body.classList.remove('mobile-device');
     };
   }, []);
-  
+
   const {
     register,
     handleSubmit,
@@ -142,18 +216,6 @@ export default function ClaimForm() {
       clearErrors('role');
     }
   }, [currentStep, clearErrors]);
-
-  // Add debug console log to track rendering
-  useEffect(() => {
-    if (currentStep === 1) {
-      console.log('[FORM DEBUG] Rendering Step 1 (Basic Info)', {
-        currentStep,
-        isValid,
-        errors: Object.keys(errors).length > 0 ? errors : 'No errors',
-        isMobileView
-      });
-    }
-  }, [currentStep, errors, isValid, isMobileView]);
 
   // Load saved contact data from localStorage on initial render
   useEffect(() => {
@@ -266,11 +328,14 @@ export default function ClaimForm() {
     setCurrentStep(prev => prev + 1);
   };
 
+  // Form submission handlers for each step
+  
   // Add a direct form submission handler for step 1
   const submitStep1 = async (e?: React.MouseEvent | React.TouchEvent) => {
     // Prevent any default behavior if event is present
     if (e) {
       e.preventDefault();
+      e.stopPropagation(); // Ensure the event doesn't bubble up
     }
     
     try {
@@ -318,6 +383,7 @@ export default function ClaimForm() {
     // Prevent any default behavior if event is present
     if (e) {
       e.preventDefault();
+      e.stopPropagation(); // Ensure the event doesn't bubble up
     }
     
     try {
@@ -356,6 +422,7 @@ export default function ClaimForm() {
     // Prevent any default behavior if event is present
     if (e) {
       e.preventDefault();
+      e.stopPropagation(); // Ensure the event doesn't bubble up
     }
     
     try {
@@ -507,76 +574,11 @@ export default function ClaimForm() {
           >
             {/* Step 1: Basic Info */}
             {currentStep === 1 && (
-              <div className="step1-container" style={{border: '2px dashed red', padding: '10px', marginBottom: '10px'}}>
-                <h3 className="text-lg font-bold mb-2">DEBUG: Contact form should appear below</h3>
+              <div className="step1-container">
                 <Step1BasicInfo 
                   register={register} 
                   errors={errors} 
                 />
-                
-                {/* Emergency fallback contact form */}
-                <div className="mt-6 pt-6 border-t-2 border-gray-300">
-                  <h3 className="text-lg font-bold mb-4">Emergency Fallback Contact Form</h3>
-                  <p className="text-sm text-gray-600 mb-4">If you cannot see the contact form above, please use this form instead:</p>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                    <div>
-                      <label htmlFor="firstName-fallback" className="label">First Name</label>
-                      <input
-                        id="firstName-fallback"
-                        type="text"
-                        className={`input ${errors.firstName ? 'border-red-500' : ''}`}
-                        placeholder="John"
-                        {...register('firstName')}
-                      />
-                      {errors.firstName && (
-                        <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="lastName-fallback" className="label">Last Name</label>
-                      <input
-                        id="lastName-fallback"
-                        type="text"
-                        className={`input ${errors.lastName ? 'border-red-500' : ''}`}
-                        placeholder="Doe"
-                        {...register('lastName')}
-                      />
-                      {errors.lastName && (
-                        <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label htmlFor="phone-fallback" className="label">Phone Number</label>
-                    <input
-                      id="phone-fallback"
-                      type="tel"
-                      className={`input ${errors.phone ? 'border-red-500' : ''}`}
-                      placeholder="(555) 555-5555"
-                      {...register('phone')}
-                    />
-                    {errors.phone && (
-                      <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-                    )}
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label htmlFor="email-fallback" className="label">Email Address</label>
-                    <input
-                      id="email-fallback"
-                      type="email"
-                      className={`input ${errors.email ? 'border-red-500' : ''}`}
-                      placeholder="john@example.com"
-                      {...register('email')}
-                    />
-                    {errors.email && (
-                      <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                    )}
-                  </div>
-                </div>
               </div>
             )}
 
