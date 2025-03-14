@@ -25,7 +25,7 @@ const claimSchema = z.object({
   email: z.string().email({ message: 'Valid email is required' }),
   
   // Step 2: Accident involvement
-  role: z.enum(['passenger', 'guest', 'otherVehicle', 'driver', 'other_vehicle'], { 
+  role: z.enum(['passenger', 'guest', 'otherVehicle'], { 
     required_error: 'Please select your role in the accident'
   }),
   rideshareUserInfo: z.string().optional(),
@@ -115,10 +115,17 @@ export default function ClaimForm() {
 
   // Validate current step fields
   const validateCurrentStep = async () => {
+    console.log(`Validating step ${currentStep}`);
     switch (currentStep) {
       case 1:
         return await trigger(['firstName', 'lastName', 'phone', 'email']);
       case 2:
+        // For step 2, validate both role and rideshareUserInfo if role is 'guest'
+        if (role === 'guest') {
+          const roleValid = await trigger('role');
+          const userInfoValid = await trigger('rideshareUserInfo');
+          return roleValid && userInfoValid;
+        }
         return await trigger('role');
       case 3:
         return await trigger(['rideshareCompany']);
@@ -138,16 +145,21 @@ export default function ClaimForm() {
       return;
     }
 
-    if (currentStep === 2 && !role) {
+    // Get current role value
+    const currentRole = getValues('role');
+    console.log(`Current role value: ${currentRole}`);
+
+    if (currentStep === 2 && !currentRole) {
       console.error("No role selected, cannot proceed");
       setFormError("Please select your role in the accident.");
       return;
     }
 
-    if (currentStep === 2 && role === 'guest') {
-      const isGuestInfoValid = await trigger('rideshareUserInfo');
-      if (!isGuestInfoValid) {
-        console.error("Guest info validation failed");
+    if (currentStep === 2 && currentRole === 'guest') {
+      const guestInfo = getValues('rideshareUserInfo');
+      if (!guestInfo || guestInfo.trim() === '') {
+        console.error("Guest info required but missing");
+        setFormError("Please provide information about the rideshare user.");
         return;
       }
     }

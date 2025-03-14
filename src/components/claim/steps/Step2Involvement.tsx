@@ -26,20 +26,28 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
         setValue('rideshareUserInfo', '');
       }
       
+      // Trigger validation after selection
+      if (trigger) {
+        trigger('role');
+      }
+      
       // Log the selection for debugging
       console.log(`Selected role: ${selectedRole}`);
     }
   };
   
-  // Check the validation status immediately
+  // Check the validation status when role changes
   useEffect(() => {
     if (role) {
       console.log(`Role is set to: ${role}`);
+      // Trigger validation when role changes
+      if (trigger) {
+        trigger('role');
+      }
     } else {
       console.log("No role selected yet");
-      // We don't set a default role here to avoid confusing the user
     }
-  }, [role]);
+  }, [role, trigger]);
 
   return (
     <div className="space-y-6">
@@ -68,7 +76,6 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
               checked={role === 'passenger'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
               {...register('role', { required: 'Please select your role' })}
-              onChange={() => handleRoleSelect('passenger')}
             />
             <label htmlFor="role-passenger" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a passenger in a rideshare vehicle</div>
@@ -87,7 +94,6 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
               checked={role === 'guest'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
               {...register('role', { required: 'Please select your role' })}
-              onChange={() => handleRoleSelect('guest')}
             />
             <label htmlFor="role-guest" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a guest traveling with a rideshare user</div>
@@ -106,7 +112,6 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
               checked={role === 'otherVehicle'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
               {...register('role', { required: 'Please select your role' })}
-              onChange={() => handleRoleSelect('otherVehicle')}
             />
             <label htmlFor="role-other-vehicle" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was in another vehicle hit by a rideshare car</div>
@@ -131,7 +136,7 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
           </p>
           <textarea
             id="rideshareUserInfo"
-            className={`input min-h-[100px] ${errors.rideshareUserInfo ? 'border-red-500' : ''}`}
+            className={`input min-h-[100px] w-full ${errors.rideshareUserInfo ? 'border-red-500' : ''}`}
             placeholder="e.g., John Doe, (555) 123-4567, john.doe@example.com"
             {...register('rideshareUserInfo', {
               validate: (value) => {
@@ -141,6 +146,12 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
                 return true;
               }
             })}
+            onChange={(e) => {
+              if (setValue && trigger) {
+                setValue('rideshareUserInfo', e.target.value);
+                trigger('rideshareUserInfo');
+              }
+            }}
           />
           {errors.rideshareUserInfo && (
             <p className="mt-1 text-sm text-red-600">{errors.rideshareUserInfo.message}</p>
