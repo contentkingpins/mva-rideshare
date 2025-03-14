@@ -1,8 +1,10 @@
 import React from 'react';
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Terms of Service | Claim Connectors',
-  description: 'Read our Terms of Service to understand your rights and responsibilities when using Claim Connectors for rideshare injury claims.',
+  description: 'Terms of Service for Claim Connectors - Understand our policies and your rights.',
+  keywords: 'rideshare terms, uber accident terms, lyft accident policy',
 };
 
 export default function TermsLayout({
@@ -10,5 +12,5 @@ export default function TermsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return children;
 } 

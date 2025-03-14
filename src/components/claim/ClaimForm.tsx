@@ -84,13 +84,25 @@ export default function ClaimForm() {
     if (savedContactData) {
       try {
         const parsedData = JSON.parse(savedContactData) as Partial<ClaimFormData>;
-        Object.entries(parsedData).forEach(([key, value]) => {
-          setValue(key as keyof ClaimFormData, value);
-        });
-        setFormData(prev => ({ ...prev, ...parsedData }));
-        // If we have contact data, we can skip to step 2
-        if (parsedData.firstName && parsedData.lastName && parsedData.phone && parsedData.email) {
-          setCurrentStep(2);
+        
+        // Ensure we're setting all fields correctly
+        if (parsedData) {
+          console.log("Found saved contact data:", parsedData);
+          
+          // Set each field individually to ensure proper validation
+          if (parsedData.firstName) setValue('firstName', parsedData.firstName);
+          if (parsedData.lastName) setValue('lastName', parsedData.lastName);
+          if (parsedData.phone) setValue('phone', parsedData.phone);
+          if (parsedData.email) setValue('email', parsedData.email);
+          
+          setFormData(prev => ({ ...prev, ...parsedData }));
+          
+          // If we have complete contact data, skip to step 2
+          if (parsedData.firstName && parsedData.lastName && 
+              parsedData.phone && parsedData.email) {
+            console.log("Skipping to step 2 with complete contact data");
+            setCurrentStep(2);
+          }
         }
       } catch (e) {
         console.error('Error parsing saved contact data:', e);
@@ -103,27 +115,19 @@ export default function ClaimForm() {
     try {
       switch (currentStep) {
         case 1:
-          // Validate step 1 fields
-          const isFirstNameValid = data.firstName && data.firstName.length >= 2;
-          const isLastNameValid = data.lastName && data.lastName.length >= 2;
-          const isPhoneValid = data.phone && data.phone.replace(/\D/g, '').length >= 10;
-          const isEmailValid = data.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email);
-          
-          if (!isFirstNameValid || !isLastNameValid || !isPhoneValid || !isEmailValid) {
-            // Show validation errors
-            await trigger(['firstName', 'lastName', 'phone', 'email']);
-            return;
-          }
+          // Simplified validation for step 1 - rely more on zod schema validation
+          const { firstName, lastName, phone, email } = data;
           
           // Save contact data to localStorage
           localStorage.setItem('contactFormData', JSON.stringify({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            phone: data.phone,
-            email: data.email,
+            firstName,
+            lastName,
+            phone,
+            email,
           }));
           
-          // Proceed to next step
+          // Always proceed to next step if form is valid (which it should be if we got here)
+          console.log("Moving to step 2 with data:", data);
           setFormData(prev => ({ ...prev, ...data }));
           setCurrentStep(2);
           break;
@@ -144,6 +148,7 @@ export default function ClaimForm() {
           }
           
           // Update form data and proceed to next step
+          console.log("Moving to step 3 with data:", data);
           setFormData(prev => ({ ...prev, ...data }));
           setCurrentStep(3);
           break;

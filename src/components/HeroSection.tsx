@@ -66,25 +66,36 @@ export default function HeroSection() {
         {/* Background image - optimized for all devices */}
         <div className="absolute inset-0 z-0">
           <picture>
-            {/* Mobile-optimized vertical crop image */}
+            {/* Mobile-optimized vertical crop image - smaller file */}
             <source 
               media="(max-width: 767px)" 
-              srcSet="/images/shutterstock_2428486561.jpg"
+              srcSet="/images/shutterstock_2428486561-mobile.webp"
+              type="image/webp"
             />
-            {/* Tablet-optimized image */}
+            {/* Tablet-optimized image - medium size */}
             <source 
               media="(max-width: 1023px)" 
-              srcSet="/images/shutterstock_2428486561.jpg"
+              srcSet="/images/shutterstock_2428486561-tablet.webp"
+              type="image/webp"
             />
-            {/* Desktop-optimized image */}
+            {/* Desktop WebP version - modern browsers */}
+            <source
+              media="(min-width: 1024px)"
+              srcSet="/images/shutterstock_2428486561-desktop.webp"
+              type="image/webp"
+            />
+            {/* Fallback image for all devices */}
             <Image
-              src="/images/shutterstock_2428486561.jpg"
+              src="/images/shutterstock_2428486561-desktop.jpg"
               alt="Rideshare accident scene"
               fill
               priority
-              sizes="100vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 100vw"
               style={{ objectFit: 'cover', objectPosition: 'center' }}
               className="brightness-105 contrast-105"
+              loading="eager"
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wgARCAAGAAgDAREAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAAAAME/8QAFAEBAAAAAAAAAAAAAAAAAAAABP/aAAwDAQACEAMQAAABxdFP/8QAFhABAQEAAAAAAAAAAAAAAAAAAQAC/9oACAEBAAEFArOv/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFhAAAwAAAAAAAAAAAAAAAAAAACEx/9oACAEBAAE/IVDP/9oADAMBAAIAAwAAABCj/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFhABAQEAAAAAAAAAAAAAAAAAAREA/9oACAEBAAE/EEiCm//Z"
             />
           </picture>
           

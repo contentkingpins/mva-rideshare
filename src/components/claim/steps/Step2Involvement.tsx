@@ -16,13 +16,29 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
   const role = watch('role');
   const [localErrors, setLocalErrors] = useState<{[key: string]: string}>({});
   
+  // Fix existing radio button issues
+  useEffect(() => {
+    // Ensure a default role is set if none exists
+    if (!role && setValue) {
+      console.log("No role set, defaulting to 'passenger'");
+      setValue('role', 'passenger', { shouldValidate: false });
+    }
+  }, [role, setValue]);
+  
   // Standard onChange handler for radio buttons
   const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (setValue) {
-      setValue('role', e.target.value as any);
+      console.log("Role changed to:", e.target.value);
+      setValue('role', e.target.value as any, { shouldValidate: true });
+      
       // Clear any guest info if not selecting guest role
       if (e.target.value !== 'guest' && setValue) {
         setValue('rideshareUserInfo', '');
+      }
+      
+      // Trigger validation after role selection
+      if (trigger) {
+        trigger('role');
       }
     }
   };
@@ -50,14 +66,17 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
         </label>
         
         <div className="space-y-3">
-          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
+          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'passenger' ? 'border-primary-500 bg-primary-50' : ''}`}>
             <input
               id="role-passenger"
               type="radio"
               value="passenger"
               checked={role === 'passenger'}
-              onChange={handleRoleChange}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+              {...register('role', { 
+                required: 'Please select your role',
+                onChange: handleRoleChange
+              })}
             />
             <label htmlFor="role-passenger" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a passenger in a rideshare vehicle</div>
@@ -65,14 +84,17 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
+          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'guest' ? 'border-primary-500 bg-primary-50' : ''}`}>
             <input
               id="role-guest"
               type="radio"
               value="guest"
-              checked={role === 'guest'}
-              onChange={handleRoleChange}
+              checked={role === 'guest'} 
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+              {...register('role', { 
+                required: 'Please select your role',
+                onChange: handleRoleChange
+              })}
             />
             <label htmlFor="role-guest" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a guest traveling with a rideshare user</div>
@@ -80,14 +102,17 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
             </label>
           </div>
           
-          <div className="flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer">
+          <div className={`flex items-start p-4 border rounded-lg hover:bg-gray-50 transition cursor-pointer ${role === 'otherVehicle' ? 'border-primary-500 bg-primary-50' : ''}`}>
             <input
               id="role-other-vehicle"
               type="radio"
               value="otherVehicle"
               checked={role === 'otherVehicle'}
-              onChange={handleRoleChange}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+              {...register('role', { 
+                required: 'Please select your role',
+                onChange: handleRoleChange
+              })}
             />
             <label htmlFor="role-other-vehicle" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was in another vehicle hit by a rideshare car</div>
