@@ -51,20 +51,15 @@ export default function Step3Qualification({
     };
   }, []);
 
-  // Handle rideshare company selection
   const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log('Rideshare company selected:', e.target.value);
     if (setValue && trigger) {
       setValue('rideshareCompany', e.target.value as 'uber' | 'lyft');
-      trigger('rideshareCompany').then(isValid => {
-        console.log('rideshareCompany validation result:', isValid);
-      });
+      trigger('rideshareCompany');
     }
   };
 
   // Handle complaint radio buttons
   const handleComplaintChange = (value: boolean) => {
-    console.log('Filed complaint value set to:', value);
     if (setValue) {
       setValue('filedComplaint', value);
     }
@@ -72,7 +67,6 @@ export default function Step3Qualification({
 
   // Handle police report radio buttons
   const handlePoliceReportChange = (value: boolean) => {
-    console.log('Has police report value set to:', value);
     if (setValue) {
       setValue('hasPoliceReport', value);
     }
@@ -80,7 +74,6 @@ export default function Step3Qualification({
 
   // Handle ambulance radio buttons
   const handleAmbulanceChange = (value: boolean) => {
-    console.log('Was ambulance called value set to:', value);
     if (setValue) {
       setValue('wasAmbulanceCalled', value);
     }
@@ -88,19 +81,17 @@ export default function Step3Qualification({
 
   // Handle medical treatment within 48 hours radio buttons
   const handleMedicalTreatment48HoursChange = (value: boolean) => {
-    console.log('Received medical treatment within 48 hours value set to:', value);
     if (setValue) {
       setValue('receivedMedicalTreatment48Hours', value);
       // If they selected "Yes" for 48 hours, we don't need to ask about 7 days
       if (value === true) {
-        setValue('receivedMedicalTreatment7Days', false as any);
+        setValue('receivedMedicalTreatment7Days', false);
       }
     }
   };
 
   // Handle medical treatment within 7 days radio buttons
   const handleMedicalTreatment7DaysChange = (value: boolean) => {
-    console.log('Received medical treatment within 7 days value set to:', value);
     if (setValue) {
       setValue('receivedMedicalTreatment7Days', value);
     }

@@ -62,11 +62,28 @@ export default function ClaimForm() {
   // Detect if user is on mobile
   useEffect(() => {
     const checkIfMobile = () => {
-      setIsMobileView(window.innerWidth < 640); // sm breakpoint
+      // Check for small screen size
+      const isMobileScreen = window.innerWidth < 640; // sm breakpoint
+      
+      // Check for common mobile user agents
+      const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+      
+      // Set mobile view if either check passes
+      setIsMobileView(isMobileScreen || isMobileUA);
+      
+      console.log('Mobile detection check:', { 
+        isMobile: isMobileScreen || isMobileUA,
+        screenWidth: window.innerWidth, 
+        userAgent: navigator.userAgent
+      });
     };
     
     checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
+    
+    // Use passive event listener for better performance on mobile
+    window.addEventListener('resize', checkIfMobile, { passive: true });
     
     return () => {
       window.removeEventListener('resize', checkIfMobile);
@@ -75,7 +92,7 @@ export default function ClaimForm() {
 
   // Debug mobile detection
   useEffect(() => {
-    console.log('Mobile view detected:', isMobileView);
+    console.log('Mobile view state updated:', isMobileView);
   }, [isMobileView]);
   
   const {
@@ -248,7 +265,7 @@ export default function ClaimForm() {
   };
 
   // Add a direct form submission handler for step 2
-  const submitStep2 = async (e?: React.MouseEvent) => {
+  const submitStep2 = async (e?: React.MouseEvent | React.TouchEvent) => {
     // Prevent any default behavior if event is present
     if (e) e.preventDefault();
     
@@ -277,12 +294,9 @@ export default function ClaimForm() {
       setFormData(prev => ({ ...prev, ...formValues }));
       console.log("Advancing to step 3");
       
-      // Force a slight delay to ensure state update
-      setTimeout(() => {
-        // Advance to next step
-        setCurrentStep(3);
-        console.log("Step changed to 3");
-      }, 50);
+      // Advance to next step - simplified to avoid timing issues
+      setCurrentStep(3);
+      console.log("Step changed to 3");
     } catch (error) {
       console.error("Error in submitStep2:", error);
       setFormError("An unexpected error occurred. Please try again.");
@@ -290,7 +304,7 @@ export default function ClaimForm() {
   };
 
   // Add a direct form submission handler for step 3
-  const submitStep3 = async (e?: React.MouseEvent) => {
+  const submitStep3 = async (e?: React.MouseEvent | React.TouchEvent) => {
     // Prevent any default behavior if event is present
     if (e) e.preventDefault();
     
@@ -353,6 +367,8 @@ export default function ClaimForm() {
       
       // Process the form (simulate API call)
       setIsLoading(true);
+      
+      // Unified approach for both mobile and desktop
       setCurrentStep(4);
       console.log("Step changed to 4 (processing)");
       
@@ -515,7 +531,13 @@ export default function ClaimForm() {
             {currentStep === 2 ? (
               <button
                 type="button"
-                onClick={submitStep2}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isSubmitting) {
+                    console.log("Button clicked - submitStep2");
+                    submitStep2(e);
+                  }
+                }}
                 className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
                 disabled={isSubmitting}
                 aria-label="Continue to next step"
@@ -525,7 +547,13 @@ export default function ClaimForm() {
             ) : currentStep === 3 ? (
               <button
                 type="button"
-                onClick={submitStep3}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!isSubmitting) {
+                    console.log("Button clicked - submitStep3");
+                    submitStep3(e);
+                  }
+                }}
                 className="btn-primary relative px-5 py-3 sm:px-6 sm:py-3 text-base w-2/3 sm:w-auto touch-manipulation"
                 disabled={isSubmitting}
                 aria-label="Submit information"

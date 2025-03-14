@@ -34,14 +34,8 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
       
       // Trigger validation after selection
       if (trigger) {
-        console.log('Triggering role validation');
-        trigger('role').then(isValid => {
-          console.log('Role validation result:', isValid);
-        });
+        trigger('role');
       }
-      
-      // Log the selection for debugging
-      console.log(`Selected role: ${selectedRole}`);
     } else {
       console.warn('setValue function is not available');
     }
@@ -51,19 +45,8 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
   useEffect(() => {
     if (role) {
       console.log(`Role is set to: ${role}`);
-      // Trigger validation when role changes
-      if (trigger) {
-        console.log('Triggering validation from useEffect');
-        trigger('role').then(isValid => {
-          console.log('Role validation result from useEffect:', isValid);
-        });
-      } else {
-        console.warn('trigger function is not available in useEffect');
-      }
-    } else {
-      console.log("No role selected yet");
     }
-  }, [role, trigger]);
+  }, [role]);
 
   // Log when the component mounts
   useEffect(() => {
@@ -100,7 +83,6 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
               checked={role === 'passenger'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
               {...register('role', { required: 'Please select your role' })}
-              onChange={() => console.log('Passenger radio onChange fired')}
             />
             <label htmlFor="role-passenger" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a passenger in a rideshare vehicle</div>
@@ -119,7 +101,6 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
               checked={role === 'guest'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
               {...register('role', { required: 'Please select your role' })}
-              onChange={() => console.log('Guest radio onChange fired')}
             />
             <label htmlFor="role-guest" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was a guest traveling with a rideshare user</div>
@@ -138,7 +119,6 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
               checked={role === 'otherVehicle'}
               className="mt-1 h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
               {...register('role', { required: 'Please select your role' })}
-              onChange={() => console.log('OtherVehicle radio onChange fired')}
             />
             <label htmlFor="role-other-vehicle" className="ml-3 cursor-pointer w-full">
               <div className="font-medium">I was in another vehicle hit by a rideshare car</div>
@@ -173,15 +153,6 @@ export default function Step2Involvement({ register, errors, watch, setValue, tr
                 return true;
               }
             })}
-            onChange={(e) => {
-              console.log('rideshareUserInfo changed:', e.target.value);
-              if (setValue && trigger) {
-                setValue('rideshareUserInfo', e.target.value);
-                trigger('rideshareUserInfo').then(isValid => {
-                  console.log('rideshareUserInfo validation result:', isValid);
-                });
-              }
-            }}
           />
           {errors.rideshareUserInfo && (
             <p className="mt-1 text-sm text-red-600">{errors.rideshareUserInfo.message}</p>
