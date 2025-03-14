@@ -70,12 +70,6 @@ export default function Step3Qualification({
     }
   };
 
-  // Register fields with custom handlers to avoid onChange duplication
-  const complaintYesRef = register('filedComplaint');
-  const complaintNoRef = register('filedComplaint');
-  const policeReportYesRef = register('hasPoliceReport');
-  const policeReportNoRef = register('hasPoliceReport');
-
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
@@ -129,11 +123,10 @@ export default function Step3Qualification({
                 <input
                   id="complaint-yes"
                   type="radio"
-                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                  value="true"
                   checked={filedComplaint === true}
                   onChange={() => handleComplaintChange(true)}
-                  name={complaintYesRef.name}
-                  ref={complaintYesRef.ref}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
                 <label htmlFor="complaint-yes" className="ml-2 cursor-pointer" onClick={() => handleComplaintChange(true)}>Yes</label>
               </div>
@@ -141,11 +134,10 @@ export default function Step3Qualification({
                 <input
                   id="complaint-no"
                   type="radio"
-                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                  value="false"
                   checked={filedComplaint === false}
                   onChange={() => handleComplaintChange(false)}
-                  name={complaintNoRef.name}
-                  ref={complaintNoRef.ref}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
                 <label htmlFor="complaint-no" className="ml-2 cursor-pointer" onClick={() => handleComplaintChange(false)}>No</label>
               </div>
@@ -161,11 +153,10 @@ export default function Step3Qualification({
                 <input
                   id="police-report-yes"
                   type="radio"
-                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                  value="true"
                   checked={hasPoliceReport === true}
                   onChange={() => handlePoliceReportChange(true)}
-                  name={policeReportYesRef.name}
-                  ref={policeReportYesRef.ref}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
                 <label htmlFor="police-report-yes" className="ml-2 cursor-pointer" onClick={() => handlePoliceReportChange(true)}>Yes</label>
               </div>
@@ -173,11 +164,10 @@ export default function Step3Qualification({
                 <input
                   id="police-report-no"
                   type="radio"
-                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
+                  value="false"
                   checked={hasPoliceReport === false}
                   onChange={() => handlePoliceReportChange(false)}
-                  name={policeReportNoRef.name}
-                  ref={policeReportNoRef.ref}
+                  className="h-4 w-4 text-primary-600 border-gray-300 focus:ring-primary-500"
                 />
                 <label htmlFor="police-report-no" className="ml-2 cursor-pointer" onClick={() => handlePoliceReportChange(false)}>No</label>
               </div>
