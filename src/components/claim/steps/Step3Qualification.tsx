@@ -42,7 +42,10 @@ export default function Step3Qualification({
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold mb-2">Claim Qualification</h2>
         <p className="text-gray-600">
-          Please provide additional information about your accident to help us process your claim.
+          Please answer each question below about your accident to help us process your claim.
+        </p>
+        <p className="text-sm text-gray-500 mt-2">
+          Each question requires a Yes or No answer.
         </p>
       </div>
       
@@ -99,197 +102,201 @@ export default function Step3Qualification({
             )}
           </div>
           
-          <div>
-            <label className="label block mb-2">Have you filed a complaint with the rideshare company?</label>
-            <div className="flex space-x-4">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="filed-yes"
-                  value="true"
-                  className="mr-2"
-                  checked={filedComplaint === true}
-                  {...register('filedComplaint')}
-                  onChange={() => handleRadioChange('filedComplaint', true)}
-                />
-                <label 
-                  htmlFor="filed-yes" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('filedComplaint', true)}
-                >Yes</label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="filed-no"
-                  value="false"
-                  className="mr-2"
-                  checked={filedComplaint === false}
-                  {...register('filedComplaint')}
-                  onChange={() => handleRadioChange('filedComplaint', false)}
-                />
-                <label 
-                  htmlFor="filed-no" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('filedComplaint', false)}
-                >No</label>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <label className="label block mb-2">Is there a police report for the accident?</label>
-            <div className="flex space-x-4">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="police-yes"
-                  value="true"
-                  className="mr-2"
-                  checked={hasPoliceReport === true}
-                  {...register('hasPoliceReport')}
-                  onChange={() => handleRadioChange('hasPoliceReport', true)}
-                />
-                <label 
-                  htmlFor="police-yes" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('hasPoliceReport', true)}
-                >Yes</label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="police-no"
-                  value="false"
-                  className="mr-2"
-                  checked={hasPoliceReport === false}
-                  {...register('hasPoliceReport')}
-                  onChange={() => handleRadioChange('hasPoliceReport', false)}
-                />
-                <label 
-                  htmlFor="police-no" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('hasPoliceReport', false)}
-                >No</label>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <label className="label block mb-2">Was an ambulance called to the accident scene?</label>
-            <div className="flex space-x-4">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="ambulance-yes"
-                  value="true"
-                  className="mr-2"
-                  checked={wasAmbulanceCalled === true}
-                  {...register('wasAmbulanceCalled')}
-                  onChange={() => handleRadioChange('wasAmbulanceCalled', true)}
-                />
-                <label 
-                  htmlFor="ambulance-yes" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('wasAmbulanceCalled', true)}
-                >Yes</label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="ambulance-no"
-                  value="false"
-                  className="mr-2"
-                  checked={wasAmbulanceCalled === false}
-                  {...register('wasAmbulanceCalled')}
-                  onChange={() => handleRadioChange('wasAmbulanceCalled', false)}
-                />
-                <label 
-                  htmlFor="ambulance-no" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('wasAmbulanceCalled', false)}
-                >No</label>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <label className="label block mb-2">Did you receive medical treatment within 48 hours of the accident?</label>
-            <div className="flex space-x-4">
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="medical-48h-yes"
-                  value="true"
-                  className="mr-2"
-                  checked={receivedMedicalTreatment48Hours === true}
-                  {...register('receivedMedicalTreatment48Hours')}
-                  onChange={() => handleRadioChange('receivedMedicalTreatment48Hours', true)}
-                />
-                <label 
-                  htmlFor="medical-48h-yes" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('receivedMedicalTreatment48Hours', true)}
-                >Yes</label>
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="radio"
-                  id="medical-48h-no"
-                  value="false"
-                  className="mr-2"
-                  checked={receivedMedicalTreatment48Hours === false}
-                  {...register('receivedMedicalTreatment48Hours')}
-                  onChange={() => handleRadioChange('receivedMedicalTreatment48Hours', false)}
-                />
-                <label 
-                  htmlFor="medical-48h-no" 
-                  className="cursor-pointer"
-                  onClick={() => handleRadioChange('receivedMedicalTreatment48Hours', false)}
-                >No</label>
-              </div>
-            </div>
-          </div>
-          
-          {receivedMedicalTreatment48Hours === false && (
-            <div>
-              <label className="label block mb-2">Did you receive medical treatment within 7 days of the accident?</label>
+          <div className="border-t pt-4 mt-4">
+            <h3 className="font-semibold text-lg mb-4">Please answer each question below:</h3>
+            
+            <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <label className="label block mb-2 font-medium">Have you filed a complaint with the rideshare company?</label>
               <div className="flex space-x-4">
                 <div className="flex items-center">
                   <input
                     type="radio"
-                    id="medical-7d-yes"
+                    id="filed-yes"
                     value="true"
                     className="mr-2"
-                    checked={receivedMedicalTreatment7Days === true}
-                    {...register('receivedMedicalTreatment7Days')}
-                    onChange={() => handleRadioChange('receivedMedicalTreatment7Days', true)}
+                    checked={filedComplaint === true}
+                    {...register('filedComplaint')}
+                    onChange={() => handleRadioChange('filedComplaint', true)}
                   />
                   <label 
-                    htmlFor="medical-7d-yes" 
+                    htmlFor="filed-yes" 
                     className="cursor-pointer"
-                    onClick={() => handleRadioChange('receivedMedicalTreatment7Days', true)}
+                    onClick={() => handleRadioChange('filedComplaint', true)}
                   >Yes</label>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="radio"
-                    id="medical-7d-no"
+                    id="filed-no"
                     value="false"
                     className="mr-2"
-                    checked={receivedMedicalTreatment7Days === false}
-                    {...register('receivedMedicalTreatment7Days')}
-                    onChange={() => handleRadioChange('receivedMedicalTreatment7Days', false)}
+                    checked={filedComplaint === false}
+                    {...register('filedComplaint')}
+                    onChange={() => handleRadioChange('filedComplaint', false)}
                   />
                   <label 
-                    htmlFor="medical-7d-no" 
+                    htmlFor="filed-no" 
                     className="cursor-pointer"
-                    onClick={() => handleRadioChange('receivedMedicalTreatment7Days', false)}
+                    onClick={() => handleRadioChange('filedComplaint', false)}
                   >No</label>
                 </div>
               </div>
             </div>
-          )}
+          
+            <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <label className="label block mb-2 font-medium">Is there a police report for the accident?</label>
+              <div className="flex space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="police-yes"
+                    value="true"
+                    className="mr-2"
+                    checked={hasPoliceReport === true}
+                    {...register('hasPoliceReport')}
+                    onChange={() => handleRadioChange('hasPoliceReport', true)}
+                  />
+                  <label 
+                    htmlFor="police-yes" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('hasPoliceReport', true)}
+                  >Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="police-no"
+                    value="false"
+                    className="mr-2"
+                    checked={hasPoliceReport === false}
+                    {...register('hasPoliceReport')}
+                    onChange={() => handleRadioChange('hasPoliceReport', false)}
+                  />
+                  <label 
+                    htmlFor="police-no" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('hasPoliceReport', false)}
+                  >No</label>
+                </div>
+              </div>
+            </div>
+          
+            <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <label className="label block mb-2 font-medium">Was an ambulance called to the accident scene?</label>
+              <div className="flex space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="ambulance-yes"
+                    value="true"
+                    className="mr-2"
+                    checked={wasAmbulanceCalled === true}
+                    {...register('wasAmbulanceCalled')}
+                    onChange={() => handleRadioChange('wasAmbulanceCalled', true)}
+                  />
+                  <label 
+                    htmlFor="ambulance-yes" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('wasAmbulanceCalled', true)}
+                  >Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="ambulance-no"
+                    value="false"
+                    className="mr-2"
+                    checked={wasAmbulanceCalled === false}
+                    {...register('wasAmbulanceCalled')}
+                    onChange={() => handleRadioChange('wasAmbulanceCalled', false)}
+                  />
+                  <label 
+                    htmlFor="ambulance-no" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('wasAmbulanceCalled', false)}
+                  >No</label>
+                </div>
+              </div>
+            </div>
+          
+            <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <label className="label block mb-2 font-medium">Did you receive medical treatment within 48 hours of the accident?</label>
+              <div className="flex space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="medical-48h-yes"
+                    value="true"
+                    className="mr-2"
+                    checked={receivedMedicalTreatment48Hours === true}
+                    {...register('receivedMedicalTreatment48Hours')}
+                    onChange={() => handleRadioChange('receivedMedicalTreatment48Hours', true)}
+                  />
+                  <label 
+                    htmlFor="medical-48h-yes" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('receivedMedicalTreatment48Hours', true)}
+                  >Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="medical-48h-no"
+                    value="false"
+                    className="mr-2"
+                    checked={receivedMedicalTreatment48Hours === false}
+                    {...register('receivedMedicalTreatment48Hours')}
+                    onChange={() => handleRadioChange('receivedMedicalTreatment48Hours', false)}
+                  />
+                  <label 
+                    htmlFor="medical-48h-no" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('receivedMedicalTreatment48Hours', false)}
+                  >No</label>
+                </div>
+              </div>
+            </div>
+          
+            {receivedMedicalTreatment48Hours === false && (
+              <div className="bg-gray-50 p-4 rounded-md mb-4">
+                <label className="label block mb-2 font-medium">Did you receive medical treatment within 7 days of the accident?</label>
+                <div className="flex space-x-4">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="medical-7d-yes"
+                      value="true"
+                      className="mr-2"
+                      checked={receivedMedicalTreatment7Days === true}
+                      {...register('receivedMedicalTreatment7Days')}
+                      onChange={() => handleRadioChange('receivedMedicalTreatment7Days', true)}
+                    />
+                    <label 
+                      htmlFor="medical-7d-yes" 
+                      className="cursor-pointer"
+                      onClick={() => handleRadioChange('receivedMedicalTreatment7Days', true)}
+                    >Yes</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="medical-7d-no"
+                      value="false"
+                      className="mr-2"
+                      checked={receivedMedicalTreatment7Days === false}
+                      {...register('receivedMedicalTreatment7Days')}
+                      onChange={() => handleRadioChange('receivedMedicalTreatment7Days', false)}
+                    />
+                    <label 
+                      htmlFor="medical-7d-no" 
+                      className="cursor-pointer"
+                      onClick={() => handleRadioChange('receivedMedicalTreatment7Days', false)}
+                    >No</label>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           
           <div className="bg-blue-50 p-4 rounded-md text-blue-800 text-sm">
             <p>
