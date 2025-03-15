@@ -143,6 +143,7 @@ export default function ClaimForm() {
   const role = watch('role');
   const filedComplaint = watch('filedComplaint');
   const hasPoliceReport = watch('hasPoliceReport');
+  const wasAmbulanceCalled = watch('wasAmbulanceCalled');
   const receivedMedicalTreatment48Hours = watch('receivedMedicalTreatment48Hours');
   const receivedMedicalTreatment7Days = watch('receivedMedicalTreatment7Days');
 
@@ -390,6 +391,12 @@ export default function ClaimForm() {
       // Check if accident date is provided
       if (!formValues.accidentDate) {
         setFormError("Please provide the date when the accident occurred.");
+        return;
+      }
+      
+      // Check if ambulance question is answered
+      if (formValues.wasAmbulanceCalled === undefined) {
+        setFormError("Please indicate if an ambulance was called to the accident scene.");
         return;
       }
       

@@ -18,13 +18,15 @@ export default function Step3Qualification({
 }: Step3Props) {
   const filedComplaint = watch('filedComplaint');
   const hasPoliceReport = watch('hasPoliceReport');
+  const wasAmbulanceCalled = watch('wasAmbulanceCalled');
   const receivedMedicalTreatment48Hours = watch('receivedMedicalTreatment48Hours');
   const receivedMedicalTreatment7Days = watch('receivedMedicalTreatment7Days');
 
   // Add debugging to help troubleshoot form values
   console.log("Step3 form values:", { 
     filedComplaint, 
-    hasPoliceReport, 
+    hasPoliceReport,
+    wasAmbulanceCalled,
     receivedMedicalTreatment48Hours, 
     receivedMedicalTreatment7Days 
   });
@@ -168,6 +170,44 @@ export default function Step3Qualification({
                   htmlFor="police-no" 
                   className="cursor-pointer"
                   onClick={() => handleRadioChange('hasPoliceReport', false)}
+                >No</label>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <label className="label block mb-2">Was an ambulance called to the accident scene?</label>
+            <div className="flex space-x-4">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="ambulance-yes"
+                  value="true"
+                  className="mr-2"
+                  checked={wasAmbulanceCalled === true}
+                  {...register('wasAmbulanceCalled')}
+                  onChange={() => handleRadioChange('wasAmbulanceCalled', true)}
+                />
+                <label 
+                  htmlFor="ambulance-yes" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('wasAmbulanceCalled', true)}
+                >Yes</label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="ambulance-no"
+                  value="false"
+                  className="mr-2"
+                  checked={wasAmbulanceCalled === false}
+                  {...register('wasAmbulanceCalled')}
+                  onChange={() => handleRadioChange('wasAmbulanceCalled', false)}
+                />
+                <label 
+                  htmlFor="ambulance-no" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('wasAmbulanceCalled', false)}
                 >No</label>
               </div>
             </div>
