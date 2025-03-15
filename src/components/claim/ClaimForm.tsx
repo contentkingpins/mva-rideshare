@@ -33,20 +33,45 @@ const claimSchema = z.object({
   rideshareUserInfo: z.string().optional(),
   
   // Step 3: Legal qualification
-  filedComplaint: z.boolean().optional()
-    .transform(val => val === true), // Ensure it's a true boolean
+  filedComplaint: z.union([z.boolean(), z.string()]).optional()
+    .transform(val => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return false;
+    }),
   rideshareCompany: z.enum(['uber', 'lyft'], { 
     required_error: 'Please select the rideshare company'
   }),
-  hasPoliceReport: z.boolean().optional()
-    .transform(val => val === true), // Ensure it's a true boolean
+  hasPoliceReport: z.union([z.boolean(), z.string()]).optional()
+    .transform(val => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return false;
+    }),
   accidentDate: z.string().min(1, { message: 'Accident date is required' }),
-  wasAmbulanceCalled: z.boolean().optional()
-    .transform(val => val === true),
-  receivedMedicalTreatment48Hours: z.boolean().optional()
-    .transform(val => val === true),
-  receivedMedicalTreatment7Days: z.boolean().optional()
-    .transform(val => val === true),
+  wasAmbulanceCalled: z.union([z.boolean(), z.string()]).optional()
+    .transform(val => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return false;
+    }),
+  receivedMedicalTreatment48Hours: z.union([z.boolean(), z.string()]).optional()
+    .transform(val => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return false;
+    }),
+  receivedMedicalTreatment7Days: z.union([z.boolean(), z.string()]).optional()
+    .transform(val => {
+      if (typeof val === 'boolean') return val;
+      if (val === 'true') return true;
+      if (val === 'false') return false;
+      return false;
+    }),
 });
 
 export type ClaimFormData = z.infer<typeof claimSchema>;
@@ -373,8 +398,8 @@ export default function ClaimForm() {
       }
       
       // Check if either complaint or police report is true
-      const hasComplaint = formValues.filedComplaint === true;
-      const hasReport = formValues.hasPoliceReport === true;
+      const hasComplaint = Boolean(formValues.filedComplaint);
+      const hasReport = Boolean(formValues.hasPoliceReport);
       
       if (!hasComplaint && !hasReport) {
         setIsRejected(true);
@@ -383,8 +408,8 @@ export default function ClaimForm() {
       }
       
       // Check for medical treatment
-      const hadMedicalTreatment48Hours = formValues.receivedMedicalTreatment48Hours === true;
-      const hadMedicalTreatment7Days = formValues.receivedMedicalTreatment7Days === true;
+      const hadMedicalTreatment48Hours = Boolean(formValues.receivedMedicalTreatment48Hours);
+      const hadMedicalTreatment7Days = Boolean(formValues.receivedMedicalTreatment7Days);
       
       // If they didn't receive treatment within 48 hours and we don't have info about 7 days
       if (!hadMedicalTreatment48Hours && formValues.receivedMedicalTreatment7Days === undefined) {

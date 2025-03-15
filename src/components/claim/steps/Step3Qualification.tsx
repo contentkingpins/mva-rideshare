@@ -21,6 +21,20 @@ export default function Step3Qualification({
   const receivedMedicalTreatment48Hours = watch('receivedMedicalTreatment48Hours');
   const receivedMedicalTreatment7Days = watch('receivedMedicalTreatment7Days');
 
+  // Add debugging to help troubleshoot form values
+  console.log("Step3 form values:", { 
+    filedComplaint, 
+    hasPoliceReport, 
+    receivedMedicalTreatment48Hours, 
+    receivedMedicalTreatment7Days 
+  });
+
+  // Add some effects to handle radio button state correctly
+  const handleRadioChange = (field: string, value: boolean) => {
+    console.log(`Setting ${field} to ${value}`);
+    setValue(field as any, value);
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
@@ -90,21 +104,33 @@ export default function Step3Qualification({
                 <input
                   type="radio"
                   id="filed-yes"
+                  value="true"
                   className="mr-2"
+                  checked={filedComplaint === true}
                   {...register('filedComplaint')}
-                  onClick={() => setValue('filedComplaint', true)}
+                  onChange={() => handleRadioChange('filedComplaint', true)}
                 />
-                <label htmlFor="filed-yes" className="cursor-pointer">Yes</label>
+                <label 
+                  htmlFor="filed-yes" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('filedComplaint', true)}
+                >Yes</label>
               </div>
               <div className="flex items-center">
                 <input
                   type="radio"
                   id="filed-no"
+                  value="false"
                   className="mr-2"
+                  checked={filedComplaint === false}
                   {...register('filedComplaint')}
-                  onClick={() => setValue('filedComplaint', false)}
+                  onChange={() => handleRadioChange('filedComplaint', false)}
                 />
-                <label htmlFor="filed-no" className="cursor-pointer">No</label>
+                <label 
+                  htmlFor="filed-no" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('filedComplaint', false)}
+                >No</label>
               </div>
             </div>
           </div>
@@ -116,21 +142,33 @@ export default function Step3Qualification({
                 <input
                   type="radio"
                   id="police-yes"
+                  value="true"
                   className="mr-2"
+                  checked={hasPoliceReport === true}
                   {...register('hasPoliceReport')}
-                  onClick={() => setValue('hasPoliceReport', true)}
+                  onChange={() => handleRadioChange('hasPoliceReport', true)}
                 />
-                <label htmlFor="police-yes" className="cursor-pointer">Yes</label>
+                <label 
+                  htmlFor="police-yes" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('hasPoliceReport', true)}
+                >Yes</label>
               </div>
               <div className="flex items-center">
                 <input
                   type="radio"
                   id="police-no"
+                  value="false"
                   className="mr-2"
+                  checked={hasPoliceReport === false}
                   {...register('hasPoliceReport')}
-                  onClick={() => setValue('hasPoliceReport', false)}
+                  onChange={() => handleRadioChange('hasPoliceReport', false)}
                 />
-                <label htmlFor="police-no" className="cursor-pointer">No</label>
+                <label 
+                  htmlFor="police-no" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('hasPoliceReport', false)}
+                >No</label>
               </div>
             </div>
           </div>
@@ -142,21 +180,33 @@ export default function Step3Qualification({
                 <input
                   type="radio"
                   id="medical-48h-yes"
+                  value="true"
                   className="mr-2"
+                  checked={receivedMedicalTreatment48Hours === true}
                   {...register('receivedMedicalTreatment48Hours')}
-                  onClick={() => setValue('receivedMedicalTreatment48Hours', true)}
+                  onChange={() => handleRadioChange('receivedMedicalTreatment48Hours', true)}
                 />
-                <label htmlFor="medical-48h-yes" className="cursor-pointer">Yes</label>
+                <label 
+                  htmlFor="medical-48h-yes" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('receivedMedicalTreatment48Hours', true)}
+                >Yes</label>
               </div>
               <div className="flex items-center">
                 <input
                   type="radio"
                   id="medical-48h-no"
+                  value="false"
                   className="mr-2"
+                  checked={receivedMedicalTreatment48Hours === false}
                   {...register('receivedMedicalTreatment48Hours')}
-                  onClick={() => setValue('receivedMedicalTreatment48Hours', false)}
+                  onChange={() => handleRadioChange('receivedMedicalTreatment48Hours', false)}
                 />
-                <label htmlFor="medical-48h-no" className="cursor-pointer">No</label>
+                <label 
+                  htmlFor="medical-48h-no" 
+                  className="cursor-pointer"
+                  onClick={() => handleRadioChange('receivedMedicalTreatment48Hours', false)}
+                >No</label>
               </div>
             </div>
           </div>
@@ -169,21 +219,33 @@ export default function Step3Qualification({
                   <input
                     type="radio"
                     id="medical-7d-yes"
+                    value="true"
                     className="mr-2"
+                    checked={receivedMedicalTreatment7Days === true}
                     {...register('receivedMedicalTreatment7Days')}
-                    onClick={() => setValue('receivedMedicalTreatment7Days', true)}
+                    onChange={() => handleRadioChange('receivedMedicalTreatment7Days', true)}
                   />
-                  <label htmlFor="medical-7d-yes" className="cursor-pointer">Yes</label>
+                  <label 
+                    htmlFor="medical-7d-yes" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('receivedMedicalTreatment7Days', true)}
+                  >Yes</label>
                 </div>
                 <div className="flex items-center">
                   <input
                     type="radio"
                     id="medical-7d-no"
+                    value="false"
                     className="mr-2"
+                    checked={receivedMedicalTreatment7Days === false}
                     {...register('receivedMedicalTreatment7Days')}
-                    onClick={() => setValue('receivedMedicalTreatment7Days', false)}
+                    onChange={() => handleRadioChange('receivedMedicalTreatment7Days', false)}
                   />
-                  <label htmlFor="medical-7d-no" className="cursor-pointer">No</label>
+                  <label 
+                    htmlFor="medical-7d-no" 
+                    className="cursor-pointer"
+                    onClick={() => handleRadioChange('receivedMedicalTreatment7Days', false)}
+                  >No</label>
                 </div>
               </div>
             </div>
