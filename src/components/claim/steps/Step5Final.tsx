@@ -13,7 +13,7 @@ export default function Step5Final() {
         </div>
         <h2 className="text-2xl md:text-3xl font-bold mb-2">Claim Successfully Uploaded</h2>
         <p className="text-gray-600">
-          Based on your information, your file has been escalated to a case manager.
+          Based on your information, your file has been escalated to a case manager. Please call to finalize your claim.
         </p>
       </div>
 

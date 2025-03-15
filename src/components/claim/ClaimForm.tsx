@@ -595,7 +595,7 @@ export default function ClaimForm() {
                 
                 <h2 className="text-2xl font-bold mb-4">Claim Successfully Uploaded</h2>
                 <p className="text-lg text-gray-600 mb-8">
-                  Based on your information, your file has been escalated to a case manager.
+                  Based on your information, your file has been escalated to a case manager. Please call to finalize your claim.
                 </p>
                 
                 <a
