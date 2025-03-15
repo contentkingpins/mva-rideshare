@@ -210,8 +210,9 @@ export default function ClaimForm() {
         }
         return await trigger('role');
       case 3:
-        // Update to include validation for new fields
-        return await trigger(['rideshareCompany', 'accidentDate', 'wasAmbulanceCalled', 'receivedMedicalTreatment48Hours']);
+        // Only validate the required fields: rideshare company and accident date
+        // The checkboxes are optional and will be validated in the submitStep3 function
+        return await trigger(['rideshareCompany', 'accidentDate']);
       default:
         return true;
     }
@@ -394,12 +395,6 @@ export default function ClaimForm() {
         return;
       }
       
-      // Check if ambulance question is answered
-      if (formValues.wasAmbulanceCalled === undefined) {
-        setFormError("Please indicate if an ambulance was called to the accident scene.");
-        return;
-      }
-      
       // Check if either complaint or police report is true
       const hasComplaint = Boolean(formValues.filedComplaint);
       const hasReport = Boolean(formValues.hasPoliceReport);
@@ -415,10 +410,7 @@ export default function ClaimForm() {
       const hadMedicalTreatment7Days = Boolean(formValues.receivedMedicalTreatment7Days);
       
       // If they didn't receive treatment within 48 hours and we don't have info about 7 days
-      if (!hadMedicalTreatment48Hours && formValues.receivedMedicalTreatment7Days === undefined) {
-        setFormError("Please indicate if you received medical treatment within 7 days of the accident.");
-        return;
-      }
+      // Note: With checkboxes, undefined means unchecked, so we don't need to check for undefined
       
       // If neither medical treatment option is selected, reject the claim
       if (!hadMedicalTreatment48Hours && !hadMedicalTreatment7Days) {
