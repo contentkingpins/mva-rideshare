@@ -24,6 +24,9 @@ export default function Navbar() {
             <Link href="/" className="font-medium text-gray-700 hover:text-primary-600">
               Home
             </Link>
+            <Link href="/rideshare-rights" className="font-medium text-gray-700 hover:text-primary-600">
+              Rideshare Rights
+            </Link>
             <Link href="/claim" className="font-medium text-gray-700 hover:text-primary-600">
               Start Your Claim
             </Link>
@@ -69,6 +72,13 @@ export default function Navbar() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
+              </Link>
+              <Link 
+                href="/rideshare-rights" 
+                className="px-4 py-2 font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Rideshare Rights
               </Link>
               <Link 
                 href="/claim" 

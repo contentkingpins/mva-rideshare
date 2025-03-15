@@ -20,7 +20,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Claim Connectors | Rideshare Injury Claims Made Easy',
   description: 'Submit your rideshare accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.',
-  keywords: 'rideshare accident, uber accident, lyft accident, rideshare injury, claim compensation, accident lawyer',
+  keywords: 'rideshare accident, uber accident, lyft accident, rideshare injury, claim compensation, accident lawyer, rideshare rights, rideshare legal guide',
   authors: [{ name: 'Claim Connectors Team' }],
   creator: 'Claim Connectors',
   publisher: 'Claim Connectors',

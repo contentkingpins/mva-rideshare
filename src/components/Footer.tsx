@@ -44,6 +44,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/rideshare-rights" className="text-gray-400 hover:text-white">
+                  Rideshare Rights
+                </Link>
+              </li>
+              <li>
                 <Link href="/claim" className="text-gray-400 hover:text-white">
                   Start Your Claim
                 </Link>

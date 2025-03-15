@@ -49,9 +49,10 @@ function FAQItem({ question, answer, isOpen, onToggle, delay }: FAQItemProps) {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="pb-5 text-gray-600">
-              <p>{answer}</p>
-            </div>
+            <div 
+              className="pb-5 text-gray-600"
+              dangerouslySetInnerHTML={{ __html: answer }}
+            ></div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -64,7 +65,7 @@ export default function FAQ() {
     {
       id: 1,
       question: "What should I do right after a rideshare accident?",
-      answer: "Immediately after a rideshare accident, ensure your safety first. Call 911 if there are injuries, take photos of the accident scene, exchange information with all parties involved, and report the accident to the rideshare company through their app. Also, get medical attention even if you don't feel injured right away, as some injuries may become apparent later."
+      answer: "Immediately after a rideshare accident, ensure your safety first. Call 911 if there are injuries, take photos of the accident scene, exchange information with all parties involved, and report the accident to the rideshare company through their app. Also, get medical attention even if you don't feel injured right away, as some injuries may become apparent later. For a complete guide, visit our <a href='/rideshare-rights' class='text-primary-600 hover:underline'>Rideshare Rights</a> page."
     },
     {
       id: 2,
