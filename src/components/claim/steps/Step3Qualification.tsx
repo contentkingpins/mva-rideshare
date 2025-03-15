@@ -31,22 +31,12 @@ export default function Step3Qualification({
     receivedMedicalTreatment7Days 
   });
 
-  // Handle checkbox change
-  const handleCheckboxChange = (field: string) => {
-    console.log(`Toggling ${field}`);
-    const currentValue = watch(field as any);
-    setValue(field as any, !currentValue);
-  };
-
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold mb-2">Claim Qualification</h2>
         <p className="text-gray-600">
           Please answer each question below about your accident to help us process your claim.
-        </p>
-        <p className="text-sm text-gray-500 mt-2">
-          You can select multiple options that apply to your situation.
         </p>
       </div>
       
@@ -104,96 +94,136 @@ export default function Step3Qualification({
           </div>
           
           <div className="border-t pt-4 mt-4">
-            <h3 className="font-semibold text-lg mb-4">Please check all that apply to your situation:</h3>
+            <h3 className="font-semibold text-lg mb-4">Please answer each question about your accident:</h3>
             
             <div className="bg-gray-50 p-4 rounded-md mb-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="filed-complaint"
-                  className="mr-2 h-5 w-5"
-                  checked={filedComplaint === true}
-                  onChange={() => handleCheckboxChange('filedComplaint')}
-                />
-                <label 
-                  htmlFor="filed-complaint" 
-                  className="cursor-pointer"
-                >
-                  I have filed a complaint with the rideshare company
-                </label>
-              </div>
-            </div>
-          
-            <div className="bg-gray-50 p-4 rounded-md mb-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="police-report"
-                  className="mr-2 h-5 w-5"
-                  checked={hasPoliceReport === true}
-                  onChange={() => handleCheckboxChange('hasPoliceReport')}
-                />
-                <label 
-                  htmlFor="police-report" 
-                  className="cursor-pointer"
-                >
-                  There is a police report for the accident
-                </label>
-              </div>
-            </div>
-          
-            <div className="bg-gray-50 p-4 rounded-md mb-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="ambulance-called"
-                  className="mr-2 h-5 w-5"
-                  checked={wasAmbulanceCalled === true}
-                  onChange={() => handleCheckboxChange('wasAmbulanceCalled')}
-                />
-                <label 
-                  htmlFor="ambulance-called" 
-                  className="cursor-pointer"
-                >
-                  An ambulance was called to the accident scene
-                </label>
-              </div>
-            </div>
-          
-            <div className="bg-gray-50 p-4 rounded-md mb-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="medical-48h"
-                  className="mr-2 h-5 w-5"
-                  checked={receivedMedicalTreatment48Hours === true}
-                  onChange={() => handleCheckboxChange('receivedMedicalTreatment48Hours')}
-                />
-                <label 
-                  htmlFor="medical-48h" 
-                  className="cursor-pointer"
-                >
-                  I received medical treatment within 48 hours of the accident
-                </label>
-              </div>
-            </div>
-          
-            {!receivedMedicalTreatment48Hours && (
-              <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <p className="mb-2 font-medium">Have you filed a complaint with the rideshare company?</p>
+              <div className="flex space-x-4">
                 <div className="flex items-center">
                   <input
-                    type="checkbox"
-                    id="medical-7d"
-                    className="mr-2 h-5 w-5"
-                    checked={receivedMedicalTreatment7Days === true}
-                    onChange={() => handleCheckboxChange('receivedMedicalTreatment7Days')}
+                    type="radio"
+                    id="filed-complaint-yes"
+                    value="true"
+                    className="mr-2"
+                    {...register('filedComplaint')}
                   />
-                  <label 
-                    htmlFor="medical-7d" 
-                    className="cursor-pointer"
-                  >
-                    I received medical treatment within 7 days of the accident
-                  </label>
+                  <label htmlFor="filed-complaint-yes" className="cursor-pointer">Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="filed-complaint-no"
+                    value="false"
+                    className="mr-2"
+                    {...register('filedComplaint')}
+                  />
+                  <label htmlFor="filed-complaint-no" className="cursor-pointer">No</label>
+                </div>
+              </div>
+            </div>
+          
+            <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <p className="mb-2 font-medium">Is there a police report for the accident?</p>
+              <div className="flex space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="police-report-yes"
+                    value="true"
+                    className="mr-2"
+                    {...register('hasPoliceReport')}
+                  />
+                  <label htmlFor="police-report-yes" className="cursor-pointer">Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="police-report-no"
+                    value="false"
+                    className="mr-2"
+                    {...register('hasPoliceReport')}
+                  />
+                  <label htmlFor="police-report-no" className="cursor-pointer">No</label>
+                </div>
+              </div>
+            </div>
+          
+            <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <p className="mb-2 font-medium">Was an ambulance called to the accident scene?</p>
+              <div className="flex space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="ambulance-called-yes"
+                    value="true"
+                    className="mr-2"
+                    {...register('wasAmbulanceCalled')}
+                  />
+                  <label htmlFor="ambulance-called-yes" className="cursor-pointer">Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="ambulance-called-no"
+                    value="false"
+                    className="mr-2"
+                    {...register('wasAmbulanceCalled')}
+                  />
+                  <label htmlFor="ambulance-called-no" className="cursor-pointer">No</label>
+                </div>
+              </div>
+            </div>
+          
+            <div className="bg-gray-50 p-4 rounded-md mb-4">
+              <p className="mb-2 font-medium">Did you receive medical treatment within 48 hours of the accident?</p>
+              <div className="flex space-x-4">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="medical-48h-yes"
+                    value="true"
+                    className="mr-2"
+                    {...register('receivedMedicalTreatment48Hours')}
+                  />
+                  <label htmlFor="medical-48h-yes" className="cursor-pointer">Yes</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="medical-48h-no"
+                    value="false"
+                    className="mr-2"
+                    {...register('receivedMedicalTreatment48Hours')}
+                  />
+                  <label htmlFor="medical-48h-no" className="cursor-pointer">No</label>
+                </div>
+              </div>
+            </div>
+          
+            {receivedMedicalTreatment48Hours === false && (
+              <div className="bg-gray-50 p-4 rounded-md mb-4">
+                <p className="mb-2 font-medium">Did you receive medical treatment within 7 days of the accident?</p>
+                <div className="flex space-x-4">
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="medical-7d-yes"
+                      value="true"
+                      className="mr-2"
+                      {...register('receivedMedicalTreatment7Days')}
+                    />
+                    <label htmlFor="medical-7d-yes" className="cursor-pointer">Yes</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="radio"
+                      id="medical-7d-no"
+                      value="false"
+                      className="mr-2"
+                      {...register('receivedMedicalTreatment7Days')}
+                    />
+                    <label htmlFor="medical-7d-no" className="cursor-pointer">No</label>
+                  </div>
                 </div>
               </div>
             )}
