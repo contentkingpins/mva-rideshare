@@ -3,9 +3,17 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { trackEvent, events } from '@/utils/metaPixel';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleCallClick = () => {
+    trackEvent(events.CALL_INITIATED, {
+      location: 'navbar',
+      phone_number: '+18339986906'
+    });
+  };
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -30,7 +38,11 @@ export default function Navbar() {
             <Link href="/claim" className="font-medium text-gray-700 hover:text-primary-600">
               Start Your Claim
             </Link>
-            <a href="tel:+18339986906" className="font-medium text-primary-600 hover:text-primary-800">
+            <a 
+              href="tel:+18339986906" 
+              className="font-medium text-primary-600 hover:text-primary-800"
+              onClick={handleCallClick}
+            >
               Call +1 (833) 998-6906
             </a>
           </div>
@@ -90,7 +102,10 @@ export default function Navbar() {
               <a 
                 href="tel:+18339986906" 
                 className="px-4 py-2 font-medium text-primary-600 hover:bg-gray-100 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => {
+                  handleCallClick();
+                  setMobileMenuOpen(false);
+                }}
               >
                 Call +1 (833) 998-6906
               </a>

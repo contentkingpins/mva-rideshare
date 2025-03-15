@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
+import { trackEvent, trackCustomEvent, events } from '@/utils/metaPixel';
 
 // Import all steps directly, no relative imports that might cause issues
 import Step1BasicInfo from './steps/Step1BasicInfo';
@@ -281,127 +282,83 @@ export default function ClaimForm() {
 
   // Form submission handlers for each step
   
-  // Add a direct form submission handler for step 1
-  const submitStep1 = async (e?: React.MouseEvent | React.TouchEvent) => {
-    // Prevent any default behavior if event is present
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation(); // Ensure the event doesn't bubble up
-    }
+  // Submit step 1 (basic info)
+  const submitStep1 = async (e: React.FormEvent) => {
+    e.preventDefault();
     
     try {
-      // Get form values
-      const formValues = getValues();
-      console.log("Step 1 form values:", formValues); // Debug log
-      
-      // Validate required fields
-      const isValid = await trigger(['firstName', 'lastName', 'phone']);
-      console.log("Step 1 validation result:", isValid); // Debug log
+      const isValid = await validateCurrentStep();
       
       if (!isValid) {
-        setFormError("Please fill in all required fields correctly.");
         return;
       }
       
-      // Save form data to localStorage for returning users
-      try {
-        const contactData = {
-          firstName: formValues.firstName,
-          lastName: formValues.lastName,
-          phone: formValues.phone
-        };
-        localStorage.setItem('contactFormData', JSON.stringify(contactData));
-        console.log("Saved contact data to localStorage"); // Debug log
-      } catch (e) {
-        console.error('Error saving to localStorage:', e);
-      }
-      
-      // Save form data
-      setFormData(prev => {
-        const newData = { ...prev, ...formValues };
-        return newData;
+      // Track step 1 completion
+      trackCustomEvent(events.COMPLETE_CLAIM_STEP, {
+        step: 1,
+        step_name: 'Basic Info'
       });
       
-      // Force immediate step change for mobile
-      console.log("Moving to step 2"); // Debug log
       setCurrentStep(2);
-      
     } catch (error) {
       console.error('Error in submitStep1:', error);
       setFormError("An unexpected error occurred. Please try again.");
     }
   };
-
-  // Add a direct form submission handler for step 2
-  const submitStep2 = async (e?: React.MouseEvent | React.TouchEvent) => {
-    // Prevent any default behavior if event is present
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation(); // Ensure the event doesn't bubble up
-    }
+  
+  // Submit step 2 (involvement)
+  const submitStep2 = async (e: React.FormEvent) => {
+    e.preventDefault();
     
     try {
-      // Get form values
-      const formValues = getValues();
+      const isValid = await validateCurrentStep();
       
-      // Make sure we have a role selected
-      if (!formValues.role) {
-        setFormError("Please select your role in the accident.");
+      if (!isValid) {
         return;
       }
       
-      // Special handling for guest role
-      if (formValues.role === 'guest' && (!formValues.rideshareUserInfo || formValues.rideshareUserInfo.trim() === '')) {
-        setFormError("Please provide information about the rideshare user.");
-        return;
-      }
-      
-      // Save form data
-      setFormData(prev => {
-        const newData = { ...prev, ...formValues };
-        return newData;
+      // Track step 2 completion
+      trackCustomEvent(events.COMPLETE_CLAIM_STEP, {
+        step: 2,
+        step_name: 'Involvement'
       });
       
-      // Force immediate step change for mobile
       setCurrentStep(3);
-      
     } catch (error) {
       console.error('Error in submitStep2:', error);
       setFormError("An unexpected error occurred. Please try again.");
     }
   };
-
-  // Add a direct form submission handler for step 3
-  const submitStep3 = async (e?: React.MouseEvent | React.TouchEvent) => {
-    // Prevent any default behavior if event is present
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation(); // Ensure the event doesn't bubble up
-    }
+  
+  // Submit step 3 (qualification)
+  const submitStep3 = async (e: React.FormEvent) => {
+    e.preventDefault();
     
     try {
-      // Get form values
+      // Validate required fields
+      const isValid = await trigger(['rideshareCompany', 'accidentDate']);
+      
+      if (!isValid) {
+        return;
+      }
+      
+      // Get current form values
       const formValues = getValues();
       
-      // Make sure we have a rideshare company selected
-      if (!formValues.rideshareCompany) {
-        setFormError("Please select whether you were in an Uber or Lyft.");
-        return;
-      }
-      
-      // Check if accident date is provided
-      if (!formValues.accidentDate) {
-        setFormError("Please provide the date when the accident occurred.");
-        return;
-      }
-      
-      // Check if either complaint or police report is true
+      // Check for complaint or police report
       const hasComplaint = Boolean(formValues.filedComplaint);
       const hasReport = Boolean(formValues.hasPoliceReport);
       
       if (!hasComplaint && !hasReport) {
         setIsRejected(true);
         setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
+        
+        // Track rejection
+        trackCustomEvent('ClaimRejected', {
+          reason: 'No complaint or police report',
+          step: 3
+        });
+        
         return;
       }
       
@@ -409,15 +366,25 @@ export default function ClaimForm() {
       const hadMedicalTreatment48Hours = Boolean(formValues.receivedMedicalTreatment48Hours);
       const hadMedicalTreatment7Days = Boolean(formValues.receivedMedicalTreatment7Days);
       
-      // If they didn't receive treatment within 48 hours and we don't have info about 7 days
-      // Note: With checkboxes, undefined means unchecked, so we don't need to check for undefined
-      
       // If neither medical treatment option is selected, reject the claim
       if (!hadMedicalTreatment48Hours && !hadMedicalTreatment7Days) {
         setIsRejected(true);
         setRejectionReason('To process a rideshare injury claim, you must have received medical treatment within 7 days of the accident.');
+        
+        // Track rejection
+        trackCustomEvent('ClaimRejected', {
+          reason: 'No medical treatment within 7 days',
+          step: 3
+        });
+        
         return;
       }
+      
+      // Track step 3 completion
+      trackCustomEvent(events.COMPLETE_CLAIM_STEP, {
+        step: 3,
+        step_name: 'Qualification'
+      });
       
       // Save form data
       setFormData(prev => {
@@ -435,6 +402,14 @@ export default function ClaimForm() {
       setTimeout(() => {
         setIsLoading(false);
         setCurrentStep(5);
+        
+        // Track successful claim submission
+        trackEvent(events.LEAD, {
+          content_name: 'Rideshare Claim',
+          content_category: 'Claim Submission',
+          status: 'Qualified'
+        });
+        
       }, 5000);
       
     } catch (error) {
