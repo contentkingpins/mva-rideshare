@@ -353,11 +353,20 @@ export default function ClaimForm() {
         setIsRejected(true);
         setRejectionReason('To process a rideshare claim, there must be either a rideshare report or a police report.');
         
-        // Track rejection
-        trackCustomEvent('ClaimRejected', {
-          reason: 'No complaint or police report',
-          step: 3
-        });
+        // Track rejection with both client and server-side tracking
+        const { trackEventWithRedundancy } = await import('@/utils/metaConversionsApi');
+        trackEventWithRedundancy(
+          'ClaimRejected', 
+          {
+            firstName: formValues.firstName,
+            lastName: formValues.lastName,
+            phone: formValues.phone,
+          },
+          {
+            reason: 'No complaint or police report',
+            step: 3
+          }
+        );
         
         return;
       }
@@ -371,20 +380,38 @@ export default function ClaimForm() {
         setIsRejected(true);
         setRejectionReason('To process a rideshare injury claim, you must have received medical treatment within 7 days of the accident.');
         
-        // Track rejection
-        trackCustomEvent('ClaimRejected', {
-          reason: 'No medical treatment within 7 days',
-          step: 3
-        });
+        // Track rejection with both client and server-side tracking
+        const { trackEventWithRedundancy } = await import('@/utils/metaConversionsApi');
+        trackEventWithRedundancy(
+          'ClaimRejected', 
+          {
+            firstName: formValues.firstName,
+            lastName: formValues.lastName,
+            phone: formValues.phone,
+          },
+          {
+            reason: 'No medical treatment within 7 days',
+            step: 3
+          }
+        );
         
         return;
       }
       
-      // Track step 3 completion
-      trackCustomEvent(events.COMPLETE_CLAIM_STEP, {
-        step: 3,
-        step_name: 'Qualification'
-      });
+      // Track step 3 completion with both client and server-side tracking
+      const { trackEventWithRedundancy } = await import('@/utils/metaConversionsApi');
+      trackEventWithRedundancy(
+        events.COMPLETE_CLAIM_STEP, 
+        {
+          firstName: formValues.firstName,
+          lastName: formValues.lastName,
+          phone: formValues.phone,
+        },
+        {
+          step: 3,
+          step_name: 'Qualification'
+        }
+      );
       
       // Save form data
       setFormData(prev => {
@@ -403,12 +430,20 @@ export default function ClaimForm() {
         setIsLoading(false);
         setCurrentStep(5);
         
-        // Track successful claim submission
-        trackEvent(events.LEAD, {
-          content_name: 'Rideshare Claim',
-          content_category: 'Claim Submission',
-          status: 'Qualified'
-        });
+        // Track successful claim submission with both client and server-side tracking
+        trackEventWithRedundancy(
+          events.LEAD, 
+          {
+            firstName: formValues.firstName,
+            lastName: formValues.lastName,
+            phone: formValues.phone,
+          },
+          {
+            content_name: 'Rideshare Claim',
+            content_category: 'Claim Submission',
+            status: 'Qualified'
+          }
+        );
         
       }, 5000);
       

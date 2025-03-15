@@ -1,16 +1,21 @@
 "use client";
 
 import Link from 'next/link';
-import { trackEvent, events } from '@/utils/metaPixel';
+import { events } from '@/utils/metaPixel';
+import { trackEventWithRedundancy } from '@/utils/metaConversionsApi';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   
   const handleCallClick = () => {
-    trackEvent(events.CALL_INITIATED, {
-      location: 'footer',
-      phone_number: '+18339986906'
-    });
+    trackEventWithRedundancy(
+      events.CALL_INITIATED, 
+      {}, // No user data for this event
+      {
+        location: 'footer',
+        phone_number: '+18339986906'
+      }
+    );
   };
   
   return (

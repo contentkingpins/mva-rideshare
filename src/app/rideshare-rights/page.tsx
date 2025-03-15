@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { trackEvent, trackCustomEvent, events } from '@/utils/metaPixel';
+import { trackEvent, events } from '@/utils/metaPixel';
+import { trackEventWithRedundancy } from '@/utils/metaConversionsApi';
 
 export default function RideshareRights() {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -12,13 +13,17 @@ export default function RideshareRights() {
   const handleDownload = () => {
     setIsDownloading(true);
     
-    // Track the download event with Meta Pixel
-    trackCustomEvent(events.DOWNLOAD_GUIDE, {
-      content_name: 'Rideshare Accident Guide',
-      content_category: 'Legal Resources',
-      value: 0,
-      currency: 'USD'
-    });
+    // Track the download event with both Meta Pixel and Conversions API
+    trackEventWithRedundancy(
+      events.DOWNLOAD_GUIDE, 
+      {}, // No user data for this event
+      {
+        content_name: 'Rideshare Accident Guide',
+        content_category: 'Legal Resources',
+        value: 0,
+        currency: 'USD'
+      }
+    );
     
     // Simulate download delay
     setTimeout(() => {
