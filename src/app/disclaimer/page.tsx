@@ -39,8 +39,7 @@ export default function DisclaimerPage() {
             <h2>Contact Us</h2>
             <p>If you have any questions about this Legal Disclaimer, please contact us at:</p>
             <p>
-              Email: <a href="mailto:info@claimconnectors.com">info@claimconnectors.com</a><br />
-              Phone: <a href="tel:8885555555">(888) 555-5555</a>
+              Phone: <a href="tel:+18339986906">+1 (833) 998-6906</a>
             </p>
           </div>
           

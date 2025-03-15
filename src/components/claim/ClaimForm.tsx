@@ -24,7 +24,6 @@ const claimSchema = z.object({
     .refine(val => val.length >= 10 && val.length <= 15, {
       message: 'Phone number must be between 10 and 15 digits'
     }),
-  email: z.string().email({ message: 'Valid email is required' }),
   
   // Step 2: Accident involvement
   role: z.enum(['passenger', 'guest', 'otherVehicle'], { 
@@ -170,7 +169,6 @@ export default function ClaimForm() {
           if (parsedData.firstName) setValue('firstName', parsedData.firstName);
           if (parsedData.lastName) setValue('lastName', parsedData.lastName);
           if (parsedData.phone) setValue('phone', parsedData.phone);
-          if (parsedData.email) setValue('email', parsedData.email);
           
           setFormData(prev => ({ ...prev, ...parsedData }));
           
@@ -178,8 +176,7 @@ export default function ClaimForm() {
           // Only skip if ALL required contact fields are present and non-empty
           if (parsedData.firstName && parsedData.firstName.trim() !== '' &&
               parsedData.lastName && parsedData.lastName.trim() !== '' &&
-              parsedData.phone && parsedData.phone.trim() !== '' &&
-              parsedData.email && parsedData.email.trim() !== '') {
+              parsedData.phone && parsedData.phone.trim() !== '') {
             // For mobile view, make sure we still start at step 1 to allow users to confirm data
             if (!isMobileView) {
               setCurrentStep(2);
@@ -202,7 +199,7 @@ export default function ClaimForm() {
   const validateCurrentStep = async () => {
     switch (currentStep) {
       case 1:
-        return await trigger(['firstName', 'lastName', 'phone', 'email']);
+        return await trigger(['firstName', 'lastName', 'phone']);
       case 2:
         // For step 2, validate both role and rideshareUserInfo if role is 'guest'
         if (role === 'guest') {
@@ -296,7 +293,7 @@ export default function ClaimForm() {
       console.log("Step 1 form values:", formValues); // Debug log
       
       // Validate required fields
-      const isValid = await trigger(['firstName', 'lastName', 'phone', 'email']);
+      const isValid = await trigger(['firstName', 'lastName', 'phone']);
       console.log("Step 1 validation result:", isValid); // Debug log
       
       if (!isValid) {
@@ -309,8 +306,7 @@ export default function ClaimForm() {
         const contactData = {
           firstName: formValues.firstName,
           lastName: formValues.lastName,
-          phone: formValues.phone,
-          email: formValues.email
+          phone: formValues.phone
         };
         localStorage.setItem('contactFormData', JSON.stringify(contactData));
         console.log("Saved contact data to localStorage"); // Debug log
