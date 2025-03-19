@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { loadTrustedFormScript, getTrustedFormCertUrl } from '@/utils/trustedform';
 
 // Define the form schemas using Zod
 const contactSchema = z.object({
@@ -12,6 +13,7 @@ const contactSchema = z.object({
   lastName: z.string().min(2, { message: 'Last name is required' }),
   phone: z.string().min(10, { message: 'Valid phone number is required' }),
   email: z.string().email({ message: 'Valid email is required' }),
+  trustedformCertUrl: z.string().optional(),
 });
 
 const accidentSchema = z.object({
@@ -56,6 +58,7 @@ export default function ClaimForm() {
   const [denialReason, setDenialReason] = useState('');
   const [processingSteps, setProcessingSteps] = useState<string[]>([]);
   const [currentProcessingStep, setCurrentProcessingStep] = useState(0);
+  const [trustedFormCertUrl, setTrustedFormCertUrl] = useState<string | null>(null);
   
   // Form hooks for each step
   const contactForm = useForm<ContactFormData>({
@@ -65,6 +68,7 @@ export default function ClaimForm() {
       lastName: '',
       phone: '',
       email: '',
+      trustedformCertUrl: '',
     },
   });
   
@@ -97,6 +101,47 @@ export default function ClaimForm() {
         setStep(2);
       } catch (error) {
         console.error('Error parsing saved contact data:', error);
+      }
+    }
+  }, []);
+  
+  // Add TrustedForm script when component mounts
+  useEffect(() => {
+    // Check if script already exists
+    if (!document.getElementById('trustedform-script')) {
+      // Create script element to match TrustedForm's recommended implementation
+      (function() {
+        var tf = document.createElement('script');
+        tf.type = 'text/javascript';
+        tf.async = true;
+        tf.id = 'trustedform-script';
+        tf.src = '//api.trustedform.com/trustedform.js?field=xxTrustedFormCertUrl&use_tagged_consent=true&1';
+        
+        var s = document.getElementsByTagName('script')[0];
+        if (s && s.parentNode) {
+          s.parentNode.insertBefore(tf, s);
+        } else {
+          document.body.appendChild(tf);
+        }
+        
+        // Set the TrustedForm certificate URL when available
+        tf.onload = () => {
+          // There's a slight delay before TrustedForm populates the field
+          setTimeout(() => {
+            const certUrl = getTrustedFormCertUrl();
+            if (certUrl) {
+              setTrustedFormCertUrl(certUrl);
+              contactForm.setValue('trustedformCertUrl', certUrl);
+            }
+          }, 1000);
+        };
+      })();
+    } else {
+      // Script might already be loaded, try to get the certificate URL directly
+      const certUrl = getTrustedFormCertUrl();
+      if (certUrl) {
+        setTrustedFormCertUrl(certUrl);
+        contactForm.setValue('trustedformCertUrl', certUrl);
       }
     }
   }, []);
@@ -144,19 +189,33 @@ export default function ClaimForm() {
     startProcessing();
 
     try {
-      // Submit lead data to API
-      console.log('Submitting data to API:', { ...formData, ...data, source: 'claim-form' });
+      // Get the TrustedForm certificate URL
+      const certUrl = getTrustedFormCertUrl() || trustedFormCertUrl;
       
-      const response = await fetch('/api/leads', {
+      // API endpoint - can be configured via environment variable or hard-coded for each environment
+      const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT || '/api/leads';
+      
+      // Prepare the lead data
+      const leadData = {
+        ...formData,
+        ...data,
+        source: 'claim-form',
+        trustedFormCertUrl: certUrl,
+        funnelType: 'MVARideshare',
+        leadType: 'RideshareAccident',
+        adCategory: 'Legal',
+        submitted_at: new Date().toISOString()
+      };
+      
+      console.log('Submitting data to API:', leadData);
+      
+      // Submit lead data to API
+      const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          ...data,
-          source: 'claim-form',
-        }),
+        body: JSON.stringify(leadData),
       });
 
       // Capture response details for debugging
@@ -271,6 +330,15 @@ export default function ClaimForm() {
           >
             <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
             <form onSubmit={contactForm.handleSubmit(handleContactSubmit)} className="space-y-4">
+              {/* TrustedForm hidden fields */}
+              <input type="hidden" id="xxTrustedFormCertUrl" name="xxTrustedFormCertUrl" />
+              <input type="hidden" id="xxTrustedFormPingUrl" name="xxTrustedFormPingUrl" />
+              
+              {/* TrustedForm consent tag */}
+              <div id="consent_id" className="xxTrustedFormField_0 xxTrustedFormToken_consent-token">
+                By submitting this form, I consent to being contacted by phone, email, or text about my legal options.
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="label">First Name</label>
