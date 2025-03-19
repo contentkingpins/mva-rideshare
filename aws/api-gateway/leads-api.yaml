@@ -1,0 +1,169 @@
+openapi: 3.0.1
+info:
+  title: MVA-Rideshare Leads API
+  description: API for MVA-Rideshare lead submissions
+  version: '1.0'
+servers:
+  - url: https://api.mva-rideshare.com
+    description: Production server
+paths:
+  /leads:
+    post:
+      summary: Submit a new lead
+      description: Endpoint for submitting a new lead for MVA rideshare claims
+      operationId: createLead
+      x-amazon-apigateway-integration:
+        uri: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${LambdaFunction}/invocations
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+        timeoutInMillis: 29000
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeadSubmission'
+      responses:
+        '201':
+          description: Lead submission created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadSubmissionResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    options:
+      summary: CORS support
+      description: Enable CORS for the leads endpoint
+      operationId: corsLeads
+      x-amazon-apigateway-integration:
+        type: mock
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        responses:
+          default:
+            statusCode: '200'
+            responseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            responseTemplates:
+              application/json: '{}'
+      responses:
+        '200':
+          description: CORS enabled
+          headers:
+            Access-Control-Allow-Headers:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Origin:
+              type: string
+          content: {}
+components:
+  schemas:
+    LeadSubmission:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - phone
+        - email
+      properties:
+        firstName:
+          type: string
+          description: First name of the individual
+        lastName:
+          type: string
+          description: Last name of the individual
+        phone:
+          type: string
+          description: Contact phone number
+        email:
+          type: string
+          description: Contact email address
+        trustedFormCertUrl:
+          type: string
+          description: TrustedForm certificate URL
+        role:
+          type: string
+          enum: [driver, passenger, guest, other_vehicle]
+          description: Role in the accident
+        atFault:
+          type: string
+          enum: [yes, no, unknown]
+          description: Whether the vehicle was at fault
+        guestInfo:
+          type: string
+          description: Additional information for guests
+        rideshareComplaint:
+          type: string
+          enum: [yes, no]
+          description: Whether a complaint was filed with the rideshare company
+        policeReport:
+          type: string
+          enum: [yes, no]
+          description: Whether a police report was filed
+        source:
+          type: string
+          description: Source of the lead
+        funnelType:
+          type: string
+          description: Type of marketing funnel
+        leadType:
+          type: string
+          description: Classification of the lead
+        adCategory:
+          type: string
+          description: Category of the advertisement
+    LeadSubmissionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the submission was successful
+        message:
+          type: string
+          description: Response message
+        lead_id:
+          type: string
+          description: Unique ID for the lead
+        s3Location:
+          type: string
+          description: S3 location where the lead data is stored
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the submission was successful
+        error:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Detailed error information
+x-amazon-apigateway-binary-media-types:
+  - application/json
+x-amazon-apigateway-gateway-responses:
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+      gatewayresponse.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+  DEFAULT_5XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+      gatewayresponse.header.Access-Control-Allow-Methods: "'OPTIONS,POST'" 

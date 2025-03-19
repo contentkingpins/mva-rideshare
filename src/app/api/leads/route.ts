@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { createLeadSubmission, docClient, TABLE_NAME } from '@/utils/dynamodb';
 import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { claimTrustedFormCertificate } from '@/utils/trustedform';
 
 export async function POST(request: Request) {
   console.log('=== Lead Submission API ===');
@@ -32,9 +33,28 @@ export async function POST(request: Request) {
     console.log('- Region:', process.env['region'] || 'not set');
     console.log('- Has Credentials:', !!process.env['key_id'] && !!process.env['secret']);
     
+    // Check for TrustedForm certificate URL and claim it if available
+    if (data.trustedFormCertUrl) {
+      console.log('5. TrustedForm certificate URL found, claiming certificate');
+      const claimResult = await claimTrustedFormCertificate(data.trustedFormCertUrl, {
+        ...data,
+        lead_id
+      });
+      
+      // Store claim result data with the lead
+      if (claimResult.success && claimResult.data) {
+        data.trustedFormClaimResult = claimResult.data;
+      } else {
+        console.warn('TrustedForm claim was not successful:', claimResult.message);
+        data.trustedFormClaimError = claimResult.message;
+      }
+    } else {
+      console.warn('5. No TrustedForm certificate URL provided');
+    }
+    
     // Try the most direct approach possible
     try {
-      console.log('5. Attempting direct PutCommand...');
+      console.log('6. Attempting direct PutCommand...');
       const command = new PutCommand({
         TableName: TABLE_NAME,
         Item: {
@@ -45,7 +65,7 @@ export async function POST(request: Request) {
       });
       
       await docClient.send(command);
-      console.log('6. Direct PutCommand successful');
+      console.log('7. Direct PutCommand successful');
       
       return NextResponse.json(
         { 
@@ -59,17 +79,17 @@ export async function POST(request: Request) {
       console.error('Direct PutCommand failed:', directError);
       
       // Try alternative method as fallback
-      console.log('5b. Falling back to createLeadSubmission helper...');
+      console.log('6b. Falling back to createLeadSubmission helper...');
       const result = await createLeadSubmission({
         lead_id,
         ...data,
         submitted_at: new Date().toISOString(),
       });
 
-      console.log('6. Submission result:', result);
+      console.log('7. Submission result:', result);
 
       if (!result.success) {
-        console.error('7. Failed to create lead submission:', result.message);
+        console.error('8. Failed to create lead submission:', result.message);
         return NextResponse.json(
           { 
             error: 'Failed to create lead submission', 
@@ -80,7 +100,7 @@ export async function POST(request: Request) {
         );
       }
 
-      console.log('7. Lead submission created successfully');
+      console.log('8. Lead submission created successfully');
       return NextResponse.json(
         { message: 'Lead submission created successfully', lead_id, success: true },
         { status: 201 }

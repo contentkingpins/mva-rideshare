@@ -1,0 +1,276 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS resources for MVA-Rideshare lead capture system'
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: prod
+    Description: Environment name (e.g., dev, staging, prod)
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+  
+  DynamoDBTableName:
+    Type: String
+    Default: rideshare-mva
+    Description: Name of the DynamoDB table to store lead data
+  
+  S3BucketName:
+    Type: String
+    Default: mva-rideshare-leads
+    Description: Name of the S3 bucket to store lead data
+  
+  TrustedFormApiKey:
+    Type: String
+    Default: ccdd54f8fb4dc3b495d85dd504abd5f3
+    Description: API key for TrustedForm certificate claiming
+    NoEcho: true
+
+Resources:
+  # S3 bucket for lead storage
+  LeadsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${S3BucketName}-${EnvironmentName}'
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: MoveToGlacierAfterOneYear
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 365
+                StorageClass: GLACIER
+            ExpirationInDays: 2555  # ~ 7 years
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: MVA-Rideshare
+
+  # DynamoDB table for lead data
+  LeadsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${DynamoDBTableName}-${EnvironmentName}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: lead_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: lead_id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: MVA-Rideshare
+
+  # Lambda execution role
+  LeadProcessingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: LeadProcessingPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:UpdateItem
+                Resource: !GetAtt LeadsTable.Arn
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub '${LeadsBucket.Arn}/*'
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: MVA-Rideshare
+
+  # Lambda function for lead processing
+  LeadProcessingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'mva-rideshare-lead-processor-${EnvironmentName}'
+      Runtime: nodejs16.x
+      Handler: index.handler
+      Role: !GetAtt LeadProcessingRole.Arn
+      Code:
+        ZipFile: |
+          // This is a placeholder. Upload your Lambda function code using the AWS CLI or Console.
+          exports.handler = async (event) => {
+            return {
+              statusCode: 200,
+              body: JSON.stringify({
+                message: 'Please deploy your actual Lambda function code'
+              })
+            };
+          };
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: !Ref LeadsTable
+          S3_BUCKET: !Ref LeadsBucket
+          TRUSTEDFORM_API_KEY: !Ref TrustedFormApiKey
+          ENVIRONMENT: !Ref EnvironmentName
+      Timeout: 30
+      MemorySize: 256
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: MVA-Rideshare
+
+  # CloudWatch Log Group for Lambda
+  LeadProcessingLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${LeadProcessingFunction}'
+      RetentionInDays: 30
+
+  # API Gateway REST API
+  LeadsAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub 'mva-rideshare-api-${EnvironmentName}'
+      Description: 'API for MVA-Rideshare lead submissions'
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Project
+          Value: MVA-Rideshare
+
+  # API Gateway Resources
+  LeadsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref LeadsAPI
+      ParentId: !GetAtt LeadsAPI.RootResourceId
+      PathPart: 'leads'
+
+  # POST method for lead submission
+  LeadsPostMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref LeadsAPI
+      ResourceId: !Ref LeadsResource
+      HttpMethod: POST
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LeadProcessingFunction.Arn}/invocations'
+      MethodResponses:
+        - StatusCode: '201'
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+        - StatusCode: '400'
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+        - StatusCode: '500'
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+
+  # OPTIONS method for CORS
+  LeadsOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref LeadsAPI
+      ResourceId: !Ref LeadsResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - StatusCode: '200'
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: '{}'
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+      MethodResponses:
+        - StatusCode: '200'
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  # Lambda permission for API Gateway
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LeadProcessingFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${LeadsAPI}/*/POST/leads'
+
+  # API Gateway Deployment
+  APIDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - LeadsPostMethod
+      - LeadsOptionsMethod
+    Properties:
+      RestApiId: !Ref LeadsAPI
+      StageName: !Ref EnvironmentName
+
+Outputs:
+  ApiUrl:
+    Description: URL of the API endpoint
+    Value: !Sub 'https://${LeadsAPI}.execute-api.${AWS::Region}.amazonaws.com/${EnvironmentName}/leads'
+  
+  S3BucketName:
+    Description: Name of the S3 bucket for lead storage
+    Value: !Ref LeadsBucket
+  
+  DynamoDBTableName:
+    Description: Name of the DynamoDB table for lead storage
+    Value: !Ref LeadsTable
+  
+  LambdaFunctionName:
+    Description: Name of the Lambda function
+    Value: !Ref LeadProcessingFunction
+  
+  LambdaFunctionArn:
+    Description: ARN of the Lambda function
+    Value: !GetAtt LeadProcessingFunction.Arn 
