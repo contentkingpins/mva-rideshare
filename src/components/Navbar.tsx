@@ -3,9 +3,22 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { events } from '@/utils/metaPixel';
+import { trackEventWithRedundancy } from '@/utils/metaConversionsApi';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleCallClick = () => {
+    trackEventWithRedundancy(
+      events.CALL_INITIATED, 
+      {}, // No user data for this event
+      {
+        location: 'navbar',
+        phone_number: '+18339986906'
+      }
+    );
+  };
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -24,11 +37,18 @@ export default function Navbar() {
             <Link href="/" className="font-medium text-gray-700 hover:text-primary-600">
               Home
             </Link>
+            <Link href="/rideshare-rights" className="font-medium text-gray-700 hover:text-primary-600">
+              Rideshare Rights
+            </Link>
             <Link href="/claim" className="font-medium text-gray-700 hover:text-primary-600">
               Start Your Claim
             </Link>
-            <a href="tel:8885555555" className="font-medium text-primary-600 hover:text-primary-800">
-              Call (888) 555-5555
+            <a 
+              href="tel:+18339986906" 
+              className="font-medium text-primary-600 hover:text-primary-800"
+              onClick={handleCallClick}
+            >
+              Call +1 (833) 998-6906
             </a>
           </div>
 
@@ -71,6 +91,13 @@ export default function Navbar() {
                 Home
               </Link>
               <Link 
+                href="/rideshare-rights" 
+                className="px-4 py-2 font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Rideshare Rights
+              </Link>
+              <Link 
                 href="/claim" 
                 className="px-4 py-2 font-medium text-gray-700 hover:bg-gray-100 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
@@ -78,11 +105,14 @@ export default function Navbar() {
                 Start Your Claim
               </Link>
               <a 
-                href="tel:8885555555" 
+                href="tel:+18339986906" 
                 className="px-4 py-2 font-medium text-primary-600 hover:bg-gray-100 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={(e) => {
+                  handleCallClick();
+                  setMobileMenuOpen(false);
+                }}
               >
-                Call (888) 555-5555
+                Call +1 (833) 998-6906
               </a>
             </div>
           </motion.div>

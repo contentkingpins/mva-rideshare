@@ -66,20 +66,6 @@ export default function Step1BasicInfo({ register, errors }: Step1Props) {
         <p className="mt-1 text-xs text-gray-500">Include area code, e.g., 5551234567 or (555) 123-4567</p>
       </div>
       
-      <div>
-        <label htmlFor="email" className="label">Email Address</label>
-        <input
-          id="email"
-          type="email"
-          className={`input ${errors.email ? 'border-red-500' : ''}`}
-          placeholder="john@example.com"
-          {...register('email')}
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-        )}
-      </div>
-      
       <div className="bg-blue-50 p-4 rounded-md text-blue-800 text-sm">
         <p>
           <strong>Your Privacy is Important: </strong>

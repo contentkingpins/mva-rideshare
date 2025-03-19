@@ -105,9 +105,14 @@ export default function HowItWorks() {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <a href="/claim" className="btn-primary text-lg">
-            Start Your Claim Now
-          </a>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="/claim" className="btn-primary text-lg">
+              Start Your Claim Now
+            </a>
+            <a href="/rideshare-rights" className="btn-secondary text-lg">
+              Learn Your Rights
+            </a>
+          </div>
         </motion.div>
       </div>
     </section>
