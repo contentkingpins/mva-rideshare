@@ -13,12 +13,16 @@ import Step2Involvement from './steps/Step2Involvement';
 import Step3Qualification from './steps/Step3Qualification';
 import Step4Processing from './steps/Step4Processing';
 import Step5Final from './steps/Step5Final';
+import { submitToTrustForms } from '@/utils/trustforms';
+import { prepareApiData, submitToApi } from '@/utils/api';
+import Script from 'next/script';
 
 // Define the schema for all steps
 const claimSchema = z.object({
   // Step 1: Basic contact information
   firstName: z.string().min(2, { message: 'First name is required' }),
   lastName: z.string().min(2, { message: 'Last name is required' }),
+  email: z.string().email({ message: 'Valid email is required' }).optional(),
   phone: z.string()
     .min(10, { message: 'Phone number must be at least 10 digits' })
     .transform(val => val.replace(/\D/g, '')) // Remove non-digit characters
@@ -84,6 +88,7 @@ export default function ClaimForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const totalSteps = 5;
 
   // Detect if user is on mobile
@@ -419,37 +424,88 @@ export default function ClaimForm() {
         return newData;
       });
       
-      // Process the form (simulate API call)
+      console.log("[MOBILE DEBUG] Form is valid, proceeding to processing");
+      
+      // Process the form - using real API submission
       setIsLoading(true);
       
       // Force state update for processing step
       setCurrentStep(4);
       
-      // Simulate processing time
-      setTimeout(() => {
-        setIsLoading(false);
-        setCurrentStep(5);
-        
-        // Track successful claim submission with both client and server-side tracking
-        trackEventWithRedundancy(
-          events.LEAD, 
-          {
-            firstName: formValues.firstName,
-            lastName: formValues.lastName,
-            phone: formValues.phone,
-          },
-          {
-            content_name: 'Rideshare Claim',
-            content_category: 'Claim Submission',
-            status: 'Qualified'
-          }
-        );
-        
-      }, 5000);
+      // Collect all form data
+      const completeFormData = {
+        ...formData,
+        ...formValues,
+        email: formValues.email || 'not-provided@example.com',
+        source: 'MVA-Rideshare-Website',
+        pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+        submittedAt: new Date().toISOString()
+      };
       
+      try {
+        // Prepare API data with proper formatting
+        const apiData = prepareApiData(completeFormData);
+        
+        // Submit to ActiveProsper TrustForms
+        const trustFormsResult = await submitToTrustForms(completeFormData);
+        console.log("[FORM] TrustForms submission result:", trustFormsResult);
+        
+        // If TrustForms has an ID, add it to the AWS submission
+        if (trustFormsResult.success && trustFormsResult.id) {
+          apiData.trustFormsId = trustFormsResult.id;
+        }
+        
+        // Submit to AWS API endpoint
+        const apiResult = await submitToApi(apiData);
+        console.log("[FORM] API submission result:", apiResult);
+        
+        // Handle submission results
+        if (apiResult.success) {
+          setSubmissionSuccess(true);
+          
+          // Track successful claim submission with both client and server-side tracking
+          trackEventWithRedundancy(
+            events.LEAD, 
+            {
+              firstName: formValues.firstName,
+              lastName: formValues.lastName,
+              phone: formValues.phone,
+            },
+            {
+              content_name: 'Rideshare Claim',
+              content_category: 'Claim Submission',
+              status: 'Qualified'
+            }
+          );
+          
+          // Add a short delay before showing success screen
+          setTimeout(() => {
+            setIsLoading(false);
+            setCurrentStep(5);
+            console.log("[MOBILE DEBUG] Step changed to 5 (final)");
+          }, 2000);
+        } else {
+          throw new Error(apiResult.error || 'Failed to submit claim');
+        }
+      } catch (apiError) {
+        console.error("[MOBILE DEBUG] API submission error:", apiError);
+        
+        // Show the form error but still proceed to final step
+        setFormError(apiError instanceof Error ? apiError.message : "An error occurred submitting your claim.");
+        
+        // Continue to final step anyway to not lose the user
+        setTimeout(() => {
+          setIsLoading(false);
+          setCurrentStep(5);
+          console.log("[MOBILE DEBUG] Step changed to 5 (final) despite API error");
+        }, 2000);
+      }
     } catch (error) {
       console.error('Error in submitStep3:', error);
       setFormError("An unexpected error occurred. Please try again.");
+      
+      // Attempt to recover
+      setIsLoading(false);
     }
   };
 
@@ -484,6 +540,26 @@ export default function ClaimForm() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {/* TrustedForm Script */}
+      <Script id="trustedform-script" strategy="beforeInteractive">
+        {`
+        (function() {
+          var tf = document.createElement('script');
+          tf.type = 'text/javascript';
+          tf.async = true;
+          tf.src = ('https:' == document.location.protocol ? 'https' : 'http') + 
+            '://api.trustedform.com/trustedform.js?field=xxTrustedFormCertUrl&use_tagged_consent=true&l=' + 
+            new Date().getTime() + Math.random();
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(tf, s);
+        })();
+        `}
+      </Script>
+      <noscript>
+        <img src="https://api.trustedform.com/ns.gif" />
+      </noscript>
+      {/* Hidden input field for TrustedForm */}
+      <input type="hidden" name="xxTrustedFormCertUrl" id="xxTrustedFormCertUrl" />
+      
       {/* Progress bar */}
       <div className="mb-8">
         <div className="bg-gray-200 h-2 rounded-full overflow-hidden">

@@ -1,19 +1,24 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { createLeadSubmission, docClient, TABLE_NAME } from '@/utils/dynamodb';
+import { submitToTrustForms } from '@/utils/trustforms';
 import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { prepareApiData, submitToApi } from '@/utils/api';
 
+/**
+ * This API route is a fallback for local development
+ * In production, the form will submit directly to the AWS API Gateway endpoint
+ */
 export async function POST(request: Request) {
-  console.log('=== Lead Submission API ===');
+  console.log('=== [Fallback] Lead Submission API ===');
+  console.log('Note: This is a fallback for local development. In production, use direct AWS API Gateway integration.');
   
   try {
-    console.log('1. Starting lead submission process');
-    
     // Parse the request body
     let data;
     try {
       data = await request.json();
-      console.log('2. Received data:', JSON.stringify(data, null, 2));
+      console.log('1. Received data:', JSON.stringify(data, null, 2));
     } catch (parseError) {
       console.error('Failed to parse request data:', parseError);
       return NextResponse.json(
@@ -22,82 +27,52 @@ export async function POST(request: Request) {
       );
     }
     
-    // Generate a unique lead_id
-    const lead_id = uuidv4();
-    console.log('3. Generated lead_id:', lead_id);
+    // Generate a unique lead_id if not provided
+    const lead_id = data.lead_id || uuidv4();
+    console.log('2. Lead ID:', lead_id);
     
-    // Log DynamoDB configuration
-    console.log('4. DynamoDB Configuration:');
-    console.log('- Table Name:', TABLE_NAME);
-    console.log('- Region:', process.env['region'] || 'not set');
-    console.log('- Has Credentials:', !!process.env['key_id'] && !!process.env['secret']);
-    
-    // Try the most direct approach possible
     try {
-      console.log('5. Attempting direct PutCommand...');
-      const command = new PutCommand({
-        TableName: TABLE_NAME,
-        Item: {
-          lead_id,
-          ...data,
-          submitted_at: new Date().toISOString()
-        }
-      });
-      
-      await docClient.send(command);
-      console.log('6. Direct PutCommand successful');
-      
-      return NextResponse.json(
-        { 
-          message: 'Lead submission created successfully', 
-          lead_id,
-          success: true 
-        },
-        { status: 201 }
-      );
-    } catch (directError) {
-      console.error('Direct PutCommand failed:', directError);
-      
-      // Try alternative method as fallback
-      console.log('5b. Falling back to createLeadSubmission helper...');
-      const result = await createLeadSubmission({
-        lead_id,
+      // Prepare API data
+      const apiData = prepareApiData({
         ...data,
-        submitted_at: new Date().toISOString(),
+        lead_id
       });
-
-      console.log('6. Submission result:', result);
-
-      if (!result.success) {
-        console.error('7. Failed to create lead submission:', result.message);
-        return NextResponse.json(
-          { 
-            error: 'Failed to create lead submission', 
-            details: result.message,
-            success: false
-          },
-          { status: 500 }
-        );
-      }
-
-      console.log('7. Lead submission created successfully');
-      return NextResponse.json(
-        { message: 'Lead submission created successfully', lead_id, success: true },
-        { status: 201 }
-      );
+      
+      // 1. Submit to TrustForms
+      console.log('3. Submitting to TrustForms');
+      const trustFormsResult = await submitToTrustForms(apiData);
+      console.log('4. TrustForms result:', trustFormsResult);
+      
+      // 2. Submit to AWS API Gateway
+      console.log('5. Submitting to AWS API Gateway');
+      const apiResult = await submitToApi(apiData);
+      console.log('6. API result:', apiResult);
+      
+      // Combine results
+      return NextResponse.json({
+        success: apiResult.success,
+        lead_id: apiResult.lead_id || lead_id,
+        message: 'Lead submitted successfully',
+        trustforms_success: trustFormsResult.success
+      }, { status: apiResult.success ? 201 : 500 });
+      
+    } catch (error) {
+      console.error('Error submitting lead:', error);
+      return NextResponse.json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }, { status: 500 });
     }
   } catch (error) {
     console.error('=== Lead Submission Error ===');
     console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error);
     console.error('Error message:', error instanceof Error ? error.message : String(error));
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     
     return NextResponse.json(
       { 
+        success: false,
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        type: error instanceof Error ? error.constructor.name : typeof error,
-        success: false
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
@@ -105,26 +80,8 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  try {
-    const command = new QueryCommand({
-      TableName: TABLE_NAME,
-      KeyConditionExpression: 'status = :status',
-      ExpressionAttributeValues: {
-        ':status': 'new',
-      },
-    });
-
-    const result = await docClient.send(command);
-
-    return NextResponse.json({ 
-      success: true, 
-      leads: result.Items 
-    });
-  } catch (error) {
-    console.error('Error fetching leads:', error);
-    return NextResponse.json(
-      { success: false, message: 'Error fetching leads' },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json({ 
+    success: false, 
+    message: 'GET requests are not supported. Use POST to submit form data.'
+  }, { status: 405 });
 } 
