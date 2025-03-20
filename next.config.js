@@ -46,7 +46,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://randomuser.me; font-src 'self'; connect-src 'self' https://randomuser.me;"
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.trustedform.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://randomuser.me https://api.trustedform.com https://www.facebook.com; font-src 'self'; connect-src 'self' https://randomuser.me https://bnmcip8xp5.execute-api.us-east-1.amazonaws.com https://api.activeprosper.com;"
           },
           {
             key: 'Permissions-Policy',
