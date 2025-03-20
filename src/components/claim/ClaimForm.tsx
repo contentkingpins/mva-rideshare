@@ -423,13 +423,7 @@ export default function ClaimForm() {
         return newData;
       });
       
-      console.log("[MOBILE DEBUG] Form is valid, proceeding to processing");
-      
-      // Process the form - using direct AWS API integration
-      setIsLoading(true);
-      
-      // Force state update for processing step
-      setCurrentStep(4);
+      console.log("[FORM] Preparing submission data");
       
       // Collect all form data
       const completeFormData = {
@@ -442,47 +436,22 @@ export default function ClaimForm() {
         xxTrustedFormCertUrl: typeof window !== 'undefined' ? 
           (document.querySelector('[name="xxTrustedFormCertUrl"]') as HTMLInputElement)?.value || '' : ''
       };
-      
+
+      // Prepare API data with proper formatting
+      const apiData = prepareApiData(completeFormData);
+
+      // Use our new rideshare-leads API endpoint instead of direct API submission
       try {
-        console.log("[FORM] Preparing submission data");
-        
-        // Prepare API data with proper formatting
-        const apiData = prepareApiData(completeFormData);
-        
-        // In development, log the data but don't actually submit
-        if (process.env.NODE_ENV === 'development') {
-          console.log("[FORM] Development mode - simulating successful submission");
-          console.log("[FORM] Submission data:", apiData);
-          
-          // Simulate success
-          setSubmissionSuccess(true);
-          
-          // Track submission
-          trackEventWithRedundancy(
-            events.LEAD, 
-            {
-              firstName: formValues.firstName,
-              lastName: formValues.lastName,
-              phone: formValues.phone,
-            },
-            {
-              content_name: 'Rideshare Claim',
-              content_category: 'Claim Submission',
-              status: 'Qualified'
-            }
-          );
-          
-          // Show success screen
-          setTimeout(() => {
-            setIsLoading(false);
-            setCurrentStep(5);
-          }, 2000);
-          
-          return;
-        }
-        
-        // Submit to AWS API endpoint
-        const apiResult = await submitToApi(apiData);
+        const response = await fetch('/api/rideshare-leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(apiData)
+        });
+
+        // Parse the response
+        const apiResult = await response.json();
         console.log("[FORM] API submission result:", apiResult);
         
         // Handle submission results
@@ -524,18 +493,12 @@ export default function ClaimForm() {
             console.log("[FORM] Proceeding to final step despite API error");
           }, 2000);
         }
-      } catch (apiError) {
-        console.error("[FORM] API submission error:", apiError);
-        
-        // Show the form error but still proceed to final step
-        setFormError(apiError instanceof Error ? apiError.message : "An error occurred submitting your claim.");
-        
-        // Continue to final step anyway to not lose the user
-        setTimeout(() => {
-          setIsLoading(false);
-          setCurrentStep(5);
-          console.log("[FORM] Proceeding to final step despite API error");
-        }, 2000);
+      } catch (error) {
+        console.error("[FORM] Error submitting form:", error);
+        setFormError(
+          "There was an error submitting your form. Please try again or contact support."
+        );
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error in submitStep3:', error);
