@@ -45,6 +45,12 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
+  
+  // Add Content Security Policy to allow API connections and external scripts
+  response.headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.trustedform.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://randomuser.me https://api.trustedform.com https://www.facebook.com; font-src 'self'; connect-src 'self' https://randomuser.me https://bnmcip8xp5.execute-api.us-east-1.amazonaws.com https://api.activeprosper.com;"
+  );
 
   return response;
 }
