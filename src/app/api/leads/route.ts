@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
-import { createLeadSubmission, docClient, TABLE_NAME } from '@/utils/dynamodb';
-import { submitToTrustForms } from '@/utils/trustforms';
-import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { prepareApiData, submitToApi } from '@/utils/api';
 
 /**
@@ -38,22 +35,16 @@ export async function POST(request: Request) {
         lead_id
       });
       
-      // 1. Submit to TrustForms
-      console.log('3. Submitting to TrustForms');
-      const trustFormsResult = await submitToTrustForms(apiData);
-      console.log('4. TrustForms result:', trustFormsResult);
-      
-      // 2. Submit to AWS API Gateway
-      console.log('5. Submitting to AWS API Gateway');
+      // Submit to AWS API Gateway
+      console.log('3. Submitting to AWS API Gateway');
       const apiResult = await submitToApi(apiData);
-      console.log('6. API result:', apiResult);
+      console.log('4. API result:', apiResult);
       
-      // Combine results
+      // Return results
       return NextResponse.json({
         success: apiResult.success,
-        lead_id: apiResult.lead_id || lead_id,
-        message: 'Lead submitted successfully',
-        trustforms_success: trustFormsResult.success
+        lead_id: lead_id,
+        message: 'Lead submitted successfully'
       }, { status: apiResult.success ? 201 : 500 });
       
     } catch (error) {
