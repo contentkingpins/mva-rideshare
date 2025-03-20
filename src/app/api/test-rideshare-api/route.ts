@@ -5,9 +5,13 @@ import { NextResponse } from 'next/server';
  * Returns detailed diagnostics about the connection and response
  */
 export async function GET() {
+  const apiBaseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || '';
+  const apiPath = process.env.API_PATH || process.env.NEXT_PUBLIC_API_PATH || '';
+  const apiEndpoint = apiBaseUrl + apiPath;
+  
   return NextResponse.json({
     message: 'This endpoint is for testing the Rideshare Leads API',
-    apiEndpoint: (process.env.NEXT_PUBLIC_API_BASE_URL || '') + (process.env.NEXT_PUBLIC_API_PATH || '') || 'Not configured',
+    apiEndpoint: apiEndpoint || 'Not configured',
     testUrl: 'Use POST method with test data'
   });
 }
@@ -27,7 +31,10 @@ export async function POST(request: Request) {
     }
 
     // Get API endpoint from environment variables
-    const apiEndpoint = (process.env.NEXT_PUBLIC_API_BASE_URL || '') + (process.env.NEXT_PUBLIC_API_PATH || '');
+    const apiBaseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const apiPath = process.env.API_PATH || process.env.NEXT_PUBLIC_API_PATH || '';
+    const apiEndpoint = apiBaseUrl + apiPath;
+    
     if (!apiEndpoint) {
       return NextResponse.json({
         success: false,

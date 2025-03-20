@@ -63,7 +63,9 @@ export async function POST(request: Request) {
       console.log('5. Submitting to Rideshare AWS API');
       
       // Get API endpoint from environment variables
-      const apiEndpoint = (process.env.NEXT_PUBLIC_API_BASE_URL || '') + (process.env.NEXT_PUBLIC_API_PATH || '');
+      const apiBaseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || '';
+      const apiPath = process.env.API_PATH || process.env.NEXT_PUBLIC_API_PATH || '';
+      const apiEndpoint = apiBaseUrl + apiPath;
       if (!apiEndpoint) {
         throw new Error('API endpoint not configured in environment variables');
       }
