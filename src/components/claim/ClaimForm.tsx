@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { trackEvent, trackCustomEvent, events } from '@/utils/metaPixel';
+import { prepareApiData, submitToApi } from '@/utils/api';
 
 // Import all steps directly, no relative imports that might cause issues
 import Step1BasicInfo from './steps/Step1BasicInfo';
@@ -424,7 +425,7 @@ export default function ClaimForm() {
       
       console.log("[MOBILE DEBUG] Form is valid, proceeding to processing");
       
-      // Process the form - using real API submission
+      // Process the form - using direct AWS API integration
       setIsLoading(true);
       
       // Force state update for processing step
@@ -443,32 +444,49 @@ export default function ClaimForm() {
       };
       
       try {
-        console.log("[FORM] Submitting via proxy API");
+        console.log("[FORM] Preparing submission data");
         
-        // Use our server-side proxy to handle both API submissions
-        const proxyResponse = await fetch('/api/proxy', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(completeFormData)
-        });
+        // Prepare API data with proper formatting
+        const apiData = prepareApiData(completeFormData);
         
-        const proxyResult = await proxyResponse.json();
-        console.log("[FORM] Proxy API response:", proxyResult);
-        
-        // Log individual API results
-        if (proxyResult.trustForms) {
-          console.log("[FORM] TrustForms result:", proxyResult.trustForms);
+        // In development, log the data but don't actually submit
+        if (process.env.NODE_ENV === 'development') {
+          console.log("[FORM] Development mode - simulating successful submission");
+          console.log("[FORM] Submission data:", apiData);
+          
+          // Simulate success
+          setSubmissionSuccess(true);
+          
+          // Track submission
+          trackEventWithRedundancy(
+            events.LEAD, 
+            {
+              firstName: formValues.firstName,
+              lastName: formValues.lastName,
+              phone: formValues.phone,
+            },
+            {
+              content_name: 'Rideshare Claim',
+              content_category: 'Claim Submission',
+              status: 'Qualified'
+            }
+          );
+          
+          // Show success screen
+          setTimeout(() => {
+            setIsLoading(false);
+            setCurrentStep(5);
+          }, 2000);
+          
+          return;
         }
         
-        if (proxyResult.aws) {
-          console.log("[FORM] AWS API result:", proxyResult.aws);
-        }
+        // Submit to AWS API endpoint
+        const apiResult = await submitToApi(apiData);
+        console.log("[FORM] API submission result:", apiResult);
         
-        // Handle submission results - consider success even if only one of the services worked
-        // This ensures users can still proceed with the workflow
-        if (proxyResult.success || proxyResult.trustForms?.success || proxyResult.aws?.success) {
+        // Handle submission results
+        if (apiResult.success) {
           setSubmissionSuccess(true);
           
           // Track successful claim submission with both client and server-side tracking
@@ -493,8 +511,8 @@ export default function ClaimForm() {
             console.log("[FORM] Form submission complete, showing success screen");
           }, 2000);
         } else {
-          // Even if both APIs failed, still proceed to success screen but log the error
-          console.warn("[FORM] APIs failed but proceeding to success screen for user experience");
+          // Even if API fails, still proceed to success screen for better user experience
+          console.warn("[FORM] API failed but proceeding to success screen");
           setFormError(
             "Your information was received successfully, but there may have been an issue with our systems. " +
             "A representative will contact you shortly to ensure your claim is processed."
@@ -503,11 +521,11 @@ export default function ClaimForm() {
           setTimeout(() => {
             setIsLoading(false);
             setCurrentStep(5);
-            console.log("[FORM] Proceeding to final step despite API errors");
+            console.log("[FORM] Proceeding to final step despite API error");
           }, 2000);
         }
       } catch (apiError) {
-        console.error("[FORM] Proxy API submission error:", apiError);
+        console.error("[FORM] API submission error:", apiError);
         
         // Show the form error but still proceed to final step
         setFormError(apiError instanceof Error ? apiError.message : "An error occurred submitting your claim.");
