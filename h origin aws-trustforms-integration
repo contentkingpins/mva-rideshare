@@ -1,0 +1,17 @@
+[33mcommit 6815c0e4f619a1c3bbe01564b9416c3e2d48692a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32maws-trustforms-integration[m[33m)[m
+Author: MVA Developer <mva-user@example.com>
+Date:   Thu Mar 20 00:11:46 2025 -0400
+
+    Add server-side proxy API for TrustForms and AWS integrations
+
+[33mcommit fc57b37edca0c7303bedba584d1d8cbafbfcb2b1[m[33m ([m[1;31morigin/aws-trustforms-integration[m[33m)[m
+Author: MVA Developer <mva-user@example.com>
+Date:   Wed Mar 19 22:19:47 2025 -0400
+
+    Update CSP in middleware to expand AWS API endpoint access
+
+[33mcommit 53b55d98612b9d69bb25979f9a69c4f5a19c79b4[m
+Author: MVA Developer <mva-user@example.com>
+Date:   Wed Mar 19 22:18:55 2025 -0400
+
+    Add Content Security Policy headers to middleware to allow API connections and TrustedForm scripts
