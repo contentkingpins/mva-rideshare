@@ -13,8 +13,6 @@ import Step2Involvement from './steps/Step2Involvement';
 import Step3Qualification from './steps/Step3Qualification';
 import Step4Processing from './steps/Step4Processing';
 import Step5Final from './steps/Step5Final';
-import { submitToTrustForms } from '@/utils/trustforms';
-import { prepareApiData, submitToApi } from '@/utils/api';
 import Script from 'next/script';
 
 // Define the schema for all steps
@@ -439,28 +437,37 @@ export default function ClaimForm() {
         email: formValues.email || 'not-provided@example.com',
         source: 'MVA-Rideshare-Website',
         pageUrl: typeof window !== 'undefined' ? window.location.href : '',
-        submittedAt: new Date().toISOString()
+        submittedAt: new Date().toISOString(),
+        xxTrustedFormCertUrl: typeof window !== 'undefined' ? 
+          (document.querySelector('[name="xxTrustedFormCertUrl"]') as HTMLInputElement)?.value || '' : ''
       };
       
       try {
-        // Prepare API data with proper formatting
-        const apiData = prepareApiData(completeFormData);
+        console.log("[FORM] Submitting via proxy API");
         
-        // Submit to ActiveProsper TrustForms
-        const trustFormsResult = await submitToTrustForms(completeFormData);
-        console.log("[FORM] TrustForms submission result:", trustFormsResult);
+        // Use our server-side proxy to handle both API submissions
+        const proxyResponse = await fetch('/api/proxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(completeFormData)
+        });
         
-        // If TrustForms has an ID, add it to the AWS submission
-        if (trustFormsResult.success && trustFormsResult.id) {
-          apiData.trustFormsId = trustFormsResult.id;
+        const proxyResult = await proxyResponse.json();
+        console.log("[FORM] Proxy API response:", proxyResult);
+        
+        // Log individual API results
+        if (proxyResult.trustForms) {
+          console.log("[FORM] TrustForms result:", proxyResult.trustForms);
         }
         
-        // Submit to AWS API endpoint
-        const apiResult = await submitToApi(apiData);
-        console.log("[FORM] API submission result:", apiResult);
+        if (proxyResult.aws) {
+          console.log("[FORM] AWS API result:", proxyResult.aws);
+        }
         
         // Handle submission results
-        if (apiResult.success) {
+        if (proxyResult.success) {
           setSubmissionSuccess(true);
           
           // Track successful claim submission with both client and server-side tracking
@@ -482,13 +489,13 @@ export default function ClaimForm() {
           setTimeout(() => {
             setIsLoading(false);
             setCurrentStep(5);
-            console.log("[MOBILE DEBUG] Step changed to 5 (final)");
+            console.log("[FORM] Form submission complete, showing success screen");
           }, 2000);
         } else {
-          throw new Error(apiResult.error || 'Failed to submit claim');
+          throw new Error(proxyResult.error || 'Failed to submit claim');
         }
       } catch (apiError) {
-        console.error("[MOBILE DEBUG] API submission error:", apiError);
+        console.error("[FORM] Proxy API submission error:", apiError);
         
         // Show the form error but still proceed to final step
         setFormError(apiError instanceof Error ? apiError.message : "An error occurred submitting your claim.");
@@ -497,7 +504,7 @@ export default function ClaimForm() {
         setTimeout(() => {
           setIsLoading(false);
           setCurrentStep(5);
-          console.log("[MOBILE DEBUG] Step changed to 5 (final) despite API error");
+          console.log("[FORM] Proceeding to final step despite API error");
         }, 2000);
       }
     } catch (error) {
