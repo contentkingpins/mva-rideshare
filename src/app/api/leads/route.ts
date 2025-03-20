@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { prepareApiData, submitToApi } from '@/utils/api';
+import { submitToTrustForms } from '@/utils/trustforms';
 
 /**
  * This API route is a fallback for local development
@@ -28,24 +29,45 @@ export async function POST(request: Request) {
     const lead_id = data.lead_id || uuidv4();
     console.log('2. Lead ID:', lead_id);
     
+    // Results object to track both integrations
+    const results: any = {
+      success: false,
+      lead_id,
+      trustForms: null,
+      aws: null
+    };
+    
     try {
-      // Prepare API data
-      const apiData = prepareApiData({
+      // 1. Submit to TrustedForms
+      console.log('3. Submitting to TrustedForms');
+      const trustFormsResult = await submitToTrustForms({
         ...data,
         lead_id
       });
+      results.trustForms = trustFormsResult;
+      console.log('4. TrustedForms result:', trustFormsResult);
       
-      // Submit to AWS API Gateway
-      console.log('3. Submitting to AWS API Gateway');
+      // 2. Prepare and submit to AWS API Gateway
+      console.log('5. Preparing data for AWS API Gateway');
+      const apiData = prepareApiData({
+        ...data,
+        lead_id,
+        // Add TrustForms ID if available
+        trustFormsId: trustFormsResult.id || ''
+      });
+      
+      console.log('6. Submitting to AWS API Gateway');
       const apiResult = await submitToApi(apiData);
-      console.log('4. API result:', apiResult);
+      results.aws = apiResult;
+      console.log('7. AWS API result:', apiResult);
       
-      // Return results
-      return NextResponse.json({
-        success: apiResult.success,
-        lead_id: lead_id,
-        message: 'Lead submitted successfully'
-      }, { status: apiResult.success ? 201 : 500 });
+      // Consider the submission successful if either API succeeded
+      results.success = trustFormsResult.success || apiResult.success;
+      
+      // Return the combined results
+      return NextResponse.json(results, { 
+        status: results.success ? 201 : 500 
+      });
       
     } catch (error) {
       console.error('Error submitting lead:', error);
