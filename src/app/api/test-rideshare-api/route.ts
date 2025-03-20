@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 /**
  * API endpoint for testing Rideshare Leads API connectivity
  * Returns detailed diagnostics about the connection and response
+ * Updated to support both API_ and NEXT_PUBLIC_ environment variables
  */
 export async function GET() {
   const apiBaseUrl = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || '';
