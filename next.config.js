@@ -14,7 +14,7 @@ const nextConfig = {
   // Remove onDemandEntries as it's not needed for production
   poweredByHeader: false,
   
-  // Security headers
+  // Security headers with ad-compatible CSP
   async headers() {
     return [
       {
@@ -46,11 +46,37 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://randomuser.me; font-src 'self'; connect-src 'self' https://randomuser.me;"
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.google-analytics.com https://*.googletagmanager.com https://*.tiktok.com https://*.tiktokcdn.com",
+              "style-src 'self' 'unsafe-inline' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "img-src 'self' data: blob: https://*.facebook.com https://*.facebook.net https://*.google.com https://*.google-analytics.com https://*.googletagmanager.com https://*.tiktok.com https://*.tiktokcdn.com https://randomuser.me",
+              "font-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "connect-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.google-analytics.com https://*.googletagmanager.com https://*.tiktok.com https://*.tiktokcdn.com https://randomuser.me",
+              "frame-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "media-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "block-all-mixed-content"
+            ].join('; ')
           },
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization, X-Requested-With'
           }
         ],
       },
