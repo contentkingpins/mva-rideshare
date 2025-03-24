@@ -8,13 +8,11 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     formats: ['image/webp'],
   },
-  // Enable static exports for improved performance
-  output: 'standalone',
   // Remove standalone output as it might cause issues with Amplify
   // Remove onDemandEntries as it's not needed for production
   poweredByHeader: false,
   
-  // Security headers
+  // Security headers with ad-compatible CSP
   async headers() {
     return [
       {
@@ -46,11 +44,38 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.trustedform.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://randomuser.me https://api.trustedform.com https://www.facebook.com; font-src 'self'; connect-src 'self' https://randomuser.me https://bnmcip8xp5.execute-api.us-east-1.amazonaws.com https://api.activeprosper.com;"
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.google-analytics.com https://*.googletagmanager.com https://*.tiktok.com https://*.tiktokcdn.com https://api.trustedform.com",
+              "style-src 'self' 'unsafe-inline' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "img-src 'self' data: blob: https://*.facebook.com https://*.facebook.net https://*.google.com https://*.google-analytics.com https://*.googletagmanager.com https://*.tiktok.com https://*.tiktokcdn.com https://randomuser.me https://api.trustedform.com https://www.facebook.com",
+              "font-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "connect-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.google-analytics.com https://*.googletagmanager.com https://*.tiktok.com https://*.tiktokcdn.com https://randomuser.me https://api.trustedform.com https://bnmcip8xp5.execute-api.us-east-1.amazonaws.com https://api.activeprosper.com",
+              "frame-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "media-src 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
+              "block-all-mixed-content",
+              "upgrade-insecure-requests"
+            ].join('; ')
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), fullscreen=(self), display-capture=()'
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*' // Consider restricting this to specific domains in production
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS'
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization, X-Requested-With'
           }
         ],
       },
@@ -72,8 +97,5 @@ const nextConfig = {
     return config;
   },
 };
-
-// Log configuration for debugging
-console.log('Next.js Config:', JSON.stringify(nextConfig, null, 2));
 
 module.exports = nextConfig; 
