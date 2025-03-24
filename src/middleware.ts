@@ -66,12 +66,6 @@ export function middleware(request: NextRequest) {
   response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   response.headers.set('Pragma', 'no-cache');
   response.headers.set('Expires', '0');
-  
-  // Add Content Security Policy to allow API connections and external scripts
-  response.headers.set(
-    'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://api.trustedform.com https://connect.facebook.net https://*.facebook.com https://*.google.com https://*.tiktok.com; style-src 'self' 'unsafe-inline' https://*.facebook.com https://*.google.com https://*.tiktok.com; img-src 'self' data: blob: https://randomuser.me https://api.trustedform.com https://www.facebook.com https://*.facebook.com https://*.google.com https://*.tiktok.com; font-src 'self' https://*.facebook.com https://*.google.com https://*.tiktok.com; connect-src 'self' https://randomuser.me https://bnmcip8xp5.execute-api.us-east-1.amazonaws.com https://api.activeprosper.com https://*.execute-api.us-east-1.amazonaws.com https://*.facebook.com https://*.google.com https://*.tiktok.com;"
-  );
 
   return response;
 }
