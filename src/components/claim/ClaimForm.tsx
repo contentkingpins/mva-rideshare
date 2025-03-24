@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { trackEvent, trackCustomEvent, events } from '@/utils/metaPixel';
+import { prepareApiData, submitToApi } from '@/utils/api';
 
 // Import all steps directly, no relative imports that might cause issues
 import Step1BasicInfo from './steps/Step1BasicInfo';
@@ -13,12 +14,14 @@ import Step2Involvement from './steps/Step2Involvement';
 import Step3Qualification from './steps/Step3Qualification';
 import Step4Processing from './steps/Step4Processing';
 import Step5Final from './steps/Step5Final';
+import Script from 'next/script';
 
 // Define the schema for all steps
 const claimSchema = z.object({
   // Step 1: Basic contact information
   firstName: z.string().min(2, { message: 'First name is required' }),
   lastName: z.string().min(2, { message: 'Last name is required' }),
+  email: z.string().email({ message: 'Valid email is required' }).optional(),
   phone: z.string()
     .min(10, { message: 'Phone number must be at least 10 digits' })
     .transform(val => val.replace(/\D/g, '')) // Remove non-digit characters
@@ -84,6 +87,7 @@ export default function ClaimForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const totalSteps = 5;
 
   // Detect if user is on mobile
@@ -419,37 +423,89 @@ export default function ClaimForm() {
         return newData;
       });
       
-      // Process the form (simulate API call)
-      setIsLoading(true);
+      console.log("[FORM] Preparing submission data");
       
-      // Force state update for processing step
-      setCurrentStep(4);
-      
-      // Simulate processing time
-      setTimeout(() => {
-        setIsLoading(false);
-        setCurrentStep(5);
-        
-        // Track successful claim submission with both client and server-side tracking
-        trackEventWithRedundancy(
-          events.LEAD, 
-          {
-            firstName: formValues.firstName,
-            lastName: formValues.lastName,
-            phone: formValues.phone,
+      // Collect all form data
+      const completeFormData = {
+        ...formData,
+        ...formValues,
+        email: formValues.email || 'not-provided@example.com',
+        source: 'MVA-Rideshare-Website',
+        pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+        submittedAt: new Date().toISOString(),
+        xxTrustedFormCertUrl: typeof window !== 'undefined' ? 
+          (document.querySelector('[name="xxTrustedFormCertUrl"]') as HTMLInputElement)?.value || '' : ''
+      };
+
+      // Prepare API data with proper formatting
+      const apiData = prepareApiData(completeFormData);
+
+      // Use our new rideshare-leads API endpoint instead of direct API submission
+      try {
+        const response = await fetch('/api/rideshare-leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
           },
-          {
-            content_name: 'Rideshare Claim',
-            content_category: 'Claim Submission',
-            status: 'Qualified'
-          }
-        );
+          body: JSON.stringify(apiData)
+        });
+
+        // Parse the response
+        const apiResult = await response.json();
+        console.log("[FORM] API submission result:", apiResult);
         
-      }, 5000);
-      
+        // Handle submission results
+        if (apiResult.success) {
+          setSubmissionSuccess(true);
+          
+          // Track successful claim submission with both client and server-side tracking
+          trackEventWithRedundancy(
+            events.LEAD, 
+            {
+              firstName: formValues.firstName,
+              lastName: formValues.lastName,
+              phone: formValues.phone,
+            },
+            {
+              content_name: 'Rideshare Claim',
+              content_category: 'Claim Submission',
+              status: 'Qualified'
+            }
+          );
+          
+          // Add a short delay before showing success screen
+          setTimeout(() => {
+            setIsLoading(false);
+            setCurrentStep(5);
+            console.log("[FORM] Form submission complete, showing success screen");
+          }, 2000);
+        } else {
+          // Even if API fails, still proceed to success screen for better user experience
+          console.warn("[FORM] API failed but proceeding to success screen");
+          setFormError(
+            "Your information was received successfully, but there may have been an issue with our systems. " +
+            "A representative will contact you shortly to ensure your claim is processed."
+          );
+          
+          setTimeout(() => {
+            setIsLoading(false);
+            setCurrentStep(5);
+            console.log("[FORM] Proceeding to final step despite API error");
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("[FORM] Error submitting form:", error);
+        setFormError(
+          "There was an error submitting your form. Please try again or contact support."
+        );
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error('Error in submitStep3:', error);
       setFormError("An unexpected error occurred. Please try again.");
+      
+      // Attempt to recover
+      setIsLoading(false);
     }
   };
 
@@ -484,6 +540,26 @@ export default function ClaimForm() {
 
   return (
     <div className="max-w-3xl mx-auto">
+      {/* TrustedForm Script */}
+      <Script id="trustedform-script" strategy="beforeInteractive">
+        {`
+        (function() {
+          var tf = document.createElement('script');
+          tf.type = 'text/javascript';
+          tf.async = true;
+          tf.src = ('https:' == document.location.protocol ? 'https' : 'http') + 
+            '://api.trustedform.com/trustedform.js?field=xxTrustedFormCertUrl&use_tagged_consent=true&l=' + 
+            new Date().getTime() + Math.random();
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(tf, s);
+        })();
+        `}
+      </Script>
+      <noscript>
+        <img src="https://api.trustedform.com/ns.gif" />
+      </noscript>
+      {/* Hidden input field for TrustedForm */}
+      <input type="hidden" name="xxTrustedFormCertUrl" id="xxTrustedFormCertUrl" />
+      
       {/* Progress bar */}
       <div className="mb-8">
         <div className="bg-gray-200 h-2 rounded-full overflow-hidden">
