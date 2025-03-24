@@ -8,6 +8,17 @@ const rateLimit = new Map<string, number>();
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const MAX_REQUESTS = 300; // Increased to 300 requests per minute for ad tracking
 
+// List of trusted ad-related domains
+const TRUSTED_AD_DOMAINS = [
+  'facebook.com',
+  'facebook.net',
+  'google.com',
+  'google-analytics.com',
+  'googletagmanager.com',
+  'tiktok.com',
+  'tiktokcdn.com'
+];
+
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
@@ -56,11 +67,16 @@ export function middleware(request: NextRequest) {
   response.headers.set('X-XSS-Protection', '1; mode=block');
   
   // Add CORS headers for ad tracking
-  response.headers.set('Access-Control-Allow-Origin', '*');
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  response.headers.set('Access-Control-Allow-Credentials', 'true');
-  response.headers.set('Access-Control-Max-Age', '86400'); // 24 hours
+  const origin = request.headers.get('origin') || '';
+  const isTrustedDomain = TRUSTED_AD_DOMAINS.some(domain => origin.includes(domain));
+  
+  if (isTrustedDomain) {
+    response.headers.set('Access-Control-Allow-Origin', origin);
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+    response.headers.set('Access-Control-Max-Age', '86400'); // 24 hours
+  }
 
   // Add tracking-friendly headers
   response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');

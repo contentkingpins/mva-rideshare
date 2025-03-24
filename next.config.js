@@ -57,16 +57,17 @@ const nextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'self' https://*.facebook.com https://*.facebook.net https://*.google.com https://*.tiktok.com",
-              "block-all-mixed-content"
+              "block-all-mixed-content",
+              "upgrade-insecure-requests"
             ].join('; ')
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=(), fullscreen=(self), display-capture=()'
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*'
+            value: '*' // Consider restricting this to specific domains in production
           },
           {
             key: 'Access-Control-Allow-Methods',
