@@ -18,8 +18,8 @@ declare global {
 export const initTikTokPixel = (pixelId: string): void => {
   if (typeof window === 'undefined') return;
 
-  // Add TikTok Pixel base code
-  !function (w: any, d: Document, t: string) {
+  // Add TikTok Pixel base code - Using TypeScript compatible IIFE syntax
+  (function (w: any, d: Document, t: string) {
     const ttq = w.ttq || [];
     w.ttq = ttq;
     w.TiktokAnalyticsObject = t;
@@ -29,7 +29,7 @@ export const initTikTokPixel = (pixelId: string): void => {
     n.src = 'https://analytics.tiktok.com/i18n/pixel/events.js';
     s.parentNode?.insertBefore(n, s);
     ttq.init(pixelId);
-  }(window, document, 'ttq');
+  })(window, document, 'ttq');
 };
 
 // Track a TikTok pixel event
