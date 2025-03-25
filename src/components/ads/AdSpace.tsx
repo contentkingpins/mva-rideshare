@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { events as standardEvents } from '@/utils/metaPixel';
 
 interface AdSpaceProps {
   platform: 'meta' | 'google' | 'tiktok';
@@ -21,9 +22,11 @@ const AdSpace: React.FC<AdSpaceProps> = ({
       switch (platform) {
         case 'meta':
           if (typeof window !== 'undefined' && (window as any).fbq) {
-            (window as any).fbq('track', 'ViewContent', {
+            (window as any).fbq('track', standardEvents.VIEW_CONTENT, {
               content_name: `ad_${adId}`,
-              content_type: 'ad_impression',
+              content_type: 'advertisement',
+              content_category: 'ad_impression',
+              content_ids: [adId],
               ad_position: position
             });
           }
@@ -41,7 +44,8 @@ const AdSpace: React.FC<AdSpaceProps> = ({
           if (typeof window !== 'undefined' && (window as any).ttq) {
             (window as any).ttq.track('ViewContent', {
               content_name: `ad_${adId}`,
-              content_type: 'ad_impression',
+              content_type: 'advertisement',
+              content_category: 'ad_impression',
               ad_position: position
             });
           }
