@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { initializeConsent } from '@/utils/metaPixel';
+import { initializeTikTokConsent } from '@/utils/tiktokPixel';
 
 export default function ConsentManager() {
   const [showBanner, setShowBanner] = useState(false);
@@ -14,18 +15,31 @@ export default function ConsentManager() {
     if (hasConsent === null) {
       setShowBanner(true);
     } else {
-      // Initialize Meta Pixel with the stored consent value
-      initializeConsent(hasConsent === 'true');
+      // Initialize tracking pixels with the stored consent value
+      const consentValue = hasConsent === 'true';
+      initializeConsent(consentValue);
+      initializeTikTokConsent(consentValue);
     }
   }, []);
   
   const acceptConsent = () => {
     localStorage.setItem('marketing_consent', 'true');
+    
+    // Initialize tracking for all platforms
     initializeConsent(true);
+    initializeTikTokConsent(true);
     
     // Trigger a PageView event since it might not have been tracked on initial load
-    if (typeof window !== 'undefined' && window.fbq) {
-      window.fbq('track', 'PageView');
+    if (typeof window !== 'undefined') {
+      // Meta Pixel PageView
+      if (window.fbq) {
+        window.fbq('track', 'PageView');
+      }
+      
+      // TikTok Pixel PageView (will reload on next page navigation due to how we load the script)
+      if (window.ttq) {
+        window.ttq('track', 'ViewContent');
+      }
     }
     
     setShowBanner(false);
@@ -33,7 +47,11 @@ export default function ConsentManager() {
   
   const declineConsent = () => {
     localStorage.setItem('marketing_consent', 'false');
+    
+    // Revoke tracking for all platforms
     initializeConsent(false);
+    initializeTikTokConsent(false);
+    
     setShowBanner(false);
   };
   
