@@ -75,6 +75,32 @@ export default function RootLayout({
           />
         </noscript>
         {/* End Meta Pixel Code */}
+        
+        {/* TikTok Pixel Code - Loads conditionally based on consent */}
+        <Script id="tiktok-pixel" strategy="afterInteractive">
+          {`
+            // Check for stored consent
+            const hasTikTokConsent = localStorage.getItem('marketing_consent') === 'true';
+            
+            // Only load TikTok pixel if consent is granted
+            if (hasTikTokConsent) {
+              !function (w, d, t) {
+                w.TiktokAnalyticsObject=t;
+                var ttq=w[t]=w[t]||[];
+                ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+                ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+                for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+                ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+                ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+                
+                // Initialize with TikTok Pixel ID
+                ttq.load('C7FVL4BC77U9D7M9FLJ0');
+                ttq.page(); // Track page view
+              }(window, document, 'ttq');
+            }
+          `}
+        </Script>
+        {/* End TikTok Pixel Code */}
       </head>
       <body className="flex flex-col min-h-screen">
         <Navbar />
