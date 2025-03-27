@@ -1,0 +1,4 @@
+# Allow Googlebot without auth
+/* 200! User-Agent=Googlebot
+/* 200! User-Agent=Googlebot-Mobile
+/* 200! User-Agent=Googlebot-Image 
