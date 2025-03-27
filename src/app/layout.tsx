@@ -57,11 +57,32 @@ export default function RootLayout({
             
             // Initialize with consent mode
             fbq('consent', hasConsent ? 'grant' : 'revoke');
-            fbq('init', '1718356202366164');
+            
+            // Initialize with the correct Pixel ID
+            fbq('init', '1718356202366164', {
+              external_id: 'website_visitor_' + Math.floor(Math.random() * 10000000)
+            });
             
             // Only track PageView if consent is granted
             if (hasConsent) {
               fbq('track', 'PageView');
+              
+              // Log pixel status for debugging
+              console.log('Facebook Pixel initialized with consent');
+              
+              // Perform a diagnostic check with our server
+              fetch('/api/meta-pixel-test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  event: 'diagnosticCheck',
+                  timestamp: new Date().toISOString(),
+                  pixelId: '1718356202366164'
+                })
+              })
+              .then(response => response.json())
+              .then(data => console.log('Pixel diagnostic check:', data))
+              .catch(error => console.error('Pixel diagnostic error:', error));
             }
           `}
         </Script>
