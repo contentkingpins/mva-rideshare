@@ -297,7 +297,7 @@ export default function HeroSection() {
       <div className="lg:hidden fixed w-full bottom-16 z-50 px-4">
         <Link 
           href="/claim"
-          className="btn-primary w-full block text-xl py-4 text-center font-semibold shadow-xl rounded-lg"
+          className="btn-primary w-full block text-xl py-4 text-center font-semibold shadow-xl rounded-lg bg-primary-700"
           onClick={(e) => {
             e.preventDefault();
             router.push('/claim');

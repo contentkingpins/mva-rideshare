@@ -78,7 +78,7 @@ export default function ConsentManager() {
           </button>
           <button
             onClick={acceptConsent}
-            className="px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded text-sm"
+            className="px-4 py-2 bg-primary-700 hover:bg-primary-600 rounded text-sm"
           >
             Accept
           </button>
