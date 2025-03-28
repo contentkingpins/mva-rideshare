@@ -112,6 +112,7 @@ export default function Testimonials() {
           <button 
             onClick={goToPrevious}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 md:translate-x-0 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-600 hover:bg-primary-50 hover:text-primary-700 transition-colors duration-200"
+            aria-label="Previous testimonial"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -120,6 +121,7 @@ export default function Testimonials() {
           <button 
             onClick={goToNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 md:translate-x-0 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-600 hover:bg-primary-50 hover:text-primary-700 transition-colors duration-200"
+            aria-label="Next testimonial"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -135,6 +137,7 @@ export default function Testimonials() {
                 className={`w-3 h-3 rounded-full transition-colors duration-200 ${
                   index === currentIndex ? 'bg-primary-600' : 'bg-gray-300 hover:bg-gray-400'
                 }`}
+                style={{ minWidth: '24px', minHeight: '24px', padding: '8px' }}
                 aria-label={`Go to testimonial ${index + 1}`}
               />
             ))}
