@@ -42,8 +42,39 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
+        {/* Preload critical CSS */}
+        <link 
+          rel="preload" 
+          href="/_next/static/css/app/layout.css" 
+          as="style"
+          crossOrigin="anonymous"
+        />
+        
+        {/* Preload hero image for faster LCP */}
+        <link 
+          rel="preload" 
+          href="/images/shutterstock_2428486561-mobile.webp" 
+          as="image" 
+          media="(max-width: 767px)" 
+          type="image/webp"
+        />
+        <link 
+          rel="preload" 
+          href="/images/shutterstock_2428486561-tablet.webp" 
+          as="image" 
+          media="(min-width: 768px) and (max-width: 1023px)" 
+          type="image/webp"
+        />
+        <link 
+          rel="preload" 
+          href="/images/shutterstock_2428486561-desktop.webp" 
+          as="image" 
+          media="(min-width: 1024px)" 
+          type="image/webp"
+        />
+        
         {/* Meta Pixel Code - Loads conditionally based on consent */}
-        <Script id="facebook-pixel" strategy="afterInteractive">
+        <Script id="facebook-pixel" strategy="lazyOnload">
           {`
             // Initialize fbq with consent handling
             !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -98,7 +129,7 @@ export default function RootLayout({
         {/* End Meta Pixel Code */}
         
         {/* TikTok Pixel Code - Loads conditionally based on consent */}
-        <Script id="tiktok-pixel" strategy="afterInteractive">
+        <Script id="tiktok-pixel" strategy="lazyOnload">
           {`
             // Check for stored consent
             const hasTikTokConsent = localStorage.getItem('marketing_consent') === 'true';
