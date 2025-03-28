@@ -1,4 +1,8 @@
 # Allow Googlebot without auth
 /* 200! User-Agent=Googlebot
 /* 200! User-Agent=Googlebot-Mobile
-/* 200! User-Agent=Googlebot-Image 
+/* 200! User-Agent=Googlebot-Image
+
+# Force apex domain to www to avoid redirect chains
+http://ridesharerights.com/* https://www.ridesharerights.com/:splat 301!
+https://ridesharerights.com/* https://www.ridesharerights.com/:splat 301! 
