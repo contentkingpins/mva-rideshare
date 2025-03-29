@@ -50,6 +50,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
+        {/* Inline critical CSS */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          /* Critical CSS for initial render */
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          html, body { height: 100%; width: 100%; }
+          body { font-family: var(--font-inter); }
+          .container { width: 100%; max-width: 1280px; margin-left: auto; margin-right: auto; }
+          @media (min-width: 640px) { .container { max-width: 640px; } }
+          @media (min-width: 768px) { .container { max-width: 768px; } }
+          @media (min-width: 1024px) { .container { max-width: 1024px; } }
+          @media (min-width: 1280px) { .container { max-width: 1280px; } }
+          .btn-primary { display: inline-block; background-color: #1d4ed8; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; }
+        ` }}/>
+        
         {/* Preload critical CSS */}
         <link 
           rel="preload" 
@@ -63,63 +77,78 @@ export default function RootLayout({
           rel="preload" 
           href="/images/shutterstock_2428486561-mobile.webp" 
           as="image" 
+          type="image/webp"
           media="(max-width: 767px)" 
-          type="image/webp"
-        />
-        <link 
-          rel="preload" 
-          href="/images/shutterstock_2428486561-tablet.webp" 
-          as="image" 
-          media="(min-width: 768px) and (max-width: 1023px)" 
-          type="image/webp"
+          fetchPriority="high"
         />
         <link 
           rel="preload" 
           href="/images/shutterstock_2428486561-desktop.webp" 
           as="image" 
-          media="(min-width: 1024px)" 
           type="image/webp"
+          media="(min-width: 768px)"
+          fetchPriority="high" 
         />
         
         {/* Meta Pixel Code - Loads conditionally based on consent */}
         <Script id="facebook-pixel" strategy="afterInteractive" data-load-after-interaction>
           {`
-            // Defer Facebook Pixel loading until after user interaction or 3 seconds
+            // Defer Facebook Pixel loading until after user interaction or 5 seconds
             const loadFacebookPixel = () => {
               if (window.fbq) return; // Already loaded
               
-              // Initialize fbq with consent handling
-              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-              document,'script','https://connect.facebook.net/en_US/fbevents.js');
+              // Create a lightweight version of fbq first to queue calls
+              window.fbq = function() {
+                if (window._fbq && window._fbq.callMethod) {
+                  window._fbq.callMethod.apply(window._fbq, arguments);
+                } else {
+                  if (!window._fbq) window._fbq = [];
+                  window._fbq.push(arguments);
+                }
+              };
               
-              // Check for stored consent
-              const hasConsent = localStorage.getItem('marketing_consent') === 'true';
-              
-              // Initialize with consent mode
-              fbq('consent', hasConsent ? 'grant' : 'revoke');
-              
-              // Initialize with the correct Pixel ID
-              fbq('init', '1718356202366164', {
-                external_id: 'website_visitor_' + Math.floor(Math.random() * 10000000)
-              });
-              
-              // Only track PageView if consent is granted
-              if (hasConsent) {
-                fbq('track', 'PageView');
+              // Delay actual script loading
+              setTimeout(() => {
+                // Don't load if user scrolled less than 25% down the page
+                if (window.scrollY < window.innerHeight * 0.25 && 
+                    document.visibilityState !== 'visible') {
+                  return; // Will try again on next interaction
+                }
                 
-                // Log pixel status for debugging
-                console.log('Facebook Pixel initialized with consent');
-              }
+                // Initialize fbq with consent handling
+                (function(f,b,e,v,n,t,s){
+                  if(f.fbq)return;
+                  n=f.fbq=function(){n.callMethod?
+                  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                  n.queue=[];t=b.createElement(e);t.async=!0;
+                  t.src=v;s=b.getElementsByTagName(e)[0];
+                  s.parentNode.insertBefore(t,s)
+                })(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+                
+                // Check for stored consent
+                const hasConsent = localStorage.getItem('marketing_consent') === 'true';
+                
+                // Initialize with consent mode
+                fbq('consent', hasConsent ? 'grant' : 'revoke');
+                
+                // Initialize with the correct Pixel ID
+                fbq('init', '1718356202366164', {
+                  external_id: 'website_visitor_' + Math.floor(Math.random() * 10000000)
+                });
+                
+                // Only track PageView if consent is granted
+                if (hasConsent) {
+                  fbq('track', 'PageView');
+                }
+              }, 50); // Small delay for better main thread scheduling
             };
             
             // Make this function available globally for the ConsentManager
             window.loadFacebookPixel = loadFacebookPixel;
 
-            // Load after user interaction (scroll, click, etc.)
-            const interactionEvents = ['scroll', 'mousemove', 'click', 'keydown', 'touchstart'];
+            // Load after significant user interaction (scroll, click, etc.)
+            const interactionEvents = ['scroll', 'click', 'touchstart'];
             const handleInteraction = () => {
               loadFacebookPixel();
               // Remove all event listeners after loading
@@ -129,8 +158,8 @@ export default function RootLayout({
             // Add event listeners for user interaction
             interactionEvents.forEach(event => window.addEventListener(event, handleInteraction, { passive: true }));
             
-            // Fallback: Load after 3 seconds regardless of interaction
-            setTimeout(loadFacebookPixel, 3000);
+            // Fallback: Load after 5 seconds regardless of interaction
+            setTimeout(loadFacebookPixel, 5000);
           `}
         </Script>
         <noscript>

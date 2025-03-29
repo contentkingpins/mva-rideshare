@@ -101,4 +101,24 @@ The project includes:
 
 ## License
 
-This project is private and confidential. 
+This project is private and confidential.
+
+## Performance Optimization
+
+### Hero Image Optimization
+
+For better Largest Contentful Paint (LCP) performance, create optimized WebP versions of the hero image:
+
+1. **Desktop Optimized Image (1920x1080)**:
+   ```bash
+   # Using ImageMagick or a similar tool
+   convert public/images/shutterstock_2428486561-desktop.jpg -quality 80 -resize 1920x1080 -format webp public/images/shutterstock_2428486561-desktop.webp
+   ```
+
+2. **Mobile Optimized Image (768x1024)**:
+   ```bash
+   # Create a mobile-optimized version with proper cropping
+   convert public/images/shutterstock_2428486561-desktop.jpg -quality 75 -resize 768x1024^ -gravity center -extent 768x1024 -format webp public/images/shutterstock_2428486561-mobile.webp
+   ```
+
+These optimized images are preloaded in the layout.tsx file to improve LCP performance. 
