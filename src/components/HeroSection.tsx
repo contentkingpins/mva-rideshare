@@ -65,46 +65,46 @@ export default function HeroSection() {
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Background image - optimized for all devices */}
         <div className="absolute inset-0 z-0">
-          <picture>
-            {/* Mobile-optimized vertical crop image - smaller file */}
-            <source 
-              media="(max-width: 767px)" 
-              srcSet="/images/shutterstock_2428486561-mobile.webp"
-              type="image/webp"
-            />
-            {/* Tablet-optimized image - medium size */}
-            <source 
-              media="(max-width: 1023px)" 
-              srcSet="/images/shutterstock_2428486561-tablet.webp"
-              type="image/webp"
-            />
-            {/* Desktop WebP version - modern browsers */}
-            <source
-              media="(min-width: 1024px)"
-              srcSet="/images/shutterstock_2428486561-desktop.webp"
-              type="image/webp"
-            />
-            {/* Fallback image for all devices */}
+          {/* Simplified image loading - optimized for LCP */}
+          {isMobile ? (
             <Image
-              src="/images/shutterstock_2428486561-desktop.jpg"
+              src="/images/shutterstock_2428486561-mobile.webp"
               alt="Rideshare accident scene"
               fill
               priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, 100vw"
+              fetchPriority="high"
+              sizes="100vw"
               style={{ 
                 objectFit: 'cover', 
-                objectPosition: isMobile ? '50% 40%' : 'center top',
+                objectPosition: '50% 40%',
                 maxHeight: '100vh',
                 minHeight: '100%',
-                transform: 'none'
               }}
               className="brightness-100 contrast-105"
               loading="eager"
+              decoding="async"
+              quality={75}
+            />
+          ) : (
+            <Image
+              src="/images/shutterstock_2428486561-desktop.webp"
+              alt="Rideshare accident scene"
+              fill
+              priority
               fetchPriority="high"
+              sizes="100vw"
+              style={{ 
+                objectFit: 'cover', 
+                objectPosition: 'center top',
+                maxHeight: '100vh',
+                minHeight: '100%',
+              }}
+              className="brightness-100 contrast-105"
+              loading="eager"
               decoding="async"
               quality={80}
             />
-          </picture>
+          )}
           
           {/* Gradient overlay - subtle professional gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>

@@ -6,11 +6,20 @@ const nextConfig = {
     domains: ['randomuser.me'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    formats: ['image/webp'],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 31536000, // 1 year cache
   },
   // Remove standalone output as it might cause issues with Amplify
   // Remove onDemandEntries as it's not needed for production
   poweredByHeader: false,
+  
+  // Performance optimization
+  experimental: {
+    optimizeCss: true,
+    optimizeServerReact: true,
+    scrollRestoration: true,
+    nextScriptWorkers: true,
+  },
   
   // Security headers with ad-compatible CSP
   async headers() {
