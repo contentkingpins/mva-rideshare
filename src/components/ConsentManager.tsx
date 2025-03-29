@@ -74,28 +74,27 @@ export default function ConsentManager() {
   }
   
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-50">
-      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
-        <div className="mb-4 md:mb-0 md:mr-4">
-          <p className="text-sm md:text-base">
-            We use cookies to improve your experience and for marketing purposes. 
-            By continuing to browse our site, you agree to our use of cookies.
-            See our <a href="/privacy" className="underline">Privacy Policy</a> for more information.
+    <div className="fixed bottom-0 md:bottom-4 md:right-4 z-50 max-w-full md:max-w-sm">
+      <div className="bg-gray-900/90 backdrop-blur-sm text-white p-3 rounded-t-lg md:rounded-lg shadow-xl">
+        <div className="flex flex-col space-y-2">
+          <p className="text-xs md:text-sm">
+            We use cookies to improve your experience. By continuing, you agree to our{' '}
+            <a href="/privacy" className="underline">Privacy Policy</a>.
           </p>
-        </div>
-        <div className="flex space-x-4">
-          <button
-            onClick={declineConsent}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-sm"
-          >
-            Decline
-          </button>
-          <button
-            onClick={acceptConsent}
-            className="px-4 py-2 bg-primary-700 hover:bg-primary-600 rounded text-sm"
-          >
-            Accept
-          </button>
+          <div className="flex justify-end space-x-2 mt-2">
+            <button
+              onClick={declineConsent}
+              className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs"
+            >
+              Decline
+            </button>
+            <button
+              onClick={acceptConsent}
+              className="px-3 py-1 bg-primary-700 hover:bg-primary-600 rounded text-xs"
+            >
+              Accept
+            </button>
+          </div>
         </div>
       </div>
     </div>

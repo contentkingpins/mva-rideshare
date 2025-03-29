@@ -6,23 +6,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 const testimonials = [
   {
     id: 1,
-    quote: "I needed money to make it through my recovery. Claim Connectors helped me get money before my case was settled!",
+    quote: "After my Uber accident, I needed money for medical bills. Claim Connectors got me a settlement in just 3 weeks! The process was incredibly fast.",
     name: "Alex G.",
     role: "Uber Passenger",
+    location: "Dallas, TX",
     image: "https://randomuser.me/api/portraits/men/32.jpg",
   },
   {
     id: 2,
-    quote: "The process was easy, and I got the settlement I deserved. Highly recommend!",
+    quote: "I was worried about legal fees, but with their No Win, No Fee guarantee, I didn't pay a penny until my case settled. I got $25,000 more than I expected!",
     name: "Jessica M.",
     role: "Lyft Passenger",
+    location: "Houston, TX",
     image: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
     id: 3,
-    quote: "I had no idea what to do after my accident. Claim Connectors made it stress-free!",
+    quote: "As a driver, I thought insurance would handle everything. I was wrong. Claim Connectors found additional coverage that tripled my settlement.",
     name: "Michael T.",
     role: "Rideshare Driver",
+    location: "Austin, TX",
     image: "https://randomuser.me/api/portraits/men/67.jpg",
   },
 ];
@@ -101,7 +104,7 @@ export default function Testimonials() {
                       {testimonials[currentIndex].quote}
                     </p>
                     <div className="font-medium text-lg">{testimonials[currentIndex].name}</div>
-                    <div className="text-gray-600">{testimonials[currentIndex].role}</div>
+                    <div className="text-gray-600">{testimonials[currentIndex].role} • {testimonials[currentIndex].location}</div>
                   </div>
                 </div>
               </motion.div>
@@ -151,10 +154,13 @@ export default function Testimonials() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <p className="text-lg mb-4">Ready to get started?</p>
-          <a href="/claim" className="btn-primary text-lg">
-            Submit Your Claim Now
-          </a>
+          <div className="bg-primary-50 rounded-lg p-6 max-w-2xl mx-auto">
+            <p className="text-lg mb-4 font-medium">Join thousands of satisfied clients who received compensation</p>
+            <p className="text-sm mb-6 text-gray-600">Free evaluation in 24 hours or less • 100% Confidential • No upfront costs</p>
+            <a href="/claim" className="btn-primary text-lg px-8 py-3 font-semibold">
+              Check My Eligibility Now
+            </a>
+          </div>
         </motion.div>
       </div>
     </section>

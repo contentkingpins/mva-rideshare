@@ -122,10 +122,10 @@ export default function HeroSection() {
             >
               <div className="max-w-lg mx-auto md:mx-0">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4 md:mb-5 drop-shadow-sm">
-                  Injured in a Rideshare Accident? Make Sure Your Rights Are Protected!
+                  Injured in a Rideshare Accident? Get Your Compensation Fast!
                 </h1>
                 <p className="text-lg md:text-lg lg:text-xl text-white text-opacity-95 leading-relaxed drop-shadow-sm mb-8">
-                  Submit your accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.
+                  Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.
                 </p>
                 
                 {/* Professional feature list */}
@@ -136,7 +136,7 @@ export default function HeroSection() {
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                       </svg>
                     </div>
-                    <span className="font-medium">1000+ Claims</span>
+                    <span className="font-medium">Thousands Helped</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
@@ -144,7 +144,7 @@ export default function HeroSection() {
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                       </svg>
                     </div>
-                    <span className="font-medium">Millions Recovered</span>
+                    <span className="font-medium">100% Confidential</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
@@ -167,7 +167,29 @@ export default function HeroSection() {
               className="hidden lg:block lg:w-1/2 lg:mt-0 px-2 md:px-0"
             >
               <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 md:p-6 lg:p-8 border border-gray-100">
-                <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">Start Your Claim Now</h2>
+                <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">Check Your Eligibility Now</h2>
+                
+                {/* Desktop Trust Signals */}
+                <div className="flex justify-center mb-4 space-x-4">
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                    </svg>
+                    <span className="text-xs">Fast Callback</span>
+                  </div>
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                    </svg>
+                    <span className="text-xs">Free Review</span>
+                  </div>
+                  <div className="flex items-center">
+                    <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+                    </svg>
+                    <span className="text-xs">Secure & Private</span>
+                  </div>
+                </div>
                 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -242,9 +264,13 @@ export default function HeroSection() {
                         Processing...
                       </span>
                     ) : (
-                      'Submit Your Claim'
+                      'Get Your Free Case Review'
                     )}
                   </button>
+                  
+                  <div className="text-center">
+                    <p className="text-green-600 font-medium text-sm">Review within 24 hours guaranteed</p>
+                  </div>
                   
                   <p className="text-xs text-gray-500 text-center mt-4">
                     By submitting, you agree to our{' '}
@@ -272,7 +298,7 @@ export default function HeroSection() {
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
               </svg>
             </div>
-            <span className="text-xs font-medium text-gray-900">1000+ Claims</span>
+            <span className="text-xs font-medium text-gray-900">Thousands Helped</span>
           </div>
           <div className="flex flex-col items-center">
             <div className="bg-primary-500 p-2 rounded-full mb-1">
@@ -280,7 +306,7 @@ export default function HeroSection() {
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
               </svg>
             </div>
-            <span className="text-xs font-medium text-gray-900">Millions Recovered</span>
+            <span className="text-xs font-medium text-gray-900">100% Confidential</span>
           </div>
           <div className="flex flex-col items-center">
             <div className="bg-primary-500 p-2 rounded-full mb-1">
@@ -303,7 +329,7 @@ export default function HeroSection() {
             router.push('/claim');
           }}
         >
-          Start Your Claim Now
+          Check Eligibility Now <span className="text-sm font-normal ml-1">(30 Sec)</span>
         </Link>
       </div>
       
@@ -316,7 +342,7 @@ export default function HeroSection() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.986.836l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
           </svg>
-          Call for Free Case Review
+          Immediate Assistance
         </a>
       </div>
     </section>
