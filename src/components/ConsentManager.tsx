@@ -4,6 +4,14 @@ import { useState, useEffect } from 'react';
 import { initializeConsent } from '@/utils/metaPixel';
 import { initializeTikTokConsent } from '@/utils/tiktokPixel';
 
+// Extend the global window interface
+declare global {
+  interface Window {
+    loadFacebookPixel?: () => void;
+    loadTikTokPixel?: () => void;
+  }
+}
+
 export default function ConsentManager() {
   const [showBanner, setShowBanner] = useState(false);
   
@@ -29,15 +37,21 @@ export default function ConsentManager() {
     initializeConsent(true);
     initializeTikTokConsent(true);
     
-    // Trigger a PageView event since it might not have been tracked on initial load
+    // Trigger loading of pixels immediately when consent is given
     if (typeof window !== 'undefined') {
-      // Meta Pixel PageView
-      if (window.fbq) {
+      // For Facebook, manually trigger the event handler if it exists
+      if (window.loadFacebookPixel) {
+        window.loadFacebookPixel();
+      } else if (window.fbq) {
+        // If fbq already exists, just trigger PageView
         window.fbq('track', 'PageView');
       }
       
-      // TikTok Pixel PageView (will reload on next page navigation due to how we load the script)
-      if (window.ttq) {
+      // For TikTok, manually trigger the event handler if it exists
+      if (window.loadTikTokPixel) {
+        window.loadTikTokPixel();
+      } else if (window.ttq) {
+        // If ttq already exists, just trigger page view
         window.ttq('track', 'ViewContent');
       }
     }
