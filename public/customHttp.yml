@@ -1,4 +1,22 @@
 customHeaders:
+  - pattern: '**/*.css'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+      - key: 'Content-Type'
+        value: 'text/css'
+  - pattern: '**/_next/static/css/**/*.css'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+      - key: 'Content-Type'
+        value: 'text/css'
+  - pattern: '**/_next/static/css/app/layout.css'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'
+      - key: 'Content-Type'
+        value: 'text/css'
   - pattern: '*.jpg'
     headers:
       - key: 'Cache-Control'
@@ -19,30 +37,6 @@ customHeaders:
     headers:
       - key: 'Cache-Control'
         value: 'public, max-age=31536000, immutable'
-  - pattern: '*.css'
-    headers:
-      - key: 'Cache-Control'
-        value: 'public, max-age=31536000, immutable'
-      - key: 'Content-Type'
-        value: 'text/css'
-  - pattern: '*_next/static/css/*.css'
-    headers:
-      - key: 'Cache-Control'
-        value: 'public, max-age=31536000, immutable'
-      - key: 'Content-Type'
-        value: 'text/css'
-  - pattern: '/_next/static/css/app/layout.css'
-    headers:
-      - key: 'Cache-Control'
-        value: 'public, max-age=31536000, immutable'
-      - key: 'Content-Type'
-        value: 'text/css'
-  - pattern: '*/_next/static/css/app/layout.css'
-    headers:
-      - key: 'Cache-Control'
-        value: 'public, max-age=31536000, immutable'
-      - key: 'Content-Type'
-        value: 'text/css'
   - pattern: '*.js'
     headers:
       - key: 'Cache-Control'

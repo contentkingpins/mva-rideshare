@@ -99,9 +99,8 @@ export default function HeroSection() {
               className="brightness-100 contrast-105"
               loading="eager"
               decoding="async"
-              quality={65} // Reduced quality for faster load
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q=="
+              quality={60} // Further reduced quality for faster load
+              unoptimized={true} // Skip Next.js image optimization to use pre-optimized images
             />
           ) : (
             <Image
@@ -120,9 +119,8 @@ export default function HeroSection() {
               className="brightness-100 contrast-105"
               loading="eager"
               decoding="async"
-              quality={70} // Reduced quality for faster load
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q=="
+              quality={65} // Further reduced quality for faster load
+              unoptimized={true} // Skip Next.js image optimization to use pre-optimized images
             />
           )}
           

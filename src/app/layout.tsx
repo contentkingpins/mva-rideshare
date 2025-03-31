@@ -84,13 +84,17 @@ export default function RootLayout({
           .bg-gray-800 { background-color: #1f2937; }
         ` }}/>
         
-        {/* Direct stylesheet insertion without preload to avoid MIME type issues */}
-        <style 
-          type="text/css" 
-          dangerouslySetInnerHTML={{ 
-            __html: `@import url("/_next/static/css/app/layout.css");` 
-          }} 
+        {/* Direct stylesheet loading - simplest approach */}
+        <link 
+          rel="stylesheet" 
+          href="/_next/static/css/app/layout.css"
+          media="print"
         />
+        <Script id="load-stylesheet" strategy="beforeInteractive">
+          {`
+            document.querySelector('link[href="/_next/static/css/app/layout.css"]').media = 'all';
+          `}
+        </Script>
         
         {/* Preload hero image for faster LCP */}
         <link 
