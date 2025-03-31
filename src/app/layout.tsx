@@ -56,8 +56,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
-        {/* DNS prefetching for faster initial connection setup */}
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        {/* Resource hints for faster connections */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
         
