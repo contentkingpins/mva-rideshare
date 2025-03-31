@@ -64,63 +64,25 @@ export default function HeroSection() {
       {/* Hero Container */}
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Background image - optimized for all devices */}
-        <div className="absolute inset-0 z-0 bg-gray-800">
-          {/* Immediate visual placeholder - uses inline styling for instant load */}
-          <div className="absolute inset-0 z-0" style={{
-            backgroundColor: '#1e3a8a',
-            backgroundImage: 'linear-gradient(to bottom, rgba(30, 64, 175, 0.9), rgba(30, 58, 138, 0.8))',
-          }}></div>
-          
-          {/* Pre-blur placeholder - immediate color impression similar to the final image */}
+        <div className="absolute inset-0 z-0 bg-primary-900">
+          {/* Static color placeholder for immediate visibility */}
           <div 
-            className="absolute inset-0 z-0 bg-cover bg-center opacity-30"
-            style={{ 
-              backgroundImage: "url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q==')",
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          />
+            className="absolute inset-0 z-0"
+            style={{ background: 'linear-gradient(to bottom, #1e40af, #1e3a8a)' }}
+          ></div>
           
-          {/* Preloaded and precomputed WebP image sizes for faster browser rendering */}
-          {isMobile ? (
-            <Image
-              src="/images/shutterstock_2428486561-mobile.webp"
-              alt="Rideshare accident scene"
-              fill
-              priority
-              fetchPriority="high"
-              sizes="100vw"
-              style={{ 
-                objectFit: 'cover', 
-                objectPosition: '50% 40%',
-                maxHeight: '100vh',
-                minHeight: '100%',
-              }}
-              className="brightness-100 contrast-105"
-              loading="eager"
-              decoding="async"
-              quality={75}
-            />
-          ) : (
-            <Image
-              src="/images/shutterstock_2428486561-desktop.webp"
-              alt="Rideshare accident scene"
-              fill
-              priority
-              fetchPriority="high"
-              sizes="100vw"
-              style={{ 
-                objectFit: 'cover', 
-                objectPosition: 'center top',
-                maxHeight: '100vh',
-                minHeight: '100%',
-              }}
-              className="brightness-100 contrast-105"
-              loading="eager"
-              decoding="async"
-              quality={80}
-            />
-          )}
+          {/* Optimized image without Next.js Image component for direct loading */}
+          <div 
+            className="absolute inset-0 z-0"
+            style={{ 
+              backgroundImage: isMobile 
+                ? 'url(/images/shutterstock_2428486561-mobile.webp)'
+                : 'url(/images/shutterstock_2428486561-desktop.webp)',
+              backgroundSize: 'cover',
+              backgroundPosition: isMobile ? '50% 40%' : 'center top',
+              filter: 'brightness(1) contrast(1.05)',
+            }}
+          ></div>
           
           {/* Gradient overlay - subtle professional gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>

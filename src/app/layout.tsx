@@ -82,9 +82,38 @@ export default function RootLayout({
           .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
           .z-0 { z-index: 0; }
           .bg-gray-800 { background-color: #1f2937; }
+          .bg-primary-900 { background-color: #1e3a8a; }
+          .from-primary-900\/50 { --tw-gradient-from: rgb(30 58 138 / 0.5); --tw-gradient-to: rgb(30 58 138 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+          .via-primary-800\/45 { --tw-gradient-via: rgb(30 64 175 / 0.45); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to); }
+          .to-primary-700\/40 { --tw-gradient-to: rgb(29 78 216 / 0.4); }
+          .bg-gradient-to-b { background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); }
+          .min-h-\[90vh\] { min-height: 90vh; }
+          
+          /* Header navigation styles */
+          .w-full { width: 100%; }
+          .h-full { height: 100%; }
+          .mx-auto { margin-left: auto; margin-right: auto; }
+          .items-center { align-items: center; }
+          .justify-center { justify-content: center; }
+          .justify-between { justify-content: space-between; }
+          .px-5 { padding-left: 1.25rem; padding-right: 1.25rem; }
+          .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+          .fixed { position: fixed; }
+          .top-0 { top: 0; }
+          .left-0 { left: 0; }
+          .right-0 { right: 0; }
+          .shadow-md { --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color); box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow); }
+          .z-50 { z-index: 50; }
+          
+          /* Hero section initial styles */
+          .leading-tight { line-height: 1.25; }
+          .tracking-tight { letter-spacing: -0.025em; }
+          .gap-6 { gap: 1.5rem; }
+          .pb-24 { padding-bottom: 6rem; }
+          .pt-16 { padding-top: 4rem; }
         ` }}/>
         
-        {/* Direct stylesheet loading - simplest approach */}
+        {/* Load remaining styles with modern approach */}
         <link 
           rel="stylesheet" 
           href="/_next/static/css/app/layout.css"
