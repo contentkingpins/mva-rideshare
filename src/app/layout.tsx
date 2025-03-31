@@ -88,13 +88,7 @@ export default function RootLayout({
         <link 
           rel="stylesheet" 
           href="/_next/static/css/app/layout.css"
-          media="print"
         />
-        <Script id="load-stylesheet" strategy="beforeInteractive">
-          {`
-            document.querySelector('link[href="/_next/static/css/app/layout.css"]').media = 'all';
-          `}
-        </Script>
         
         {/* Preload hero image for faster LCP */}
         <link 
