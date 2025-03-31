@@ -63,28 +63,9 @@ export default function HeroSection() {
     <section className="relative overflow-hidden">
       {/* Hero Container */}
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
-        {/* Background image - optimized for all devices */}
-        <div className="absolute inset-0 z-0 bg-primary-900">
-          {/* Static background for immediate display */}
-          <div 
-            className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900 to-primary-800"
-          ></div>
-          
-          {/* Plain HTML img tag for faster loading - no background-image */}
-          <img 
-            src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
-            alt="Rideshare accident scene"
-            className="absolute inset-0 z-0 w-full h-full object-cover opacity-80"
-            style={{ 
-              objectPosition: isMobile ? '50% 40%' : 'center top',
-              filter: 'brightness(0.8) contrast(1.05)'
-            }}
-            loading="eager"
-            decoding="async"
-          />
-          
-          {/* Gradient overlay - subtle professional gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
+        {/* Background with solid color gradient for immediate display */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900 to-primary-800">
+          {/* No image initially - just solid color */}
         </div>
 
         {/* Content Container */}
