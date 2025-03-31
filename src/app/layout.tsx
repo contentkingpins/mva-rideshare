@@ -123,8 +123,24 @@ export default function RootLayout({
         {/* Simple direct CSS loading */}
         <link rel="stylesheet" href="/_next/static/css/app/layout.css" />
         
+        {/* Preload hero image for critical LCP performance */}
+        <link 
+          rel="preload" 
+          href="/images/shutterstock_2428486561-mobile.webp" 
+          as="image"
+          type="image/webp"
+          media="(max-width: 1023px)"
+        />
+        <link 
+          rel="preload" 
+          href="/images/shutterstock_2428486561-desktop.webp" 
+          as="image"
+          type="image/webp"
+          media="(min-width: 1024px)"
+        />
+        
         {/* Meta Pixel Code - Loads conditionally based on consent */}
-        <Script id="facebook-pixel" strategy="afterInteractive" data-load-after-interaction>
+        <Script id="facebook-pixel" strategy="lazyOnload">
           {`
             // Defer Facebook Pixel loading until after user interaction or 5 seconds
             const loadFacebookPixel = () => {
@@ -140,59 +156,57 @@ export default function RootLayout({
                 }
               };
               
-              // Delay actual script loading
-              setTimeout(() => {
-                // Don't load if user scrolled less than 25% down the page
-                if (window.scrollY < window.innerHeight * 0.25 && 
-                    document.visibilityState !== 'visible') {
-                  return; // Will try again on next interaction
-                }
-                
-                // Initialize fbq with consent handling
-                (function(f,b,e,v,n,t,s){
-                  if(f.fbq)return;
-                  n=f.fbq=function(){n.callMethod?
-                  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                  n.queue=[];t=b.createElement(e);t.async=!0;
-                  t.src=v;s=b.getElementsByTagName(e)[0];
-                  s.parentNode.insertBefore(t,s)
-                })(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-                
-                // Check for stored consent
-                const hasConsent = localStorage.getItem('marketing_consent') === 'true';
-                
-                // Initialize with consent mode
-                fbq('consent', hasConsent ? 'grant' : 'revoke');
-                
-                // Initialize with the correct Pixel ID
-                fbq('init', '1718356202366164', {
-                  external_id: 'website_visitor_' + Math.floor(Math.random() * 10000000)
-                });
-                
-                // Only track PageView if consent is granted
-                if (hasConsent) {
-                  fbq('track', 'PageView');
-                }
-              }, 50); // Small delay for better main thread scheduling
+              // Initialize fbq with consent handling
+              (function(f,b,e,v,n,t,s){
+                if(f.fbq)return;
+                n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)
+              })(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+              
+              // Check for stored consent
+              const hasConsent = localStorage.getItem('marketing_consent') === 'true';
+              
+              // Initialize with consent mode
+              fbq('consent', hasConsent ? 'grant' : 'revoke');
+              
+              // Initialize with the correct Pixel ID
+              fbq('init', '1718356202366164', {
+                external_id: 'website_visitor_' + Math.floor(Math.random() * 10000000)
+              });
+              
+              // Only track PageView if consent is granted
+              if (hasConsent) {
+                fbq('track', 'PageView');
+              }
             };
             
             // Make this function available globally for the ConsentManager
             window.loadFacebookPixel = loadFacebookPixel;
 
-            // Load after significant user interaction (scroll, click, etc.)
-            const interactionEvents = ['scroll', 'click', 'touchstart'];
-            const handleInteraction = () => {
-              loadFacebookPixel();
-              // Remove all event listeners after loading
-              interactionEvents.forEach(event => window.removeEventListener(event, handleInteraction));
-            };
-            
-            // Add event listeners for user interaction
-            interactionEvents.forEach(event => window.addEventListener(event, handleInteraction, { passive: true }));
-            
-            // Fallback: Load after 5 seconds regardless of interaction
-            setTimeout(loadFacebookPixel, 5000);
+            // Only load after user has interacted with the page
+            document.addEventListener('DOMContentLoaded', function() {
+              // Wait for interaction
+              const interactionEvents = ['scroll', 'click', 'touchstart'];
+              const handleInteraction = () => {
+                loadFacebookPixel();
+                // Remove all event listeners after loading
+                interactionEvents.forEach(event => {
+                  document.removeEventListener(event, handleInteraction);
+                });
+              };
+              
+              // Add event listeners for user interaction
+              interactionEvents.forEach(event => {
+                document.addEventListener(event, handleInteraction, { passive: true });
+              });
+              
+              // Fallback: Load after 10 seconds regardless of interaction
+              setTimeout(loadFacebookPixel, 10000);
+            });
           `}
         </Script>
         <noscript>
@@ -207,9 +221,9 @@ export default function RootLayout({
         {/* End Meta Pixel Code */}
         
         {/* TikTok Pixel Code - Loads conditionally based on consent */}
-        <Script id="tiktok-pixel" strategy="afterInteractive" data-load-after-interaction>
+        <Script id="tiktok-pixel" strategy="lazyOnload">
           {`
-            // Defer TikTok Pixel loading until after user interaction or 4 seconds
+            // Defer TikTok Pixel loading
             const loadTikTokPixel = () => {
               if (window.ttq) return; // Already loaded
               
@@ -236,20 +250,29 @@ export default function RootLayout({
             
             // Make this function available globally for the ConsentManager
             window.loadTikTokPixel = loadTikTokPixel;
-
-            // Load after user interaction (scroll, click, etc.)
-            const interactionEventsTT = ['scroll', 'mousemove', 'click', 'keydown', 'touchstart'];
-            const handleInteractionTT = () => {
-              loadTikTokPixel();
-              // Remove all event listeners after loading
-              interactionEventsTT.forEach(event => window.removeEventListener(event, handleInteractionTT));
-            };
             
-            // Add event listeners for user interaction
-            interactionEventsTT.forEach(event => window.addEventListener(event, handleInteractionTT, { passive: true }));
-            
-            // Fallback: Load after 4 seconds regardless of interaction (slightly delayed after Facebook)
-            setTimeout(loadTikTokPixel, 4000);
+            // Only load after first interaction and significant delay
+            document.addEventListener('DOMContentLoaded', function() {
+              setTimeout(function() {
+                // Wait for interaction for TikTok
+                const interactionEventsTT = ['scroll', 'click', 'touchstart'];
+                const handleInteractionTT = () => {
+                  loadTikTokPixel();
+                  // Remove all event listeners after loading
+                  interactionEventsTT.forEach(event => {
+                    document.removeEventListener(event, handleInteractionTT);
+                  });
+                };
+                
+                // Add event listeners for user interaction
+                interactionEventsTT.forEach(event => {
+                  document.addEventListener(event, handleInteractionTT, { passive: true });
+                });
+              }, 2000); // Wait 2 seconds before even setting up listeners
+              
+              // Fallback for TikTok: Load after 15 seconds regardless
+              setTimeout(loadTikTokPixel, 15000);
+            });
           `}
         </Script>
         {/* End TikTok Pixel Code */}
