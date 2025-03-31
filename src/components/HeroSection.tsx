@@ -70,7 +70,7 @@ export default function HeroSection() {
             className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900 to-primary-800"
           ></div>
           
-          {/* Load image only after critical content is visible */}
+          {/* Original accident image with people */}
           <img 
             src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
             alt="Rideshare accident scene"
