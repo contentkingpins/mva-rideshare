@@ -92,6 +92,10 @@ export default function RootLayout({
           .object-cover { object-fit: cover; }
           .w-full { width: 100%; }
           .h-full { height: 100%; }
+          .opacity-70 { opacity: 0.7; }
+          .from-primary-900\/50 { --tw-gradient-from: rgb(30 58 138 / 0.5); --tw-gradient-to: rgb(30 58 138 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+          .via-primary-800\/45 { --tw-gradient-via: rgb(30 64 175 / 0.45); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to); }
+          .to-primary-700\/40 { --tw-gradient-to: rgb(29 78 216 / 0.4); }
           
           /* Header navigation styles */
           .mx-auto { margin-left: auto; margin-right: auto; }
