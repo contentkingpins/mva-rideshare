@@ -18,7 +18,6 @@ const nextConfig = {
     optimizeCss: true,
     optimizeServerReact: true,
     scrollRestoration: true,
-    nextScriptWorkers: true,
   },
   
   // Security headers with ad-compatible CSP
