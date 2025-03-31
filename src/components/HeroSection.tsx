@@ -65,7 +65,13 @@ export default function HeroSection() {
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Background image - optimized for all devices */}
         <div className="absolute inset-0 z-0 bg-gray-800">
-          {/* Low-quality image placeholder for instant visibility */}
+          {/* Immediate visual placeholder - uses inline styling for instant load */}
+          <div className="absolute inset-0 z-0" style={{
+            backgroundColor: '#1e3a8a',
+            backgroundImage: 'linear-gradient(to bottom, rgba(30, 64, 175, 0.9), rgba(30, 58, 138, 0.8))',
+          }}></div>
+          
+          {/* Pre-blur placeholder - immediate color impression similar to the final image */}
           <div 
             className="absolute inset-0 z-0 bg-cover bg-center opacity-30"
             style={{ 
@@ -75,7 +81,7 @@ export default function HeroSection() {
             }}
           />
           
-          {/* Optimized image loading - uses blur-up approach */}
+          {/* Preloaded and precomputed WebP image sizes for faster browser rendering */}
           {isMobile ? (
             <Image
               src="/images/shutterstock_2428486561-mobile.webp"
@@ -93,7 +99,7 @@ export default function HeroSection() {
               className="brightness-100 contrast-105"
               loading="eager"
               decoding="async"
-              quality={75}
+              quality={65} // Reduced quality for faster load
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q=="
             />
@@ -114,7 +120,7 @@ export default function HeroSection() {
               className="brightness-100 contrast-105"
               loading="eager"
               decoding="async"
-              quality={80}
+              quality={70} // Reduced quality for faster load
               placeholder="blur"
               blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q=="
             />

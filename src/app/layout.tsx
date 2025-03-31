@@ -77,38 +77,31 @@ export default function RootLayout({
           .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
           .flex { display: flex; }
           .flex-col { flex-direction: column; }
+          .relative { position: relative; }
+          .absolute { position: absolute; }
+          .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+          .z-0 { z-index: 0; }
+          .bg-gray-800 { background-color: #1f2937; }
         ` }}/>
         
-        {/* Preload critical CSS with script approach to avoid render blocking */}
-        <link 
-          rel="preload" 
-          href="/_next/static/css/app/layout.css" 
-          as="style"
-          id="main-stylesheet-preload"
-          crossOrigin="anonymous"
+        {/* Direct stylesheet insertion without preload to avoid MIME type issues */}
+        <style 
+          type="text/css" 
+          dangerouslySetInnerHTML={{ 
+            __html: `@import url("/_next/static/css/app/layout.css");` 
+          }} 
         />
         
-        <Script id="load-stylesheet" strategy="beforeInteractive">
-          {`
-            var stylesheet = document.getElementById('main-stylesheet-preload');
-            if (stylesheet) {
-              var newStylesheet = document.createElement('link');
-              newStylesheet.rel = 'stylesheet';
-              newStylesheet.href = stylesheet.href;
-              newStylesheet.crossOrigin = stylesheet.crossOrigin;
-              document.head.appendChild(newStylesheet);
-            }
-          `}
-        </Script>
-        
-        <noscript>
-          <link 
-            rel="stylesheet" 
-            href="/_next/static/css/app/layout.css"
-          />
-        </noscript>
-        
         {/* Preload hero image for faster LCP */}
+        <link 
+          rel="preconnect"
+          href={`${process.env.NEXT_PUBLIC_BASE_URL || ''}`}
+          crossOrigin="anonymous"
+        />
+        <link 
+          rel="dns-prefetch"
+          href={`${process.env.NEXT_PUBLIC_BASE_URL || ''}`}
+        />
         <link 
           rel="preload" 
           href="/images/shutterstock_2428486561-mobile.webp" 
