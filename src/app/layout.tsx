@@ -123,20 +123,13 @@ export default function RootLayout({
         {/* Simple direct CSS loading */}
         <link rel="stylesheet" href="/_next/static/css/app/layout.css" />
         
-        {/* Preload hero image for critical LCP performance */}
-        <link 
-          rel="preload" 
-          href="/images/shutterstock_2428486561-mobile.webp" 
-          as="image"
-          type="image/webp"
-          media="(max-width: 1023px)"
-        />
-        <link 
-          rel="preload" 
-          href="/images/shutterstock_2428486561-desktop.webp" 
-          as="image"
-          type="image/webp"
-          media="(min-width: 1024px)"
+        {/* Preload critical fonts for text rendering */}
+        <link
+          rel="preload"
+          href="/_next/static/media/c9a5bc6a7c948fb0-s.p.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
         
         {/* Meta Pixel Code - Loads conditionally based on consent */}
