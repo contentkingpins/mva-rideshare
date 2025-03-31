@@ -64,8 +64,18 @@ export default function HeroSection() {
       {/* Hero Container */}
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Background image - optimized for all devices */}
-        <div className="absolute inset-0 z-0">
-          {/* Simplified image loading - optimized for LCP */}
+        <div className="absolute inset-0 z-0 bg-gray-800">
+          {/* Low-quality image placeholder for instant visibility */}
+          <div 
+            className="absolute inset-0 z-0 bg-cover bg-center opacity-30"
+            style={{ 
+              backgroundImage: "url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q==')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          />
+          
+          {/* Optimized image loading - uses blur-up approach */}
           {isMobile ? (
             <Image
               src="/images/shutterstock_2428486561-mobile.webp"
@@ -84,6 +94,8 @@ export default function HeroSection() {
               loading="eager"
               decoding="async"
               quality={75}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q=="
             />
           ) : (
             <Image
@@ -103,6 +115,8 @@ export default function HeroSection() {
               loading="eager"
               decoding="async"
               quality={80}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/wAALCAAIAAYBAREA/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAA/AH//2Q=="
             />
           )}
           
