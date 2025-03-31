@@ -120,34 +120,8 @@ export default function RootLayout({
           .overflow-hidden { overflow: hidden; }
         ` }}/>
         
-        {/* Optimized CSS loading to avoid render-blocking */}
-        <link 
-          rel="preload"
-          href="/_next/static/css/app/layout.css"
-          as="style"
-        />
-        <link 
-          rel="stylesheet" 
-          href="/_next/static/css/app/layout.css"
-        />
-        
-        {/* Preload hero images for faster LCP */}
-        <link 
-          rel="preload" 
-          href="/images/shutterstock_2428486561-mobile.webp" 
-          as="image" 
-          type="image/webp"
-          media="(max-width: 1023px)" 
-          fetchPriority="high"
-        />
-        <link 
-          rel="preload" 
-          href="/images/shutterstock_2428486561-desktop.webp" 
-          as="image" 
-          type="image/webp"
-          media="(min-width: 1024px)"
-          fetchPriority="high" 
-        />
+        {/* Simple direct CSS loading */}
+        <link rel="stylesheet" href="/_next/static/css/app/layout.css" />
         
         {/* Meta Pixel Code - Loads conditionally based on consent */}
         <Script id="facebook-pixel" strategy="afterInteractive" data-load-after-interaction>
