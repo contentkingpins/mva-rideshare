@@ -70,7 +70,7 @@ export default function HeroSection() {
             className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900 to-primary-800"
           ></div>
           
-          {/* Original accident image with people */}
+          {/* Original accident image with people - sized for better performance */}
           <img 
             src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
             alt="Rideshare accident scene"
@@ -79,6 +79,9 @@ export default function HeroSection() {
               objectPosition: isMobile ? '50% 40%' : 'center top',
               filter: 'brightness(0.7) contrast(1.05)'
             }}
+            width={isMobile ? 768 : 1920}
+            height={isMobile ? 1024 : 1080}
+            fetchPriority="high"
           />
           
           {/* Gradient overlay - subtle professional gradient */}
