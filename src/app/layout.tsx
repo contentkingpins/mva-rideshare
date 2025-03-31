@@ -56,6 +56,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
+        {/* DNS prefetching for faster initial connection setup */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
+        
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{ __html: `
           /* Critical CSS for initial render */
@@ -121,6 +126,7 @@ export default function RootLayout({
         ` }}/>
         
         {/* Simple direct CSS loading */}
+        <link rel="preload" as="style" href="/_next/static/css/app/layout.css" />
         <link rel="stylesheet" href="/_next/static/css/app/layout.css" />
         
         {/* Preload critical fonts for text rendering */}

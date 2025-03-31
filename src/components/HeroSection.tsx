@@ -70,16 +70,18 @@ export default function HeroSection() {
             className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900 to-primary-800"
           ></div>
           
-          {/* Image loads with lower priority to let text become LCP */}
-          <img 
+          {/* Optimized image loading with Next.js Image */}
+          <Image
             src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
             alt="Rideshare accident scene"
-            className="absolute inset-0 z-0 w-full h-full object-cover opacity-70"
+            fill
+            priority
+            quality={75}
+            className="absolute inset-0 z-0 object-cover opacity-70"
             style={{ 
               objectPosition: isMobile ? '50% 40%' : 'center top',
               filter: 'brightness(0.7) contrast(1.05)'
             }}
-            loading="lazy"
           />
           
           {/* Gradient overlay - subtle professional gradient */}
