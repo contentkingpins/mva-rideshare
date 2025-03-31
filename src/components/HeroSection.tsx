@@ -79,7 +79,9 @@ export default function HeroSection() {
               objectPosition: isMobile ? '50% 40%' : 'center top',
               filter: 'brightness(0.7) contrast(1.05)'
             }}
-            loading="lazy"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
           
           {/* Gradient overlay - subtle professional gradient */}
