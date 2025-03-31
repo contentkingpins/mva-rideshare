@@ -27,6 +27,13 @@ const montserrat = Montserrat({
   weight: ['400', '500', '600', '700', '800'],
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
+  maximumScale: 1.0,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
   title: 'Claim Connectors | Rideshare Injury Claims Made Easy',
   description: 'Submit your rideshare accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.',
@@ -34,7 +41,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'Claim Connectors Team' }],
   creator: 'Claim Connectors',
   publisher: 'Claim Connectors',
-  viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
   formatDetection: {
     email: false,
     address: false,
