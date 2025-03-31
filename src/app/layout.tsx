@@ -30,8 +30,8 @@ const montserrat = Montserrat({
 export const viewport = {
   width: 'device-width',
   initialScale: 1.0,
-  maximumScale: 1.0,
-  userScalable: false,
+  maximumScale: 5.0,
+  userScalable: true,
 };
 
 export const metadata: Metadata = {
@@ -62,21 +62,51 @@ export default function RootLayout({
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body { height: 100%; width: 100%; }
           body { font-family: var(--font-inter); }
-          .container { width: 100%; max-width: 1280px; margin-left: auto; margin-right: auto; }
+          .container { width: 100%; max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
           @media (min-width: 640px) { .container { max-width: 640px; } }
           @media (min-width: 768px) { .container { max-width: 768px; } }
           @media (min-width: 1024px) { .container { max-width: 1024px; } }
           @media (min-width: 1280px) { .container { max-width: 1280px; } }
           .btn-primary { display: inline-block; background-color: #1d4ed8; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; }
+          .text-white { color: white; }
+          .font-bold { font-weight: 700; }
+          .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+          .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+          .mb-4 { margin-bottom: 1rem; }
+          .mb-8 { margin-bottom: 2rem; }
+          .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+          .flex { display: flex; }
+          .flex-col { flex-direction: column; }
         ` }}/>
         
-        {/* Preload critical CSS */}
+        {/* Preload critical CSS with script approach to avoid render blocking */}
         <link 
           rel="preload" 
           href="/_next/static/css/app/layout.css" 
           as="style"
+          id="main-stylesheet-preload"
           crossOrigin="anonymous"
         />
+        
+        <Script id="load-stylesheet" strategy="beforeInteractive">
+          {`
+            var stylesheet = document.getElementById('main-stylesheet-preload');
+            if (stylesheet) {
+              var newStylesheet = document.createElement('link');
+              newStylesheet.rel = 'stylesheet';
+              newStylesheet.href = stylesheet.href;
+              newStylesheet.crossOrigin = stylesheet.crossOrigin;
+              document.head.appendChild(newStylesheet);
+            }
+          `}
+        </Script>
+        
+        <noscript>
+          <link 
+            rel="stylesheet" 
+            href="/_next/static/css/app/layout.css"
+          />
+        </noscript>
         
         {/* Preload hero image for faster LCP */}
         <link 
