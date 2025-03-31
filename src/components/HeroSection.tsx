@@ -99,8 +99,7 @@ export default function HeroSection() {
               className="brightness-100 contrast-105"
               loading="eager"
               decoding="async"
-              quality={60} // Further reduced quality for faster load
-              unoptimized={true} // Skip Next.js image optimization to use pre-optimized images
+              quality={75}
             />
           ) : (
             <Image
@@ -119,8 +118,7 @@ export default function HeroSection() {
               className="brightness-100 contrast-105"
               loading="eager"
               decoding="async"
-              quality={65} // Further reduced quality for faster load
-              unoptimized={true} // Skip Next.js image optimization to use pre-optimized images
+              quality={80}
             />
           )}
           
