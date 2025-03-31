@@ -83,15 +83,20 @@ export default function RootLayout({
           .z-0 { z-index: 0; }
           .bg-gray-800 { background-color: #1f2937; }
           .bg-primary-900 { background-color: #1e3a8a; }
+          .bg-primary-800 { background-color: #1e40af; }
+          .from-primary-900 { --tw-gradient-from: #1e3a8a; --tw-gradient-to: rgb(30 58 138 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+          .to-primary-800 { --tw-gradient-to: #1e40af; }
           .from-primary-900\/50 { --tw-gradient-from: rgb(30 58 138 / 0.5); --tw-gradient-to: rgb(30 58 138 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
           .via-primary-800\/45 { --tw-gradient-via: rgb(30 64 175 / 0.45); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to); }
           .to-primary-700\/40 { --tw-gradient-to: rgb(29 78 216 / 0.4); }
           .bg-gradient-to-b { background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); }
           .min-h-\[90vh\] { min-height: 90vh; }
-          
-          /* Header navigation styles */
+          .object-cover { object-fit: cover; }
           .w-full { width: 100%; }
           .h-full { height: 100%; }
+          .opacity-80 { opacity: 0.8; }
+          
+          /* Header navigation styles */
           .mx-auto { margin-left: auto; margin-right: auto; }
           .items-center { align-items: center; }
           .justify-center { justify-content: center; }
@@ -104,6 +109,7 @@ export default function RootLayout({
           .right-0 { right: 0; }
           .shadow-md { --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color); box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow); }
           .z-50 { z-index: 50; }
+          .z-10 { z-index: 10; }
           
           /* Hero section initial styles */
           .leading-tight { line-height: 1.25; }
@@ -111,13 +117,18 @@ export default function RootLayout({
           .gap-6 { gap: 1.5rem; }
           .pb-24 { padding-bottom: 6rem; }
           .pt-16 { padding-top: 4rem; }
+          .overflow-hidden { overflow: hidden; }
         ` }}/>
         
-        {/* Load remaining styles with modern approach */}
-        <link 
-          rel="stylesheet" 
-          href="/_next/static/css/app/layout.css"
+        {/* Fetch CSS without relying on MIME type checking */}
+        <style 
+          dangerouslySetInnerHTML={{
+            __html: "@import url('/_next/static/css/app/layout.css')"
+          }}
         />
+        <noscript>
+          <link rel="stylesheet" href="/_next/static/css/app/layout.css" />
+        </noscript>
         
         {/* Preload hero image for faster LCP */}
         <link 
@@ -129,6 +140,35 @@ export default function RootLayout({
           rel="dns-prefetch"
           href={`${process.env.NEXT_PUBLIC_BASE_URL || ''}`}
         />
+        
+        {/* Inline the smallest possible version of the hero images for immediate display */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          /* Prefetched fallback images */
+          @media (max-width: 767px) {
+            body::before {
+              content: "";
+              position: fixed;
+              top: -999px;
+              left: -999px;
+              width: 1px;
+              height: 1px;
+              background-image: url('/images/shutterstock_2428486561-mobile.webp');
+            }
+          }
+          @media (min-width: 768px) {
+            body::before {
+              content: "";
+              position: fixed;
+              top: -999px;
+              left: -999px;
+              width: 1px;
+              height: 1px;
+              background-image: url('/images/shutterstock_2428486561-desktop.webp');
+            }
+          }
+        `}} />
+        
+        {/* Direct image preloading */}
         <link 
           rel="preload" 
           href="/images/shutterstock_2428486561-mobile.webp" 
