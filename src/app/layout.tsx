@@ -56,10 +56,21 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
-        {/* Resource hints for faster connections */}
+        {/* Performance optimizations for connections */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.ridesharerights.com'}`} crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
+        
+        {/* Preload hero image with highest priority */}
+        <link 
+          rel="preload" 
+          href="/images/shutterstock_2428486561-mobile.webp" 
+          as="image" 
+          type="image/webp"
+          media="(max-width: 1023px)"
+          fetchPriority="high"
+        />
         
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{ __html: `
@@ -139,9 +150,21 @@ export default function RootLayout({
         />
         
         {/* Meta Pixel Code - Loads conditionally based on consent */}
-        <Script id="facebook-pixel" strategy="lazyOnload">
+        <Script id="facebook-pixel" strategy="lazyOnload" data-test="fb-script">
           {`
-            // Defer Facebook Pixel loading until after user interaction or 5 seconds
+            // Defer Facebook Pixel loading until idle callback
+            window.fbPixelReady = function() {
+              // Only load when browser is idle
+              if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(function() {
+                  loadFacebookPixel();
+                }, { timeout: 10000 });
+              } else {
+                setTimeout(loadFacebookPixel, 10000);
+              }
+            };
+            
+            // Actual loading logic
             const loadFacebookPixel = () => {
               if (window.fbq) return; // Already loaded
               
@@ -186,26 +209,15 @@ export default function RootLayout({
             // Make this function available globally for the ConsentManager
             window.loadFacebookPixel = loadFacebookPixel;
 
-            // Only load after user has interacted with the page
-            document.addEventListener('DOMContentLoaded', function() {
-              // Wait for interaction
-              const interactionEvents = ['scroll', 'click', 'touchstart'];
-              const handleInteraction = () => {
-                loadFacebookPixel();
-                // Remove all event listeners after loading
-                interactionEvents.forEach(event => {
-                  document.removeEventListener(event, handleInteraction);
-                });
-              };
-              
-              // Add event listeners for user interaction
-              interactionEvents.forEach(event => {
-                document.addEventListener(event, handleInteraction, { passive: true });
+            // Only load after page is fully loaded and user has interacted
+            if (document.readyState === 'complete') {
+              window.fbPixelReady();
+            } else {
+              window.addEventListener('load', function() {
+                // Add with delay to prevent layout shift
+                setTimeout(window.fbPixelReady, 2000);
               });
-              
-              // Fallback: Load after 10 seconds regardless of interaction
-              setTimeout(loadFacebookPixel, 10000);
-            });
+            }
           `}
         </Script>
         <noscript>
@@ -222,56 +234,61 @@ export default function RootLayout({
         {/* TikTok Pixel Code - Loads conditionally based on consent */}
         <Script id="tiktok-pixel" strategy="lazyOnload">
           {`
-            // Defer TikTok Pixel loading
-            const loadTikTokPixel = () => {
-              if (window.ttq) return; // Already loaded
-              
-              // Check for stored consent
-              const hasTikTokConsent = localStorage.getItem('marketing_consent') === 'true';
-              
-              // Only load TikTok pixel if consent is granted
-              if (hasTikTokConsent) {
-                !function (w, d, t) {
-                  w.TiktokAnalyticsObject=t;
-                  var ttq=w[t]=w[t]||[];
-                  ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
-                  ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
-                  for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
-                  ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
-                  ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
-                  
-                  // Initialize with TikTok Pixel ID
-                  ttq.load('C7FVL4BC77U9D7M9FLJ0');
-                  ttq.page(); // Track page view
-                }(window, document, 'ttq');
-              }
-            };
+            // Only setup TikTok when browser is idle
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(function() {
+                window.setupTikTokLoader();
+              }, { timeout: 15000 });
+            } else {
+              setTimeout(window.setupTikTokLoader, 15000);
+            }
             
-            // Make this function available globally for the ConsentManager
-            window.loadTikTokPixel = loadTikTokPixel;
-            
-            // Only load after first interaction and significant delay
-            document.addEventListener('DOMContentLoaded', function() {
-              setTimeout(function() {
-                // Wait for interaction for TikTok
-                const interactionEventsTT = ['scroll', 'click', 'touchstart'];
-                const handleInteractionTT = () => {
-                  loadTikTokPixel();
-                  // Remove all event listeners after loading
-                  interactionEventsTT.forEach(event => {
-                    document.removeEventListener(event, handleInteractionTT);
-                  });
-                };
+            window.setupTikTokLoader = function() {
+              // Defer TikTok Pixel loading
+              const loadTikTokPixel = () => {
+                if (window.ttq) return; // Already loaded
                 
-                // Add event listeners for user interaction
-                interactionEventsTT.forEach(event => {
-                  document.addEventListener(event, handleInteractionTT, { passive: true });
-                });
-              }, 2000); // Wait 2 seconds before even setting up listeners
+                // Check for stored consent
+                const hasTikTokConsent = localStorage.getItem('marketing_consent') === 'true';
+                
+                // Only load TikTok pixel if consent is granted
+                if (hasTikTokConsent) {
+                  !function (w, d, t) {
+                    w.TiktokAnalyticsObject=t;
+                    var ttq=w[t]=w[t]||[];
+                    ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+                    ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+                    for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+                    ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+                    ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+                    
+                    // Initialize with TikTok Pixel ID
+                    ttq.load('C7FVL4BC77U9D7M9FLJ0');
+                    ttq.page(); // Track page view
+                  }(window, document, 'ttq');
+                }
+              };
               
-              // Fallback for TikTok: Load after 15 seconds regardless
-              setTimeout(loadTikTokPixel, 15000);
-            });
+              // Make this function available globally for the ConsentManager
+              window.loadTikTokPixel = loadTikTokPixel;
+              
+              // Wait for user interaction before setting up TikTok
+              const interactionEventsTT = ['scroll', 'click', 'touchstart'];
+              const handleInteractionTT = () => {
+                // Remove all listeners before loading
+                interactionEventsTT.forEach(event => {
+                  document.removeEventListener(event, handleInteractionTT);
+                });
+                
+                // Load after interaction
+                loadTikTokPixel();
+              };
+              
+              // Add event listeners for user interaction
+              interactionEventsTT.forEach(event => {
+                document.addEventListener(event, handleInteractionTT, { passive: true });
+              });
+            };
           `}
         </Script>
         {/* End TikTok Pixel Code */}

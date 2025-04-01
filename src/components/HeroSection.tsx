@@ -76,7 +76,7 @@ export default function HeroSection() {
             alt="Rideshare accident scene"
             fill
             priority
-            quality={65}
+            quality={55}
             className="absolute inset-0 z-0 object-cover opacity-70"
             style={{ 
               objectPosition: isMobile ? '50% 40%' : 'center top',
@@ -94,13 +94,8 @@ export default function HeroSection() {
         {/* Content Container */}
         <div className="container relative z-10 h-full px-5 md:px-6">
           <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-16 md:pt-16 pb-36 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
-            {/* Text Content - Adaptive for different screens */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="w-full lg:w-1/2 text-white lg:pr-6 pt-0 md:pt-8"
-            >
+            {/* Text Content - Adaptive for different screens - No initial animations for faster render */}
+            <div className="w-full lg:w-1/2 text-white lg:pr-6 pt-0 md:pt-8">
               <div className="max-w-lg mx-auto md:mx-0">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4 md:mb-5 drop-shadow-sm">
                   Injured in a Rideshare Accident? Get Your Compensation Fast!
@@ -137,13 +132,10 @@ export default function HeroSection() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
             
             {/* Hide contact form on mobile - we'll show it on click with the link */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <div
               id="contact-form"
               className="hidden lg:block lg:w-1/2 lg:mt-0 px-2 md:px-0"
             >
@@ -265,7 +257,7 @@ export default function HeroSection() {
                   </p>
                 </form>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
