@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Inter, Montserrat, Outfit } from 'next/font/google';
+import { Inter, Montserrat } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Script from 'next/script';
@@ -28,12 +28,6 @@ const montserrat = Montserrat({
   weight: ['400', '500', '600', '700', '800'],
 });
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-outfit',
-});
-
 export const viewport: Viewport = {
   themeColor: '#1e40af',
   width: 'device-width',
@@ -56,11 +50,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${montserrat.variable} ${outfit.variable}`}>
+    <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
         {/* Performance optimizations for connections */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.ridesharerights.com'}`} crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.ridesharerights.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://randomuser.me" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
@@ -68,15 +62,6 @@ export default function RootLayout({
         {/* Performance timing mark for page start */}
         <script dangerouslySetInnerHTML={{ __html: `
           performance.mark('page_start');
-          
-          // Preload critical fonts - load only what's needed
-          const fontPreload = document.createElement('link');
-          fontPreload.rel = 'preload';
-          fontPreload.href = '/_next/static/media/${outfit.style.fontFamily.replace(/["']/g, '')}-latin-wght-normal.woff2';
-          fontPreload.as = 'font';
-          fontPreload.type = 'font/woff2';
-          fontPreload.crossOrigin = 'anonymous';
-          document.head.appendChild(fontPreload);
         `}} />
         
         {/* Inline critical CSS */}
@@ -84,7 +69,7 @@ export default function RootLayout({
           /* Critical CSS for initial render */
           * { margin: 0; padding: 0; box-sizing: border-box; }
           html, body { height: 100%; width: 100%; }
-          body { font-family: var(--font-inter); }
+          body { font-family: var(--font-inter), system-ui, sans-serif; }
           .container { width: 100%; max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: 1rem; padding-right: 1rem; }
           @media (min-width: 640px) { .container { max-width: 640px; } }
           @media (min-width: 768px) { .container { max-width: 768px; } }
@@ -137,6 +122,12 @@ export default function RootLayout({
           .lg\:w-1\/2 { width: 50%; }
           .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
           .lg\:text-5xl { font-size: 3rem; line-height: 1; }
+          
+          /* Hero section background styles */
+          .hero-section { 
+            background-color: #1e40af;
+            background-image: linear-gradient(to bottom, rgba(30, 58, 138, 0.8), rgba(29, 78, 216, 0.7));
+          }
         ` }}/>
         
         {/* Meta tags for viewport control */}
@@ -147,7 +138,7 @@ export default function RootLayout({
         {/* Script to mark when the body starts rendering */}
         <script dangerouslySetInnerHTML={{ __html: `performance.mark('body_render');` }} />
         
-        {/* Performance optimization for image loading */}
+        {/* Performance optimization for CSS loading */}
         <Script id="perf-optimizer" strategy="beforeInteractive">
           {`
             // Mark when navigation started for faster metrics
@@ -157,46 +148,40 @@ export default function RootLayout({
             
             // Ensure proper CSS loading to avoid MIME type errors
             (function() {
-              // Create stylesheet element with inline @import to force correct MIME type
-              const styleElement = document.createElement('style');
-              styleElement.textContent = '@import url("/_next/static/css/app/layout.css")';
-              document.head.appendChild(styleElement);
-              
-              // Add CSS with correct MIME type
-              const loadCSS = (href) => {
-                return new Promise((resolve, reject) => {
-                  const link = document.createElement('link');
-                  link.rel = 'stylesheet';
-                  link.type = 'text/css';
-                  link.href = href;
-                  link.onload = resolve;
-                  link.onerror = reject;
-                  document.head.appendChild(link);
-                });
+              // Only inject critical CSS - avoid external files with MIME type issues
+              const injectCSS = (cssText) => {
+                const style = document.createElement('style');
+                style.textContent = cssText;
+                document.head.appendChild(style);
               };
               
-              // Load CSS in priority order
-              Promise.all([
-                loadCSS('/_next/static/css/app/layout.css')
-              ]).catch(err => {
-                console.warn('CSS loading error, falling back to inline styles', err);
-                // If external CSS fails, ensure basic styling works
-                const fallbackStyle = document.createElement('style');
-                fallbackStyle.textContent = 'body{font-family:system-ui,-apple-system,sans-serif;color:#333}';
-                document.head.appendChild(fallbackStyle);
-              });
+              // Simple CSS reset and basic styles
+              injectCSS(\`
+                :root {
+                  --font-inter: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                  --font-montserrat: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                }
+                
+                /* Base Hero Section Styles */
+                .hero-section {
+                  background-image: linear-gradient(to bottom, rgba(30, 58, 138, 0.85), rgba(29, 78, 216, 0.75)), url('/images/shutterstock_2428486561-mobile.webp');
+                  background-position: center;
+                  background-size: cover;
+                }
+                
+                @media (min-width: 1024px) {
+                  .hero-section {
+                    background-image: linear-gradient(to bottom, rgba(30, 58, 138, 0.85), rgba(29, 78, 216, 0.75)), url('/images/shutterstock_2428486561-desktop.webp');
+                    background-position: center top;
+                  }
+                }
+              \`);
             })();
             
-            // Apply a solid color background immediately as fallback
-            document.addEventListener('DOMContentLoaded', function() {
-              const heroSection = document.querySelector('.hero-section');
-              if (heroSection) {
-                // Add a low-resolution solid color as immediate fallback
-                const fallbackStyle = document.createElement('style');
-                fallbackStyle.textContent = '.hero-section::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e40af; z-index: -1; }';
-                document.head.appendChild(fallbackStyle);
-              }
-            });
+            // Init variable definition
+            if (typeof process === 'undefined') {
+              window.process = { env: { NODE_ENV: 'production' } };
+            }
           `}
         </Script>
         
@@ -354,7 +339,8 @@ export default function RootLayout({
             performance.measure('page_load_time', 'page_start', 'page_fully_loaded');
             
             // Log performance metrics to console in development
-            if (process.env.NODE_ENV === 'development') {
+            const isDev = typeof window.process !== 'undefined' && window.process.env && window.process.env.NODE_ENV === 'development';
+            if (isDev) {
               const loadMetric = performance.getEntriesByName('page_load_time')[0];
               console.log('Total page load time:', loadMetric.duration);
             }
