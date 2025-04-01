@@ -66,68 +66,51 @@ export default function HeroSection() {
     router.push('/claim');
   };
 
-  // Create static background styles for immediate rendering
-  const mobileBgStyle = {
-    backgroundImage: "linear-gradient(to bottom, rgba(30, 58, 138, 0.8), rgba(29, 78, 216, 0.7)), url('/images/shutterstock_2428486561-mobile.webp')",
-    backgroundSize: "cover",
-    backgroundPosition: "50% 40%"
-  };
-  
-  const desktopBgStyle = {
-    backgroundImage: "linear-gradient(to bottom, rgba(30, 58, 138, 0.8), rgba(29, 78, 216, 0.7)), url('/images/shutterstock_2428486561-desktop.webp')",
-    backgroundSize: "cover",
-    backgroundPosition: "center top"
-  };
+  // Precompute static heading to avoid render-time calculations
+  const headingText = "Injured in a Rideshare Accident? Get Your Compensation Fast!";
+  const subheadingText = "Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.";
 
   return (
     <section className="relative overflow-hidden">
-      {/* Hero Container with CSS background */}
-      <div 
-        className="hero-section relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full"
-        style={isMobile ? mobileBgStyle : desktopBgStyle}
-      >
-        {/* Simple gradient overlay for better text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/20 to-primary-800/20"></div>
-
-        {/* Content Container */}
+      {/* Hero Container - directly adding hero-section class for CSS to target */}
+      <div className="hero-section relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
+        {/* Content Container with reduced nesting */}
         <div className="container relative z-10 h-full px-5 md:px-6">
           <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-16 md:pt-16 pb-36 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
-            {/* Text Content - Keep this as simple as possible for fast LCP */}
-            <div className="w-full lg:w-1/2 text-white lg:pr-6 pt-0 md:pt-8">
-              <div className="max-w-lg mx-auto md:mx-0">
-                {/* This is the LCP element - make it render as fast as possible */}
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4 md:mb-5">
-                  Injured in a Rideshare Accident? Get Your Compensation Fast!
-                </h1>
-                <p className="text-lg md:text-lg lg:text-xl text-white text-opacity-95 leading-relaxed mb-8">
-                  Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.
-                </p>
-                
-                {/* Simplified feature list - removed classes that might affect layout */}
-                <div className="hidden md:grid md:grid-cols-3 gap-4 mt-8">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary-500/50 p-2 rounded-full">
-                      <CheckIcon />
-                    </div>
-                    <span className="font-medium">Thousands Helped</span>
+            {/* Text Content - Simplified markup for faster rendering */}
+            <div className="w-full lg:w-1/2 text-white">
+              {/* Essential LCP element - use plain HTML with minimal spans */}
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5" style={{lineHeight: 1.2}}>
+                {headingText}
+              </h1>
+              <p className="text-lg md:text-lg lg:text-xl text-white mb-8">
+                {subheadingText}
+              </p>
+              
+              {/* Features list - static rendering without complex nesting */}
+              <div className="hidden md:grid md:grid-cols-3 gap-4 mt-8">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary-500/50 p-2 rounded-full">
+                    <CheckIcon />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary-500/50 p-2 rounded-full">
-                      <CheckIcon />
-                    </div>
-                    <span className="font-medium">100% Confidential</span>
+                  <span className="font-medium">Thousands Helped</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary-500/50 p-2 rounded-full">
+                    <CheckIcon />
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary-500/50 p-2 rounded-full">
-                      <CheckIcon />
-                    </div>
-                    <span className="font-medium">No Win, No Fee</span>
+                  <span className="font-medium">100% Confidential</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary-500/50 p-2 rounded-full">
+                    <CheckIcon />
                   </div>
+                  <span className="font-medium">No Win, No Fee</span>
                 </div>
               </div>
             </div>
             
-            {/* Hide contact form on mobile - we'll show it on click with the link */}
+            {/* Contact form */}
             <div
               id="contact-form"
               className="hidden lg:block lg:w-1/2 lg:mt-0 px-2 md:px-0"
@@ -255,7 +238,7 @@ export default function HeroSection() {
         </div>
       </div>
       
-      {/* Mobile Features List */}
+      {/* Mobile UI elements */}
       <div className="lg:hidden w-full fixed bottom-24 z-40 bg-white/90 backdrop-blur-md pt-3 pb-4 px-4 border-t border-gray-200">
         <div className="grid grid-cols-3 text-center w-full max-w-lg mx-auto">
           <div className="flex flex-col items-center">
@@ -279,7 +262,6 @@ export default function HeroSection() {
         </div>
       </div>
       
-      {/* Full width CTA for mobile */}
       <div className="lg:hidden fixed w-full bottom-16 z-50 px-4">
         <Link 
           href="/claim"
@@ -294,7 +276,6 @@ export default function HeroSection() {
         </Link>
       </div>
       
-      {/* Mobile Call Button (Fixed at Bottom) */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-primary-800 p-3 shadow-lg z-50">
         <a 
           href="tel:+18339986906" 
