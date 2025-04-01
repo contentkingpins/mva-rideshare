@@ -24,6 +24,10 @@ const CheckIcon = () => (
   </svg>
 );
 
+// Precomputed static HTML for faster rendering
+const STATIC_HERO_HEADING = '<h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-5" style="line-height:1.2">Injured in a Rideshare Accident? Get Your Compensation Fast!</h1>';
+const STATIC_HERO_SUBHEADING = '<p class="text-lg md:text-lg lg:text-xl text-white mb-8">Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.</p>';
+
 export default function HeroSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -66,29 +70,29 @@ export default function HeroSection() {
     router.push('/claim');
   };
 
-  // Precompute static heading to avoid render-time calculations
-  const headingText = "Injured in a Rideshare Accident? Get Your Compensation Fast!";
-  const subheadingText = "Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.";
-
   return (
     <section className="relative overflow-hidden">
-      {/* Hero Container - directly adding hero-section class for CSS to target */}
+      {/* Hero Container - simplified class name for faster processing */}
       <div className="hero-section relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
         {/* Content Container with reduced nesting */}
         <div className="container relative z-10 h-full px-5 md:px-6">
           <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-16 md:pt-16 pb-36 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
-            {/* Text Content - Simplified markup for faster rendering */}
+            {/* Text Content - Ultra-optimized with dangerouslySetInnerHTML */}
             <div className="w-full lg:w-1/2 text-white">
-              {/* Essential LCP element - use plain HTML with minimal spans */}
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-5" style={{lineHeight: 1.2}}>
-                {headingText}
-              </h1>
-              <p className="text-lg md:text-lg lg:text-xl text-white mb-8">
-                {subheadingText}
-              </p>
+              {/* Use precomputed static HTML for maximum rendering performance */}
+              <div 
+                dangerouslySetInnerHTML={{ __html: STATIC_HERO_HEADING + STATIC_HERO_SUBHEADING }}
+                style={{
+                  contentVisibility: 'auto',
+                  contain: 'content',
+                }}
+              />
               
-              {/* Features list - static rendering without complex nesting */}
-              <div className="hidden md:grid md:grid-cols-3 gap-4 mt-8">
+              {/* Features list - static rendering with content-visibility */}
+              <div 
+                className="hidden md:grid md:grid-cols-3 gap-4 mt-8"
+                style={{ contentVisibility: 'auto', containIntrinsicSize: '0 100px' }}
+              >
                 <div className="flex items-center gap-3">
                   <div className="bg-primary-500/50 p-2 rounded-full">
                     <CheckIcon />
@@ -110,10 +114,15 @@ export default function HeroSection() {
               </div>
             </div>
             
-            {/* Contact form */}
+            {/* Contact form - with content-visibility to reduce initial render cost */}
             <div
               id="contact-form"
               className="hidden lg:block lg:w-1/2 lg:mt-0 px-2 md:px-0"
+              style={{ 
+                contentVisibility: 'auto', 
+                containIntrinsicSize: '0 600px',
+                contain: 'paint layout style'
+              }}
             >
               <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 md:p-6 lg:p-8 border border-gray-100">
                 <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">Check Your Eligibility Now</h2>
@@ -238,8 +247,11 @@ export default function HeroSection() {
         </div>
       </div>
       
-      {/* Mobile UI elements */}
-      <div className="lg:hidden w-full fixed bottom-24 z-40 bg-white/90 backdrop-blur-md pt-3 pb-4 px-4 border-t border-gray-200">
+      {/* Mobile UI elements with content-visibility for progressive loading */}
+      <div 
+        className="lg:hidden w-full fixed bottom-24 z-40 bg-white/90 backdrop-blur-md pt-3 pb-4 px-4 border-t border-gray-200"
+        style={{ contentVisibility: 'auto', containIntrinsicSize: '0 80px' }}
+      >
         <div className="grid grid-cols-3 text-center w-full max-w-lg mx-auto">
           <div className="flex flex-col items-center">
             <div className="bg-primary-500 p-2 rounded-full mb-1">
