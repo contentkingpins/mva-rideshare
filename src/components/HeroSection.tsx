@@ -76,15 +76,18 @@ export default function HeroSection() {
             alt="Rideshare accident scene"
             fill
             priority
-            quality={55}
+            quality={40}
             className="absolute inset-0 z-0 object-cover opacity-70"
             style={{ 
               objectPosition: isMobile ? '50% 40%' : 'center top',
-              filter: 'brightness(0.7) contrast(1.05)'
+              filter: 'brightness(0.7) contrast(1.05)',
+              contentVisibility: 'auto'
             }}
-            sizes="100vw"
+            sizes={isMobile ? "100vw" : "100vw"}
             placeholder="blur"
             blurDataURL="data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAACwAQCdASoIAAgAAkA4JZQCdADx7wfoAAD++f9RWkiWj/CiSK+EgxRvP0yR/5u1jO/pVYn//yRSvmwgAAAA"
+            unoptimized={true}
+            loading="eager"
           />
           
           {/* Gradient overlay - subtle professional gradient */}
