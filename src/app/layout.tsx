@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
-import type { Metadata } from 'next';
-import { Inter, Montserrat } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Inter, Montserrat, Outfit } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Script from 'next/script';
@@ -28,25 +28,26 @@ const montserrat = Montserrat({
   weight: ['400', '500', '600', '700', '800'],
 });
 
-export const viewport = {
+const outfit = Outfit({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-outfit',
+});
+
+export const viewport: Viewport = {
+  themeColor: '#1e40af',
   width: 'device-width',
-  initialScale: 1.0,
-  maximumScale: 5.0,
+  initialScale: 1,
+  maximumScale: 5,
   userScalable: true,
 };
 
 export const metadata: Metadata = {
-  title: 'Claim Connectors | Rideshare Injury Claims Made Easy',
-  description: 'Submit your rideshare accident into our claim calculator—in just a few seconds, we can determine if you qualify for legal representation.',
-  keywords: 'rideshare accident, uber accident, lyft accident, rideshare injury, claim compensation, accident lawyer, rideshare rights, rideshare legal guide',
-  authors: [{ name: 'Claim Connectors Team' }],
-  creator: 'Claim Connectors',
-  publisher: 'Claim Connectors',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
+  title: 'Rideshare Rights | Get Your Case Reviewed by Uber & Lyft Accident Experts',
+  description: 'Have you been injured in a rideshare accident? Our expert attorneys can help you get the compensation you deserve. Get your free case review today.',
+  authors: [{ name: 'Rideshare Rights' }],
+  keywords: 'rideshare accident, uber accident, lyft accident, rideshare lawyer, uber lawyer, lyft lawyer, rideshare accident claim',
+  robots: 'index, follow',
 };
 
 export default function RootLayout({
@@ -55,7 +56,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
+    <html lang="en" className={`${inter.variable} ${montserrat.variable} ${outfit.variable}`}>
       <head>
         {/* Performance optimizations for connections */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
@@ -157,8 +158,29 @@ export default function RootLayout({
           .lg\:text-5xl { font-size: 3rem; line-height: 1; }
           .drop-shadow-sm { filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05)); }
         ` }}/>
+        
+        {/* Performance timing mark for page start */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          performance.mark('page_start');
+          
+          // Preload critical fonts - load only what's needed
+          const fontPreload = document.createElement('link');
+          fontPreload.rel = 'preload';
+          fontPreload.href = '/_next/static/media/${outfit.style.fontFamily.replace(/["']/g, '')}-latin-wght-normal.woff2';
+          fontPreload.as = 'font';
+          fontPreload.type = 'font/woff2';
+          fontPreload.crossOrigin = 'anonymous';
+          document.head.appendChild(fontPreload);
+        `}} />
+        
+        {/* Meta tags for viewport control */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
       </head>
       <body>
+        {/* Script to mark when the body starts rendering */}
+        <script dangerouslySetInnerHTML={{ __html: `performance.mark('body_render');` }} />
+        
         {/* Performance optimization for image loading */}
         <Script id="perf-optimizer" strategy="beforeInteractive">
           {`
@@ -167,32 +189,51 @@ export default function RootLayout({
               window.performance.mark('navigation_start');
             }
             
-            // Make sure CSS is loaded correctly
+            // Ensure proper CSS loading to avoid MIME type errors
             (function() {
-              // Create a link element for the CSS
-              var cssLink = document.createElement('link');
-              cssLink.rel = 'stylesheet';
-              cssLink.href = '/_next/static/css/app/layout.css';
-              cssLink.type = 'text/css';
-              document.head.appendChild(cssLink);
+              // Create stylesheet element with inline @import to force correct MIME type
+              const styleElement = document.createElement('style');
+              styleElement.textContent = '@import url("/_next/static/css/app/layout.css")';
+              document.head.appendChild(styleElement);
               
-              // Force MIME type
-              cssLink.onload = function() {
-                var styleSheet = document.createElement('style');
-                styleSheet.textContent = '@import url("/_next/static/css/app/layout.css")';
-                document.head.appendChild(styleSheet);
+              // Add CSS with correct MIME type
+              const loadCSS = (href) => {
+                return new Promise((resolve, reject) => {
+                  const link = document.createElement('link');
+                  link.rel = 'stylesheet';
+                  link.type = 'text/css';
+                  link.href = href;
+                  link.onload = resolve;
+                  link.onerror = reject;
+                  document.head.appendChild(link);
+                });
               };
+              
+              // Load CSS in priority order
+              Promise.all([
+                loadCSS('/_next/static/css/app/layout.css')
+              ]).catch(err => {
+                console.warn('CSS loading error, falling back to inline styles', err);
+                // If external CSS fails, ensure basic styling works
+                const fallbackStyle = document.createElement('style');
+                fallbackStyle.textContent = 'body{font-family:system-ui,-apple-system,sans-serif;color:#333}';
+                document.head.appendChild(fallbackStyle);
+              });
             })();
             
             // Immediately start loading critical hero image
-            if (window.innerWidth < 1024) {
-              const img = new Image();
-              img.src = '/images/shutterstock_2428486561-mobile.webp';
-              img.fetchPriority = 'high';
-            } else {
-              const img = new Image();
-              img.src = '/images/shutterstock_2428486561-desktop.webp';
-              img.fetchPriority = 'high';
+            if (typeof window !== 'undefined') {
+              const preloadHeroImage = () => {
+                const img = new Image();
+                img.src = window.innerWidth < 1024 
+                  ? '/images/shutterstock_2428486561-mobile.webp'
+                  : '/images/shutterstock_2428486561-desktop.webp';
+                if ('fetchPriority' in HTMLImageElement.prototype) {
+                  img.fetchPriority = 'high';
+                }
+              };
+              
+              preloadHeroImage();
             }
           `}
         </Script>
@@ -282,6 +323,31 @@ export default function RootLayout({
             }
           `}
         </Script>
+
+        {/* TikTok Pixel - load with low priority */}
+        <Script id="tiktok-pixel" strategy="lazyOnload">
+          {`
+            !function (w, d, t) {
+              w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+              ttq.load('CG702TBC77U5VTCL7T50');
+              ttq.page();
+            }(window, document, 'ttq');
+          `}
+        </Script>
+        
+        {/* Performance timing marker for page end */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.addEventListener('load', function() {
+            performance.mark('page_fully_loaded');
+            performance.measure('page_load_time', 'page_start', 'page_fully_loaded');
+            
+            // Log performance metrics to console in development
+            if (process.env.NODE_ENV === 'development') {
+              const loadMetric = performance.getEntriesByName('page_load_time')[0];
+              console.log('Total page load time:', loadMetric.duration);
+            }
+          });
+        `}} />
       </body>
     </html>
   );
