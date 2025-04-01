@@ -42,6 +42,25 @@ export const metadata: Metadata = {
   authors: [{ name: 'Rideshare Rights' }],
   keywords: 'rideshare accident, uber accident, lyft accident, rideshare lawyer, uber lawyer, lyft lawyer, rideshare accident claim',
   robots: 'index, follow',
+  alternates: {
+    canonical: 'https://www.ridesharerights.com',
+  },
+  openGraph: {
+    title: 'Get Compensation for Your Rideshare Accident | Free Case Review',
+    description: 'Injured in an Uber or Lyft? Our rideshare accident specialists help victims get maximum compensation. Thousands helped nationwide.',
+    url: 'https://www.ridesharerights.com',
+    siteName: 'Rideshare Rights',
+    images: [
+      {
+        url: 'https://www.ridesharerights.com/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Rideshare Accident Claims',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
@@ -52,9 +71,116 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${montserrat.variable}`}>
       <head>
+        {/* Instant LCP optimization markers */}
+        <meta name="rendersuggestions" content="contentvisible,voluntaryuser,intersection-observer" />
+        
+        {/* Explicitly set content-type for critical resources */}
+        <meta httpEquiv="Content-Type" content="text/html; charset=UTF-8" />
+        
+        {/* Preconnect to critical domains */}
+        <link rel="preconnect" href="https://www.ridesharerights.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.google-analytics.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        
+        {/* DNS prefetch for third-party resources */}
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        <link rel="dns-prefetch" href="https://randomuser.me" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        
+        {/* Ultra high priority preload for hero image - critical for LCP */}
+        <link 
+          rel="preload" 
+          as="image" 
+          href="/images/hero-bg-mobile.jpg" 
+          media="(max-width: 768px)" 
+          fetchPriority="high"
+        />
+        <link 
+          rel="preload" 
+          as="image" 
+          href="/images/hero-bg.jpg" 
+          media="(min-width: 769px)" 
+          fetchPriority="high"
+        />
+        
+        {/* Inline critical CSS for hero section to completely eliminate render-blocking */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+              background-color: #f9fafb;
+            }
+            .hero-section {
+              background-image: url('/images/hero-bg-mobile.jpg');
+              background-color: #333; /* Fallback color */
+              background-position: center;
+              background-size: cover;
+              background-repeat: no-repeat;
+              position: relative;
+            }
+            .hero-section:before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+              z-index: 1;
+            }
+            @media (min-width: 768px) {
+              .hero-section {
+                background-image: url('/images/hero-bg.jpg');
+              }
+            }
+            .container {
+              width: 100%;
+              margin-left: auto;
+              margin-right: auto;
+              max-width: 1280px;
+            }
+            .btn-primary {
+              display: inline-block;
+              background-color: #2563EB;
+              color: white;
+              font-weight: 600;
+              padding: 0.75rem 1.5rem;
+              border-radius: 0.375rem;
+              text-align: center;
+              transition: all 0.2s;
+            }
+            .btn-primary:hover {
+              background-color: #1E40AF;
+            }
+            .input {
+              width: 100%;
+              padding: 0.75rem;
+              border: 1px solid #D1D5DB;
+              border-radius: 0.375rem;
+              background-color: white;
+            }
+            .label {
+              display: block;
+              margin-bottom: 0.25rem;
+              font-weight: 500;
+              color: #374151;
+            }
+            `,
+          }}
+        />
+        
+        {/* Force browser paint - improves perceived speed */}
+        <meta httpEquiv="Page-Enter" content="RevealTrans(Duration=0,Transition=0)" />
+        
+        {/* Performance optimization hints */}
+        <link rel="prefetch" href="/claim" as="document" />
+        <link rel="prefetch" href="/about" as="document" />
+        
         {/* Performance optimizations for connections */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://www.ridesharerights.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://randomuser.me" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
