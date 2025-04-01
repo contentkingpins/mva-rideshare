@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +21,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export default function HeroSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const router = useRouter();
   
   // Check viewport size
@@ -37,6 +37,21 @@ export default function HeroSection() {
       window.removeEventListener('resize', checkIfMobile);
     };
   }, []);
+
+  // Preload image
+  useEffect(() => {
+    const preloadImage = () => {
+      const img = new globalThis.Image();
+      const imgSrc = isMobile 
+        ? "/images/shutterstock_2428486561-mobile.webp" 
+        : "/images/shutterstock_2428486561-desktop.webp";
+      
+      img.src = imgSrc;
+      img.onload = () => setImageLoaded(true);
+    };
+    
+    preloadImage();
+  }, [isMobile]);
   
   const {
     register,
@@ -63,36 +78,36 @@ export default function HeroSection() {
     <section className="relative overflow-hidden">
       {/* Hero Container */}
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
-        {/* Background image - optimized for all devices */}
-        <div className="absolute inset-0 z-0 bg-primary-900">
-          {/* Static background for immediate display */}
-          <div 
-            className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900 to-primary-800"
-          ></div>
-          
-          {/* Optimized image loading with Next.js Image */}
+        {/* Static background color while image loads */}
+        <div className="absolute inset-0 z-0 bg-primary-900 bg-gradient-to-b from-primary-900 to-primary-800"></div>
+        
+        {/* Optimized image loading with Next.js Image */}
+        <div className="absolute inset-0 z-0">
           <Image
             src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
             alt="Rideshare accident scene"
             fill
             priority
-            quality={40}
+            quality={35}
+            sizes="100vw"
             className="absolute inset-0 z-0 object-cover opacity-70"
             style={{ 
               objectPosition: isMobile ? '50% 40%' : 'center top',
               filter: 'brightness(0.7) contrast(1.05)',
-              contentVisibility: 'auto'
+              contentVisibility: 'auto',
+              willChange: 'transform',
+              transform: 'translateZ(0)'
             }}
-            sizes={isMobile ? "100vw" : "100vw"}
             placeholder="blur"
             blurDataURL="data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAACwAQCdASoIAAgAAkA4JZQCdADx7wfoAAD++f9RWkiWj/CiSK+EgxRvP0yR/5u1jO/pVYn//yRSvmwgAAAA"
             unoptimized={true}
             loading="eager"
+            onLoad={() => setImageLoaded(true)}
           />
-          
-          {/* Gradient overlay - subtle professional gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20"></div>
         </div>
+        
+        {/* Gradient overlay - subtle professional gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20 z-1"></div>
 
         {/* Content Container */}
         <div className="container relative z-10 h-full px-5 md:px-6">
@@ -300,6 +315,7 @@ export default function HeroSection() {
         <Link 
           href="/claim"
           className="btn-primary w-full block text-xl py-4 text-center font-semibold shadow-xl rounded-lg bg-primary-700"
+          prefetch={true}
           onClick={(e) => {
             e.preventDefault();
             router.push('/claim');
