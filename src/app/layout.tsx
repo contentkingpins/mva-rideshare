@@ -65,24 +65,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
         
-        {/* Preload hero images with highest priority */}
-        <link 
-          rel="preload" 
-          href="/images/shutterstock_2428486561-mobile.webp" 
-          as="image" 
-          type="image/webp"
-          media="(max-width: 1023px)"
-          fetchPriority="high"
-        />
-        <link 
-          rel="preload" 
-          href="/images/shutterstock_2428486561-desktop.webp" 
-          as="image" 
-          type="image/webp"
-          media="(min-width: 1024px)"
-          fetchPriority="high"
-        />
-        
         {/* Performance timing mark for page start */}
         <script dangerouslySetInnerHTML={{ __html: `
           performance.mark('page_start');
@@ -123,20 +105,14 @@ export default function RootLayout({
           .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
           .z-0 { z-index: 0; }
           .z-10 { z-index: 10; }
-          .bg-gray-800 { background-color: #1f2937; }
           .bg-primary-900 { background-color: #1e3a8a; }
           .bg-primary-800 { background-color: #1e40af; }
-          .from-primary-900 { --tw-gradient-from: #1e3a8a; --tw-gradient-to: rgb(30 58 138 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-          .to-primary-800 { --tw-gradient-to: #1e40af; }
           .bg-gradient-to-b { background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); }
           .min-h-\[90vh\] { min-height: 90vh; }
-          .object-cover { object-fit: cover; }
           .w-full { width: 100%; }
           .h-full { height: 100%; }
-          .opacity-70 { opacity: 0.7; }
-          .from-primary-900\/50 { --tw-gradient-from: rgb(30 58 138 / 0.5); --tw-gradient-to: rgb(30 58 138 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-          .via-primary-800\/45 { --tw-gradient-via: rgb(30 64 175 / 0.45); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to); }
-          .to-primary-700\/40 { --tw-gradient-to: rgb(29 78 216 / 0.4); }
+          .from-primary-900\/20 { --tw-gradient-from: rgb(30 58 138 / 0.2); --tw-gradient-to: rgb(30 58 138 / 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+          .to-primary-800\/20 { --tw-gradient-to: rgb(30 64 175 / 0.2); }
           
           /* Header navigation styles */
           .mx-auto { margin-left: auto; margin-right: auto; }
@@ -154,20 +130,12 @@ export default function RootLayout({
           
           /* Hero section initial styles */
           .leading-tight { line-height: 1.25; }
-          .tracking-tight { letter-spacing: -0.025em; }
           .gap-6 { gap: 1.5rem; }
           .pb-24 { padding-bottom: 6rem; }
           .pt-16 { padding-top: 4rem; }
           .overflow-hidden { overflow: hidden; }
-          
-          /* Additional optimization for LCP */
-          img[alt="Rideshare accident scene"] { 
-            content-visibility: auto;
-            transform: translateZ(0);
-          }
           .lg\:w-1\/2 { width: 50%; }
-          .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-          .md\:text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+          .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
           .lg\:text-5xl { font-size: 3rem; line-height: 1; }
         ` }}/>
         
@@ -219,20 +187,16 @@ export default function RootLayout({
               });
             })();
             
-            // Immediately start loading critical hero image
-            if (typeof window !== 'undefined') {
-              const preloadHeroImage = () => {
-                const img = new Image();
-                img.src = window.innerWidth < 1024 
-                  ? '/images/shutterstock_2428486561-mobile.webp'
-                  : '/images/shutterstock_2428486561-desktop.webp';
-                if ('fetchPriority' in HTMLImageElement.prototype) {
-                  img.fetchPriority = 'high';
-                }
-              };
-              
-              preloadHeroImage();
-            }
+            // Apply a solid color background immediately as fallback
+            document.addEventListener('DOMContentLoaded', function() {
+              const heroSection = document.querySelector('.hero-section');
+              if (heroSection) {
+                // Add a low-resolution solid color as immediate fallback
+                const fallbackStyle = document.createElement('style');
+                fallbackStyle.textContent = '.hero-section::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e40af; z-index: -1; }';
+                document.head.appendChild(fallbackStyle);
+              }
+            });
           `}
         </Script>
         
