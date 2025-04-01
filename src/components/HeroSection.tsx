@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 // Define the form schema using Zod
@@ -67,33 +66,28 @@ export default function HeroSection() {
     router.push('/claim');
   };
 
+  // Create static background styles for immediate rendering
+  const mobileBgStyle = {
+    backgroundImage: "linear-gradient(to bottom, rgba(30, 58, 138, 0.8), rgba(29, 78, 216, 0.7)), url('/images/shutterstock_2428486561-mobile.webp')",
+    backgroundSize: "cover",
+    backgroundPosition: "50% 40%"
+  };
+  
+  const desktopBgStyle = {
+    backgroundImage: "linear-gradient(to bottom, rgba(30, 58, 138, 0.8), rgba(29, 78, 216, 0.7)), url('/images/shutterstock_2428486561-desktop.webp')",
+    backgroundSize: "cover",
+    backgroundPosition: "center top"
+  };
+
   return (
     <section className="relative overflow-hidden">
-      {/* Simplified Hero Container */}
-      <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
-        {/* Static background color - no transitions or animations */}
-        <div className="absolute inset-0 z-0 bg-primary-800"></div>
-        
-        {/* Static image - no transitions, opacity changes, or other expensive operations */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
-            alt="Rideshare accident scene"
-            fill
-            priority
-            fetchPriority="high"
-            quality={20}
-            sizes="100vw"
-            className="absolute inset-0 z-0 object-cover opacity-70"
-            style={{ 
-              objectPosition: isMobile ? '50% 40%' : 'center top'
-            }}
-            unoptimized={true}
-          />
-        </div>
-        
-        {/* Simple gradient overlay - no transitions or animations */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/40 to-primary-800/30 z-1"></div>
+      {/* Hero Container with CSS background */}
+      <div 
+        className="hero-section relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full"
+        style={isMobile ? mobileBgStyle : desktopBgStyle}
+      >
+        {/* Simple gradient overlay for better text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/20 to-primary-800/20"></div>
 
         {/* Content Container */}
         <div className="container relative z-10 h-full px-5 md:px-6">
