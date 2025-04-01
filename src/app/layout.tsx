@@ -11,6 +11,7 @@ declare global {
   interface Window {
     loadFacebookPixel?: () => void;
     loadTikTokPixel?: () => void;
+    performance?: Performance;
   }
 }
 
@@ -148,6 +149,7 @@ export default function RootLayout({
             content-visibility: auto;
             will-change: transform;
             transform: translateZ(0);
+            backface-visibility: hidden;
           }
           .lg\:w-1\/2 { width: 50%; }
           .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
@@ -155,10 +157,6 @@ export default function RootLayout({
           .lg\:text-5xl { font-size: 3rem; line-height: 1; }
           .drop-shadow-sm { filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05)); }
         ` }}/>
-        
-        {/* Simple direct CSS loading */}
-        <link rel="preload" as="style" href="/_next/static/css/app/layout.css" />
-        <link rel="stylesheet" href="/_next/static/css/app/layout.css" />
       </head>
       <body>
         {/* Performance optimization for image loading */}
@@ -168,6 +166,23 @@ export default function RootLayout({
             if (window.performance && window.performance.mark) {
               window.performance.mark('navigation_start');
             }
+            
+            // Make sure CSS is loaded correctly
+            (function() {
+              // Create a link element for the CSS
+              var cssLink = document.createElement('link');
+              cssLink.rel = 'stylesheet';
+              cssLink.href = '/_next/static/css/app/layout.css';
+              cssLink.type = 'text/css';
+              document.head.appendChild(cssLink);
+              
+              // Force MIME type
+              cssLink.onload = function() {
+                var styleSheet = document.createElement('style');
+                styleSheet.textContent = '@import url("/_next/static/css/app/layout.css")';
+                document.head.appendChild(styleSheet);
+              };
+            })();
             
             // Immediately start loading critical hero image
             if (window.innerWidth < 1024) {
