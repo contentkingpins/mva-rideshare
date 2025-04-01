@@ -61,6 +61,7 @@ export default function RootLayout({
         {/* Performance optimizations for connections */}
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.ridesharerights.com'}`} crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://randomuser.me" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
         
@@ -81,6 +82,20 @@ export default function RootLayout({
           media="(min-width: 1024px)"
           fetchPriority="high"
         />
+        
+        {/* Performance timing mark for page start */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          performance.mark('page_start');
+          
+          // Preload critical fonts - load only what's needed
+          const fontPreload = document.createElement('link');
+          fontPreload.rel = 'preload';
+          fontPreload.href = '/_next/static/media/${outfit.style.fontFamily.replace(/["']/g, '')}-latin-wght-normal.woff2';
+          fontPreload.as = 'font';
+          fontPreload.type = 'font/woff2';
+          fontPreload.crossOrigin = 'anonymous';
+          document.head.appendChild(fontPreload);
+        `}} />
         
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{ __html: `
@@ -148,30 +163,13 @@ export default function RootLayout({
           /* Additional optimization for LCP */
           img[alt="Rideshare accident scene"] { 
             content-visibility: auto;
-            will-change: transform;
             transform: translateZ(0);
-            backface-visibility: hidden;
           }
           .lg\:w-1\/2 { width: 50%; }
           .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
           .md\:text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
           .lg\:text-5xl { font-size: 3rem; line-height: 1; }
-          .drop-shadow-sm { filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05)); }
         ` }}/>
-        
-        {/* Performance timing mark for page start */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          performance.mark('page_start');
-          
-          // Preload critical fonts - load only what's needed
-          const fontPreload = document.createElement('link');
-          fontPreload.rel = 'preload';
-          fontPreload.href = '/_next/static/media/${outfit.style.fontFamily.replace(/["']/g, '')}-latin-wght-normal.woff2';
-          fontPreload.as = 'font';
-          fontPreload.type = 'font/woff2';
-          fontPreload.crossOrigin = 'anonymous';
-          document.head.appendChild(fontPreload);
-        `}} />
         
         {/* Meta tags for viewport control */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -327,11 +325,61 @@ export default function RootLayout({
         {/* TikTok Pixel - load with low priority */}
         <Script id="tiktok-pixel" strategy="lazyOnload">
           {`
-            !function (w, d, t) {
-              w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
-              ttq.load('CG702TBC77U5VTCL7T50');
-              ttq.page();
-            }(window, document, 'ttq');
+            // Only load TikTok pixel after user interaction and when browser is idle
+            const loadTikTokPixel = () => {
+              const tikTokScript = document.createElement('script');
+              tikTokScript.defer = true;
+              tikTokScript.async = true;
+              tikTokScript.src = "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=CG702TBC77U5VTCL7T50";
+              
+              document.body.appendChild(tikTokScript);
+              
+              tikTokScript.onload = function() {
+                if (window.ttq) {
+                  window.ttq.page();
+                }
+              };
+            };
+            
+            // Initialize TikTok object before loading script
+            window.TiktokAnalyticsObject = 'ttq';
+            window.ttq = window.ttq || [];
+            
+            // Helper function to add methods
+            window.ttq.methods = ["page", "track", "identify", "instances"];
+            window.ttq.setAndDefer = function(t, e) {
+              t[e] = function() { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) }
+            };
+            for(var i = 0; i < window.ttq.methods.length; i++) {
+              window.ttq.setAndDefer(window.ttq, window.ttq.methods[i]);
+            }
+            
+            // Only load after user interaction and when browser is idle
+            let hasInteracted = false;
+            const events = ['click', 'scroll', 'keydown', 'mousemove', 'touchstart'];
+            
+            const onUserInteraction = () => {
+              if (!hasInteracted) {
+                hasInteracted = true;
+                
+                // Remove all listeners after first interaction
+                events.forEach(e => window.removeEventListener(e, onUserInteraction));
+                
+                if ('requestIdleCallback' in window) {
+                  window.requestIdleCallback(() => loadTikTokPixel(), { timeout: 5000 });
+                } else {
+                  setTimeout(loadTikTokPixel, 5000);
+                }
+              }
+            };
+            
+            // Add interaction listeners
+            events.forEach(e => window.addEventListener(e, onUserInteraction, { passive: true }));
+            
+            // Add a timeout fallback
+            setTimeout(() => {
+              if (!hasInteracted) onUserInteraction();
+            }, 15000);
           `}
         </Script>
         
