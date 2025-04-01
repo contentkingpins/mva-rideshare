@@ -49,6 +49,18 @@ frontend:
       headers:
         - key: 'Cache-Control'
           value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.css'
+      headers:
+        - key: 'Content-Type'
+          value: 'text/css'
+    - pattern: '**/*.js'
+      headers:
+        - key: 'Content-Type'
+          value: 'application/javascript'
+    - pattern: '**/*.webp'
+      headers:
+        - key: 'Content-Type'
+          value: 'image/webp'
   routes:
     - source: '/_next/static/(?<file>.*)'
       destination: '/_next/static/$file'
