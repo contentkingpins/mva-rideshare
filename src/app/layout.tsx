@@ -62,13 +62,21 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://connect.facebook.net" />
         <link rel="dns-prefetch" href="https://analytics.tiktok.com" />
         
-        {/* Preload hero image with highest priority */}
+        {/* Preload hero images with highest priority */}
         <link 
           rel="preload" 
           href="/images/shutterstock_2428486561-mobile.webp" 
           as="image" 
           type="image/webp"
           media="(max-width: 1023px)"
+          fetchPriority="high"
+        />
+        <link 
+          rel="preload" 
+          href="/images/shutterstock_2428486561-desktop.webp" 
+          as="image" 
+          type="image/webp"
+          media="(min-width: 1024px)"
           fetchPriority="high"
         />
         
@@ -134,20 +142,59 @@ export default function RootLayout({
           .pb-24 { padding-bottom: 6rem; }
           .pt-16 { padding-top: 4rem; }
           .overflow-hidden { overflow: hidden; }
+          
+          /* Additional optimization for LCP */
+          img[alt="Rideshare accident scene"] { 
+            content-visibility: auto;
+            will-change: transform;
+            transform: translateZ(0);
+          }
+          .lg\:w-1\/2 { width: 50%; }
+          .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+          .md\:text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+          .lg\:text-5xl { font-size: 3rem; line-height: 1; }
+          .drop-shadow-sm { filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05)); }
         ` }}/>
         
         {/* Simple direct CSS loading */}
         <link rel="preload" as="style" href="/_next/static/css/app/layout.css" />
         <link rel="stylesheet" href="/_next/static/css/app/layout.css" />
+      </head>
+      <body>
+        {/* Performance optimization for image loading */}
+        <Script id="perf-optimizer" strategy="beforeInteractive">
+          {`
+            // Mark when navigation started for faster metrics
+            if (window.performance && window.performance.mark) {
+              window.performance.mark('navigation_start');
+            }
+            
+            // Immediately start loading critical hero image
+            if (window.innerWidth < 1024) {
+              const img = new Image();
+              img.src = '/images/shutterstock_2428486561-mobile.webp';
+              img.fetchPriority = 'high';
+            } else {
+              const img = new Image();
+              img.src = '/images/shutterstock_2428486561-desktop.webp';
+              img.fetchPriority = 'high';
+            }
+          `}
+        </Script>
         
-        {/* Preload critical fonts for text rendering */}
-        <link
-          rel="preload"
-          href="/_next/static/media/c9a5bc6a7c948fb0-s.p.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        {/* Navbar component */}
+        <Navbar />
+        
+        {/* Main content */}
+        <main>
+          {children}
+        </main>
+        
+        {/* Footer component */}
+        <Footer />
+        
+        {/* Consent Manager for handling cookie preferences */}
+        <ConsentManager />
         
         {/* Meta Pixel Code - Loads conditionally based on consent */}
         <Script id="facebook-pixel" strategy="lazyOnload" data-test="fb-script">
@@ -220,87 +267,7 @@ export default function RootLayout({
             }
           `}
         </Script>
-        <noscript>
-          <img 
-            height="1" 
-            width="1" 
-            style={{ display: 'none' }}
-            src="https://www.facebook.com/tr?id=1718356202366164&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
-        {/* End Meta Pixel Code */}
-        
-        {/* TikTok Pixel Code - Loads conditionally based on consent */}
-        <Script id="tiktok-pixel" strategy="lazyOnload">
-          {`
-            // Only setup TikTok when browser is idle
-            if ('requestIdleCallback' in window) {
-              requestIdleCallback(function() {
-                window.setupTikTokLoader();
-              }, { timeout: 15000 });
-            } else {
-              setTimeout(window.setupTikTokLoader, 15000);
-            }
-            
-            window.setupTikTokLoader = function() {
-              // Defer TikTok Pixel loading
-              const loadTikTokPixel = () => {
-                if (window.ttq) return; // Already loaded
-                
-                // Check for stored consent
-                const hasTikTokConsent = localStorage.getItem('marketing_consent') === 'true';
-                
-                // Only load TikTok pixel if consent is granted
-                if (hasTikTokConsent) {
-                  !function (w, d, t) {
-                    w.TiktokAnalyticsObject=t;
-                    var ttq=w[t]=w[t]||[];
-                    ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
-                    ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
-                    for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
-                    ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
-                    ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
-                    
-                    // Initialize with TikTok Pixel ID
-                    ttq.load('C7FVL4BC77U9D7M9FLJ0');
-                    ttq.page(); // Track page view
-                  }(window, document, 'ttq');
-                }
-              };
-              
-              // Make this function available globally for the ConsentManager
-              window.loadTikTokPixel = loadTikTokPixel;
-              
-              // Wait for user interaction before setting up TikTok
-              const interactionEventsTT = ['scroll', 'click', 'touchstart'];
-              const handleInteractionTT = () => {
-                // Remove all listeners before loading
-                interactionEventsTT.forEach(event => {
-                  document.removeEventListener(event, handleInteractionTT);
-                });
-                
-                // Load after interaction
-                loadTikTokPixel();
-              };
-              
-              // Add event listeners for user interaction
-              interactionEventsTT.forEach(event => {
-                document.addEventListener(event, handleInteractionTT, { passive: true });
-              });
-            };
-          `}
-        </Script>
-        {/* End TikTok Pixel Code */}
-      </head>
-      <body className="flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
-        <ConsentManager />
       </body>
     </html>
   );
-} 
+}
