@@ -41,7 +41,15 @@ frontend:
       headers:
         - key: 'X-Content-Type-Options'
           value: 'nosniff'
-    - pattern: '_next/static/css/**/*.css'
+        - key: 'Cache-Control'
+          value: 'public, max-age=3600'
+    - pattern: '_next/static/css/**'
+      headers:
+        - key: 'Content-Type'
+          value: 'text/css'
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '_next/static/css/app/layout.css'
       headers:
         - key: 'Content-Type'
           value: 'text/css'
@@ -53,7 +61,7 @@ frontend:
           value: 'text/css'
         - key: 'Cache-Control'
           value: 'public, max-age=31536000, immutable'
-    - pattern: '_next/static/media/**/*'
+    - pattern: '_next/static/media/**'
       headers:
         - key: 'Cache-Control'
           value: 'public, max-age=31536000, immutable'
@@ -88,6 +96,17 @@ frontend:
         - key: 'Cache-Control'
           value: 'public, max-age=31536000, immutable'
   routes:
+    - source: '/_next/static/css/app/layout.css'
+      headers:
+        - key: 'Content-Type'
+          value: 'text/css'
+    - source: '/_next/static/css/(.+)'
+      destination: '/_next/static/css/$1'
+      headers:
+        - key: 'Content-Type'
+          value: 'text/css'
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
     - source: '/_next/static/(?<file>.*)'
       destination: '/_next/static/$file'
       headers:

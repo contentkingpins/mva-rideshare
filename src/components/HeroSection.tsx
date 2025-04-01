@@ -18,6 +18,13 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
+// Simple inline SVG for faster rendering
+const CheckIcon = () => (
+  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
+  </svg>
+);
+
 export default function HeroSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -26,32 +33,41 @@ export default function HeroSection() {
   
   // Check viewport size
   useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
-    };
-    
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkIfMobile);
-    };
-  }, []);
-
-  // Preload image
-  useEffect(() => {
-    const preloadImage = () => {
-      const img = new globalThis.Image();
-      const imgSrc = isMobile 
-        ? "/images/shutterstock_2428486561-mobile.webp" 
-        : "/images/shutterstock_2428486561-desktop.webp";
+    // Check device immediately on client-side
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth < 1024);
       
-      img.src = imgSrc;
-      img.onload = () => setImageLoaded(true);
-    };
-    
-    preloadImage();
-  }, [isMobile]);
+      // Preload hero image
+      const preloadImage = () => {
+        const mobileSrc = "/images/shutterstock_2428486561-mobile.webp";
+        const desktopSrc = "/images/shutterstock_2428486561-desktop.webp";
+        
+        // Create image object and set events before setting src
+        const imgElement = new window.Image();
+        if ('fetchPriority' in HTMLImageElement.prototype) {
+          // @ts-ignore - fetchPriority is a newer attribute that TypeScript might not recognize
+          imgElement.fetchPriority = 'high';
+        }
+        imgElement.onload = () => setImageLoaded(true);
+        
+        // Set src based on screen size
+        imgElement.src = window.innerWidth < 1024 ? mobileSrc : desktopSrc;
+      };
+      
+      // Preload immediately
+      preloadImage();
+      
+      // Handle resize events
+      const handleResize = () => {
+        setIsMobile(window.innerWidth < 1024);
+      };
+      
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+  }, []);
   
   const {
     register,
@@ -78,25 +94,38 @@ export default function HeroSection() {
     <section className="relative overflow-hidden">
       {/* Hero Container */}
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
-        {/* Static background color while image loads */}
-        <div className="absolute inset-0 z-0 bg-primary-900 bg-gradient-to-b from-primary-900 to-primary-800"></div>
+        {/* Static background color - always visible */}
+        <div className="absolute inset-0 z-0 bg-primary-800 bg-gradient-to-b from-primary-900 via-primary-800 to-primary-700"></div>
         
         {/* Optimized image loading with Next.js Image */}
         <div className="absolute inset-0 z-0">
+          {/* Use a static div with CSS background first for immediate display */}
+          <div 
+            className="absolute inset-0 z-0 bg-primary-900"
+            style={{
+              backgroundImage: 'linear-gradient(to bottom, rgba(30, 58, 138, 0.9), rgba(29, 78, 216, 0.8))',
+              opacity: imageLoaded ? 0 : 1,
+              transition: 'opacity 0.3s ease-in'
+            }}
+          ></div>
+          
           <Image
             src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
             alt="Rideshare accident scene"
             fill
             priority
-            quality={35}
+            quality={30}
             sizes="100vw"
             className="absolute inset-0 z-0 object-cover opacity-70"
             style={{ 
               objectPosition: isMobile ? '50% 40%' : 'center top',
-              filter: 'brightness(0.7) contrast(1.05)',
+              filter: 'brightness(0.65) contrast(1.1)',
               contentVisibility: 'auto',
               willChange: 'transform',
-              transform: 'translateZ(0)'
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              opacity: imageLoaded ? 1 : 0,
+              transition: 'opacity 0.3s ease-in'
             }}
             placeholder="blur"
             blurDataURL="data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAACwAQCdASoIAAgAAkA4JZQCdADx7wfoAAD++f9RWkiWj/CiSK+EgxRvP0yR/5u1jO/pVYn//yRSvmwgAAAA"
@@ -106,13 +135,13 @@ export default function HeroSection() {
           />
         </div>
         
-        {/* Gradient overlay - subtle professional gradient */}
+        {/* Fixed gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20 z-1"></div>
 
         {/* Content Container */}
         <div className="container relative z-10 h-full px-5 md:px-6">
           <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-16 md:pt-16 pb-36 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
-            {/* Text Content - Adaptive for different screens - No initial animations for faster render */}
+            {/* Text Content - Adaptive for different screens */}
             <div className="w-full lg:w-1/2 text-white lg:pr-6 pt-0 md:pt-8">
               <div className="max-w-lg mx-auto md:mx-0">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4 md:mb-5 drop-shadow-sm">
@@ -126,25 +155,19 @@ export default function HeroSection() {
                 <div className="hidden md:grid md:grid-cols-3 gap-4 mt-8">
                   <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                      </svg>
+                      <CheckIcon />
                     </div>
                     <span className="font-medium">Thousands Helped</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                      </svg>
+                      <CheckIcon />
                     </div>
                     <span className="font-medium">100% Confidential</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-                      </svg>
+                      <CheckIcon />
                     </div>
                     <span className="font-medium">No Win, No Fee</span>
                   </div>
@@ -265,11 +288,11 @@ export default function HeroSection() {
                   
                   <p className="text-xs text-gray-500 text-center mt-4">
                     By submitting, you agree to our{' '}
-                    <Link href="/privacy" className="text-primary-600 hover:underline">
+                    <Link href="/privacy" className="text-primary-600 hover:underline" prefetch={true}>
                       Privacy Policy
                     </Link>{' '}
                     and{' '}
-                    <Link href="/terms" className="text-primary-600 hover:underline">
+                    <Link href="/terms" className="text-primary-600 hover:underline" prefetch={true}>
                       Terms of Service
                     </Link>
                   </p>
@@ -285,25 +308,19 @@ export default function HeroSection() {
         <div className="grid grid-cols-3 text-center w-full max-w-lg mx-auto">
           <div className="flex flex-col items-center">
             <div className="bg-primary-500 p-2 rounded-full mb-1">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-              </svg>
+              <CheckIcon />
             </div>
             <span className="text-xs font-medium text-gray-900">Thousands Helped</span>
           </div>
           <div className="flex flex-col items-center">
             <div className="bg-primary-500 p-2 rounded-full mb-1">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-              </svg>
+              <CheckIcon />
             </div>
             <span className="text-xs font-medium text-gray-900">100% Confidential</span>
           </div>
           <div className="flex flex-col items-center">
             <div className="bg-primary-500 p-2 rounded-full mb-1">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-              </svg>
+              <CheckIcon />
             </div>
             <span className="text-xs font-medium text-gray-900">No Win, No Fee</span>
           </div>
