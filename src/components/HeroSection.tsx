@@ -24,27 +24,45 @@ const CheckIcon = () => (
   </svg>
 );
 
-// Precomputed static HTML for faster rendering
-const STATIC_HERO_HEADING = '<h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-5" style="line-height:1.2">Injured in a Rideshare Accident? Get Your Compensation Fast!</h1>';
-const STATIC_HERO_SUBHEADING = '<p class="text-lg md:text-lg lg:text-xl text-white mb-8">Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.</p>';
+// Ultra-optimized static HTML with exact height/width to prevent CLS
+const STATIC_HERO_HEADING = '<h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-5" style="line-height:1.2;transform:translateZ(0);will-change:contents;height:auto;min-height:3.5rem;width:100%;">Injured in a Rideshare Accident? Get Your Compensation Fast!</h1>';
+const STATIC_HERO_SUBHEADING = '<p class="text-lg md:text-lg lg:text-xl text-white mb-8" style="min-height:1.75rem;width:100%;transform:translateZ(0);">Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.</p>';
 
 export default function HeroSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
   
-  // Simplified initialization - avoid image loading state
+  // Mark LCP element when it enters viewport
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && window.performance) {
+      // Create an observer to mark when hero content is visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            performance.mark('hero_visible');
+            observer.disconnect();
+          }
+        });
+      }, {threshold: 0.1});
+      
+      // Observe the hero content
+      const heroContent = document.querySelector('.hero-content');
+      if (heroContent) {
+        observer.observe(heroContent);
+      }
+      
+      // Device detection
       setIsMobile(window.innerWidth < 1024);
       
       const handleResize = () => {
         setIsMobile(window.innerWidth < 1024);
       };
       
-      window.addEventListener('resize', handleResize);
+      window.addEventListener('resize', handleResize, {passive: true});
       return () => {
         window.removeEventListener('resize', handleResize);
+        observer.disconnect();
       };
     }
   }, []);
@@ -71,27 +89,55 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden">
-      {/* Hero Container - simplified class name for faster processing */}
-      <div className="hero-section relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
+    <section 
+      className="relative overflow-hidden"
+      style={{
+        height: 'auto',
+        minHeight: isMobile ? '90vh' : '650px',
+        contain: 'layout paint style'
+      }}
+    >
+      {/* Hero Container - predefined dimensions to prevent layout shifts */}
+      <div 
+        className="hero-section relative w-full"
+        style={{
+          minHeight: isMobile ? '90vh' : '650px',
+          height: 'auto',
+          contentVisibility: 'auto',
+        }}
+      >
         {/* Content Container with reduced nesting */}
         <div className="container relative z-10 h-full px-5 md:px-6">
           <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-16 md:pt-16 pb-36 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
-            {/* Text Content - Ultra-optimized with dangerouslySetInnerHTML */}
-            <div className="w-full lg:w-1/2 text-white">
-              {/* Use precomputed static HTML for maximum rendering performance */}
+            {/* Text Content - Hardware accelerated with fixed dimensions */}
+            <div 
+              className="hero-content w-full lg:w-1/2 text-white"
+              style={{
+                minHeight: isMobile ? '200px' : '300px',
+                height: 'auto',
+                transform: 'translateZ(0)',
+                willChange: 'contents'
+              }}
+            >
+              {/* Ultra-optimized static HTML with explicit dimensions */}
               <div 
                 dangerouslySetInnerHTML={{ __html: STATIC_HERO_HEADING + STATIC_HERO_SUBHEADING }}
                 style={{
-                  contentVisibility: 'auto',
                   contain: 'content',
+                  height: 'auto',
+                  minHeight: '150px'
                 }}
               />
               
               {/* Features list - static rendering with content-visibility */}
               <div 
                 className="hidden md:grid md:grid-cols-3 gap-4 mt-8"
-                style={{ contentVisibility: 'auto', containIntrinsicSize: '0 100px' }}
+                style={{ 
+                  contentVisibility: 'auto', 
+                  containIntrinsicSize: '0 100px',
+                  height: 'auto',
+                  minHeight: '60px'
+                }}
               >
                 <div className="flex items-center gap-3">
                   <div className="bg-primary-500/50 p-2 rounded-full">
@@ -121,7 +167,9 @@ export default function HeroSection() {
               style={{ 
                 contentVisibility: 'auto', 
                 containIntrinsicSize: '0 600px',
-                contain: 'paint layout style'
+                contain: 'paint layout style',
+                height: 'auto',
+                minHeight: '600px'
               }}
             >
               <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-4 md:p-6 lg:p-8 border border-gray-100">
@@ -247,10 +295,14 @@ export default function HeroSection() {
         </div>
       </div>
       
-      {/* Mobile UI elements with content-visibility for progressive loading */}
+      {/* Mobile UI elements with fixed dimensions to prevent layout shifts */}
       <div 
         className="lg:hidden w-full fixed bottom-24 z-40 bg-white/90 backdrop-blur-md pt-3 pb-4 px-4 border-t border-gray-200"
-        style={{ contentVisibility: 'auto', containIntrinsicSize: '0 80px' }}
+        style={{ 
+          contentVisibility: 'auto',
+          height: '80px',
+          transform: 'translateZ(0)'
+        }}
       >
         <div className="grid grid-cols-3 text-center w-full max-w-lg mx-auto">
           <div className="flex flex-col items-center">
@@ -274,7 +326,13 @@ export default function HeroSection() {
         </div>
       </div>
       
-      <div className="lg:hidden fixed w-full bottom-16 z-50 px-4">
+      <div 
+        className="lg:hidden fixed w-full bottom-16 z-50 px-4"
+        style={{ 
+          height: '64px',
+          transform: 'translateZ(0)'
+        }}
+      >
         <Link 
           href="/claim"
           className="btn-primary w-full block text-xl py-4 text-center font-semibold shadow-xl rounded-lg bg-primary-700"
@@ -288,7 +346,13 @@ export default function HeroSection() {
         </Link>
       </div>
       
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-primary-800 p-3 shadow-lg z-50">
+      <div 
+        className="lg:hidden fixed bottom-0 left-0 right-0 bg-primary-800 p-3 shadow-lg z-50"
+        style={{ 
+          height: '56px',
+          transform: 'translateZ(0)'
+        }}
+      >
         <a 
           href="tel:+18339986906" 
           className="btn-secondary w-full flex items-center justify-center gap-2"

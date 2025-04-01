@@ -91,14 +91,14 @@ export default function RootLayout({
         <link 
           rel="preload" 
           as="image" 
-          href="/images/hero-bg-mobile.jpg" 
+          href="/images/shutterstock_2428486561-mobile.webp" 
           media="(max-width: 768px)" 
           fetchPriority="high"
         />
         <link 
           rel="preload" 
           as="image" 
-          href="/images/hero-bg.jpg" 
+          href="/images/shutterstock_2428486561-desktop.webp" 
           media="(min-width: 769px)" 
           fetchPriority="high"
         />
@@ -114,12 +114,14 @@ export default function RootLayout({
               background-color: #f9fafb;
             }
             .hero-section {
-              background-image: url('/images/hero-bg-mobile.jpg');
-              background-color: #333; /* Fallback color */
+              background-image: url('/images/shutterstock_2428486561-mobile.webp');
+              background-color: #1e40af; /* Fallback color - primary blue */
               background-position: center;
               background-size: cover;
               background-repeat: no-repeat;
               position: relative;
+              content-visibility: auto;
+              contain-intrinsic-size: 100% 90vh;
             }
             .hero-section:before {
               content: '';
@@ -133,9 +135,11 @@ export default function RootLayout({
             }
             @media (min-width: 768px) {
               .hero-section {
-                background-image: url('/images/hero-bg.jpg');
+                background-image: url('/images/shutterstock_2428486561-desktop.webp');
+                contain-intrinsic-size: 100% 650px;
               }
             }
+            /* Reserve space for layout elements to prevent CLS */
             .container {
               width: 100%;
               margin-left: auto;
@@ -167,6 +171,27 @@ export default function RootLayout({
               margin-bottom: 0.25rem;
               font-weight: 500;
               color: #374151;
+            }
+            /* Critical LCP text styles */
+            h1 {
+              font-size: 1.875rem;
+              line-height: 2.25rem;
+              font-weight: 700;
+              margin-bottom: 1.25rem;
+              color: white;
+              max-width: 100%;
+            }
+            @media (min-width: 768px) {
+              h1 {
+                font-size: 2.25rem;
+                line-height: 2.5rem;
+              }
+            }
+            @media (min-width: 1024px) {
+              h1 {
+                font-size: 3rem;
+                line-height: 1.2;
+              }
             }
             `,
           }}
