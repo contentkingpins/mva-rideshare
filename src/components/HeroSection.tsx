@@ -28,36 +28,13 @@ const CheckIcon = () => (
 export default function HeroSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const router = useRouter();
   
-  // Check viewport size
+  // Simplified initialization - avoid image loading state
   useEffect(() => {
-    // Check device immediately on client-side
     if (typeof window !== 'undefined') {
       setIsMobile(window.innerWidth < 1024);
       
-      // Preload hero image
-      const preloadImage = () => {
-        const mobileSrc = "/images/shutterstock_2428486561-mobile.webp";
-        const desktopSrc = "/images/shutterstock_2428486561-desktop.webp";
-        
-        // Create image object and set events before setting src
-        const imgElement = new window.Image();
-        if ('fetchPriority' in HTMLImageElement.prototype) {
-          // @ts-ignore - fetchPriority is a newer attribute that TypeScript might not recognize
-          imgElement.fetchPriority = 'high';
-        }
-        imgElement.onload = () => setImageLoaded(true);
-        
-        // Set src based on screen size
-        imgElement.src = window.innerWidth < 1024 ? mobileSrc : desktopSrc;
-      };
-      
-      // Preload immediately
-      preloadImage();
-      
-      // Handle resize events
       const handleResize = () => {
         setIsMobile(window.innerWidth < 1024);
       };
@@ -92,66 +69,47 @@ export default function HeroSection() {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Hero Container */}
+      {/* Simplified Hero Container */}
       <div className="relative min-h-[90vh] md:min-h-[600px] lg:min-h-[650px] w-full">
-        {/* Static background color - always visible */}
-        <div className="absolute inset-0 z-0 bg-primary-800 bg-gradient-to-b from-primary-900 via-primary-800 to-primary-700"></div>
+        {/* Static background color - no transitions or animations */}
+        <div className="absolute inset-0 z-0 bg-primary-800"></div>
         
-        {/* Optimized image loading with Next.js Image */}
+        {/* Static image - no transitions, opacity changes, or other expensive operations */}
         <div className="absolute inset-0 z-0">
-          {/* Use a static div with CSS background first for immediate display */}
-          <div 
-            className="absolute inset-0 z-0 bg-primary-900"
-            style={{
-              backgroundImage: 'linear-gradient(to bottom, rgba(30, 58, 138, 0.9), rgba(29, 78, 216, 0.8))',
-              opacity: imageLoaded ? 0 : 1,
-              transition: 'opacity 0.3s ease-in'
-            }}
-          ></div>
-          
           <Image
             src={isMobile ? "/images/shutterstock_2428486561-mobile.webp" : "/images/shutterstock_2428486561-desktop.webp"}
             alt="Rideshare accident scene"
             fill
             priority
-            quality={30}
+            fetchPriority="high"
+            quality={20}
             sizes="100vw"
             className="absolute inset-0 z-0 object-cover opacity-70"
             style={{ 
-              objectPosition: isMobile ? '50% 40%' : 'center top',
-              filter: 'brightness(0.65) contrast(1.1)',
-              contentVisibility: 'auto',
-              willChange: 'transform',
-              transform: 'translateZ(0)',
-              backfaceVisibility: 'hidden',
-              opacity: imageLoaded ? 1 : 0,
-              transition: 'opacity 0.3s ease-in'
+              objectPosition: isMobile ? '50% 40%' : 'center top'
             }}
-            placeholder="blur"
-            blurDataURL="data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAACwAQCdASoIAAgAAkA4JZQCdADx7wfoAAD++f9RWkiWj/CiSK+EgxRvP0yR/5u1jO/pVYn//yRSvmwgAAAA"
             unoptimized={true}
-            loading="eager"
-            onLoad={() => setImageLoaded(true)}
           />
         </div>
         
-        {/* Fixed gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/50 via-primary-800/45 to-primary-700/40 md:from-primary-900/30 md:via-primary-800/25 md:to-primary-700/20 z-1"></div>
+        {/* Simple gradient overlay - no transitions or animations */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-900/40 to-primary-800/30 z-1"></div>
 
         {/* Content Container */}
         <div className="container relative z-10 h-full px-5 md:px-6">
           <div className="flex flex-col lg:flex-row items-center justify-center h-full pt-16 md:pt-16 pb-36 md:pb-24 lg:py-16 gap-6 md:gap-8 lg:gap-12">
-            {/* Text Content - Adaptive for different screens */}
+            {/* Text Content - Keep this as simple as possible for fast LCP */}
             <div className="w-full lg:w-1/2 text-white lg:pr-6 pt-0 md:pt-8">
               <div className="max-w-lg mx-auto md:mx-0">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-4 md:mb-5 drop-shadow-sm">
+                {/* This is the LCP element - make it render as fast as possible */}
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-4 md:mb-5">
                   Injured in a Rideshare Accident? Get Your Compensation Fast!
                 </h1>
-                <p className="text-lg md:text-lg lg:text-xl text-white text-opacity-95 leading-relaxed drop-shadow-sm mb-8">
+                <p className="text-lg md:text-lg lg:text-xl text-white text-opacity-95 leading-relaxed mb-8">
                   Submit your info and receive a callback in 24 hours or less for your free rideshare accident evaluation.
                 </p>
                 
-                {/* Professional feature list */}
+                {/* Simplified feature list - removed classes that might affect layout */}
                 <div className="hidden md:grid md:grid-cols-3 gap-4 mt-8">
                   <div className="flex items-center gap-3">
                     <div className="bg-primary-500/50 p-2 rounded-full">

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
+import Image from 'next/image';
 
 const testimonials = [
   {
@@ -87,10 +89,13 @@ export default function Testimonials() {
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                   <div className="flex-shrink-0">
                     <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white shadow-md">
-                      <img 
+                      <Image 
                         src={testimonials[currentIndex].image} 
                         alt={testimonials[currentIndex].name} 
-                        className="w-full h-full object-cover"
+                        className="object-cover"
+                        width={96}
+                        height={96}
+                        unoptimized={true}
                       />
                     </div>
                   </div>
@@ -111,10 +116,10 @@ export default function Testimonials() {
             </AnimatePresence>
           </div>
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - optimize by using transform */}
           <button 
             onClick={goToPrevious}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 md:translate-x-0 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-600 hover:bg-primary-50 hover:text-primary-700 transition-colors duration-200"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 md:translate-x-0 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-600 focus:outline-none"
             aria-label="Previous testimonial"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -123,7 +128,7 @@ export default function Testimonials() {
           </button>
           <button 
             onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 md:translate-x-0 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-600 hover:bg-primary-50 hover:text-primary-700 transition-colors duration-200"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 md:translate-x-0 w-10 h-10 rounded-full bg-white shadow-md flex items-center justify-center text-primary-600 focus:outline-none"
             aria-label="Next testimonial"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -131,18 +136,29 @@ export default function Testimonials() {
             </svg>
           </button>
 
-          {/* Dots */}
+          {/* Dots - Replace color transitions with transform and opacity for better performance */}
           <div className="flex justify-center mt-6 space-x-2">
             {testimonials.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentIndex(index)}
-                className={`w-3 h-3 rounded-full transition-colors duration-200 ${
-                  index === currentIndex ? 'bg-primary-600' : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-                style={{ minWidth: '24px', minHeight: '24px', padding: '8px' }}
+                className="relative p-2 focus:outline-none"
+                style={{ width: '36px', height: '36px' }}
                 aria-label={`Go to testimonial ${index + 1}`}
-              />
+              >
+                <span 
+                  className={`absolute inset-0 m-auto w-3 h-3 rounded-full bg-gray-300`}
+                  style={{ transform: 'scale(1.0)' }}
+                ></span>
+                {index === currentIndex && (
+                  <motion.span
+                    className="absolute inset-0 m-auto w-3 h-3 rounded-full bg-primary-600"
+                    initial={{ transform: 'scale(0)' }}
+                    animate={{ transform: 'scale(1)' }}
+                    transition={{ duration: 0.2 }}
+                  ></motion.span>
+                )}
+              </button>
             ))}
           </div>
         </div>
@@ -157,9 +173,9 @@ export default function Testimonials() {
           <div className="bg-primary-50 rounded-lg p-6 max-w-2xl mx-auto">
             <p className="text-lg mb-4 font-medium">Join thousands of satisfied clients who received compensation</p>
             <p className="text-sm mb-6 text-gray-600">Free evaluation in 24 hours or less • 100% Confidential • No upfront costs</p>
-            <a href="/claim" className="btn-primary text-lg px-8 py-3 font-semibold">
+            <Link href="/claim" className="btn-primary inline-block text-lg px-8 py-3 font-semibold">
               Check My Eligibility Now
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>
