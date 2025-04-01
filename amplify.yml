@@ -4,17 +4,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - echo "Configuring npm registry and settings..."
-        - npm config set registry https://registry.npmjs.org/
-        - npm config set fetch-retries 5
-        - npm config set fetch-retry-mintimeout 20000
-        - npm config set fetch-retry-maxtimeout 120000
-        - echo "Making post-build script executable..."
-        - chmod +x amplify-post-build.sh
-        - echo "Installing dependencies with fallback strategies..."
-        - npm ci || npm install --no-package-lock || npm install
-        - echo "Patching SWC dependencies if needed..."
-        - npm install @next/swc-* --no-save || true
+        - npm ci --no-optional || npm install --no-optional || (mkdir -p node_modules/camelcase-css && echo 'module.exports = function(str) { return str.replace(/-([a-z])/g, function(_, letter) { return letter.toUpperCase(); }); };' > node_modules/camelcase-css/index.js && npm install)
         - echo "Setting up environment variables..."
         - |
           if [ -z "$key_id" ] || [ -z "$secret" ]; then
@@ -36,8 +26,6 @@ frontend:
       commands:
         - echo "Building Next.js application..."
         - npm run build || (echo "Build failed" && exit 1)
-        - echo "Running post-build script..."
-        - ./amplify-post-build.sh
         - echo "Build completed successfully"
   artifacts:
     baseDirectory: .next
@@ -48,7 +36,6 @@ frontend:
     paths:
       - node_modules/**/*
       - .next/cache/**/*
-      - .npm-cache/**/*
   customHeaders:
     - pattern: '**/*'
       headers:
