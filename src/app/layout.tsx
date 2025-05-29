@@ -284,6 +284,16 @@ export default function RootLayout({
         {/* Meta tags for viewport control */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
+        
+        {/* SEO Meta Tags */}
+        <meta name="description" content="Get legal help for rideshare accidents in Maryland. Free consultation for Uber and Lyft accident claims. Experienced MVA rideshare attorneys." />
+        <meta name="keywords" content="rideshare accident lawyer, uber accident attorney, lyft accident lawyer, maryland rideshare law, mva rideshare claims" />
+        <meta name="author" content="Rideshare Rights" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.ridesharerights.com/" />
+        
+        {/* Google Site Verification */}
+        <meta name="google-site-verification" content="google73c8220fa04b6f91" />
       </head>
       <body>
         {/* Script to mark when the body starts rendering */}
