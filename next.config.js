@@ -75,7 +75,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*' // Consider restricting this to specific domains in production
+            value: 'https://www.ridesharerights.com https://ridesharerights.com https://*.hennessey.com https://*.google.com https://*.facebook.com'
           },
           {
             key: 'Access-Control-Allow-Methods',

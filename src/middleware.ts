@@ -29,9 +29,28 @@ export function middleware(request: NextRequest) {
 
   // Basic bot protection - only block obvious bots
   const userAgent = request.headers.get('user-agent') || '';
-  if (userAgent.toLowerCase().includes('crawler') || 
+  
+  // Allow legitimate crawlers and ad verification bots
+  const allowedBots = [
+    'googlebot',
+    'google-ads',
+    'adsbot-google',
+    'facebookexternalhit',
+    'twitterbot',
+    'linkedinbot',
+    'bingbot',
+    'slurp'
+  ];
+  
+  const isAllowedBot = allowedBots.some(bot => 
+    userAgent.toLowerCase().includes(bot)
+  );
+  
+  if (!isAllowedBot && (
+      userAgent.toLowerCase().includes('crawler') || 
       userAgent.toLowerCase().includes('spider') || 
-      userAgent.toLowerCase().includes('bot')) {
+      (userAgent.toLowerCase().includes('bot') && !userAgent.toLowerCase().includes('googlebot'))
+  )) {
     console.log(`[Middleware] Blocked bot: ${userAgent}`);
     return new NextResponse('Not allowed', { status: 403 });
   }
